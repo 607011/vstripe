@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+/* Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+ * All rights reserved.
  * $Id$
  */
 
@@ -30,7 +30,16 @@ public:
 public slots:
     void openVideoFile(void);
     void closeVideoFile(void);
+    void decodingFinished(void);
     void togglePictureWidget(bool);
+    void toggleReading(void);
+    void frameChanged(int);
+    void forward(int nFrames = 1);
+    void backward(int nFrames = 1);
+    void fastForward(void);
+    void fastBackward(void);
+    void setMarkA(void);
+    void setMarkB(void);
 
 private:
     Ui::MainWindow* ui;
@@ -38,6 +47,9 @@ private:
     VideoWidget* videoWidget;
     PictureWidget* pictureWidget;
     VideoReaderThread* videoReaderThread;
+    QVector<QImage> images;
+    int markA;
+    int markB;
 
 };
 

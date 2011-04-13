@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+/* Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+ * All rights reserved.
  * $Id$
  */
 
@@ -11,20 +11,18 @@
 #include <QRect>
 #include <QPaintEvent>
 #include <QResizeEvent>
+#include <QMutex>
+#include <QVector>
 
-extern "C" {
-#include <avcodec.h>
-#include <avformat.h>
-#include <swscale.h>
-}
+#include "ffmpeg.h"
 
-class VideoWidget : public QFrame
+class VideoWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit VideoWidget(QFrame* parent = 0);
+    explicit VideoWidget(QWidget* parent = NULL);
     ~VideoWidget();
-    void setFrame(AVFrame* pFrame);
+    void setFrame(const QImage&);
 
     QSize minimumSizeHint(void) const { return QSize(384, 216); }
 
@@ -37,13 +35,15 @@ private:
     qreal windowAspectRatio;
     qreal frameAspectRatio;
     QRect destRect;
+    QMutex frameMutex;
 
     void calcDestRect(void);
+
 
 signals:
 
 public slots:
-    void setFrameSize(int w, int h);
+    void setFrameSize(const QSize&);
 };
 
 #endif // VIDEOWIDGET_H

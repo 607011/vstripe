@@ -1,30 +1,29 @@
-/*
- * Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+/* Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+ * All rights reserved.
  * $Id$
  */
 
 #ifndef VIDEOREADERTHREAD_H
 #define VIDEOREADERTHREAD_H
 
-extern "C" {
-#include <avcodec.h>
-#include <avformat.h>
-#include <swscale.h>
-}
-
 #include <QThread>
 #include <QString>
+#include <QImage>
+#include <QFile>
+#include <QVector>
 
 #include "videowidget.h"
+#include "videodecoder.h"
 
 class VideoReaderThread : public QThread
 {
     Q_OBJECT
 public:
-    explicit VideoReaderThread(VideoWidget* videoWidget, QObject* parent = 0);
+    explicit VideoReaderThread(VideoWidget* videoWidget, QObject* parent = NULL);
     ~VideoReaderThread();
 
-    void startReading(const QString& videoFileName);
+    void setFile(QString videoFileName);
+    void startReading(int numFrames, QVector<QImage>* images);
     void stopReading(void);
 
 signals:
@@ -35,9 +34,12 @@ protected:
     void run(void);
 
 private:
-    QString mFileName;
     VideoWidget* mVideoWidget;
-    bool abort;
+    VideoDecoder mDecoder;
+    bool mAbort;
+    QVector<QImage>* mImages;
+    int mMaxFrameCount;
+    int mFrameCount;
 };
 
 #endif // VIDEOREADERTHREAD_H

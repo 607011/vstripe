@@ -19,11 +19,14 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     videowidget.cpp \
     videoreaderthread.cpp \
-    picturewidget.cpp
+    picturewidget.cpp \
+    videodecoder.cpp
 
 HEADERS  += mainwindow.h \
     videowidget.h \
     videoreaderthread.h \
-    picturewidget.h
+    picturewidget.h \
+    videodecoder.h \
+    ffmpeg.h
 
 FORMS    += mainwindow.ui

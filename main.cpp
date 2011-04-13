@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+/* Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+ * All rights reserved.
  * $Id$
  */
 

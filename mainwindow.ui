@@ -21,6 +21,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QSlider" name="frameSlider">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
             <horstretch>5</horstretch>
@@ -150,7 +153,7 @@
            <bool>false</bool>
           </property>
           <property name="text">
-           <string>Stop</string>
+           <string/>
           </property>
          </widget>
         </item>
