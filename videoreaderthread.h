@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+ * $Id$
+ */
+
 #ifndef VIDEOREADERTHREAD_H
 #define VIDEOREADERTHREAD_H
 

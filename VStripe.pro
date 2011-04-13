@@ -16,14 +16,14 @@ DEFINES += __STDC_CONSTANT_MACROS
 LIBS += -LC:/Workspace/ffmpeg-32-bit-static/lib -lavcodec.dll -lavformat.dll -lavutil.dll -lswscale.dll
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    framereader.cpp \
+    mainwindow.cpp \
     videowidget.cpp \
-    videoreaderthread.cpp
+    videoreaderthread.cpp \
+    picturewidget.cpp
 
 HEADERS  += mainwindow.h \
-    framereader.h \
     videowidget.h \
-    videoreaderthread.h
+    videoreaderthread.h \
+    picturewidget.h
 
 FORMS    += mainwindow.ui

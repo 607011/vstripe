@@ -1,8 +1,14 @@
+/*
+ * Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+ * $Id$
+ */
+
 #ifndef VIDEOWIDGET_H
 #define VIDEOWIDGET_H
 
 #include <QFrame>
 #include <QImage>
+#include <QRect>
 #include <QPaintEvent>
 #include <QResizeEvent>
 
@@ -28,6 +34,11 @@ protected:
 
 private:
     QImage image;
+    qreal windowAspectRatio;
+    qreal frameAspectRatio;
+    QRect destRect;
+
+    void calcDestRect(void);
 
 signals:
 

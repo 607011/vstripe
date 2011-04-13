@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+ * $Id$
+ */
+
 #include <QDebug>
 #include <QMutexLocker>
 
@@ -35,8 +40,8 @@ void VideoReaderThread::stopReading(void)
 
 void VideoReaderThread::run(void)
 {
-    char* filename = new char[mFileName.size()+1];
-    strcpy(filename, mFileName.toLocal8Bit().data());
+    char* const filename = new char[mFileName.size()+1];
+    strcpy(filename, mFileName.toLocal8Bit().constData());
 
     // Open video file
     AVFormatContext* pFormatCtx;
@@ -46,14 +51,14 @@ void VideoReaderThread::run(void)
     }
 
     // Retrieve stream information
-    if(av_find_stream_info(pFormatCtx) < 0) {
+    if (av_find_stream_info(pFormatCtx) < 0) {
         qDebug() << tr("Couldn't find stream information");
         exit(-1);
     }
 
     // Find the first video stream
     int videoStream = -1;
-    for (unsigned int i = 0; i < pFormatCtx->nb_streams;++i) {
+    for (unsigned int i = 0; i < pFormatCtx->nb_streams; ++i) {
         if (pFormatCtx->streams[i]->codec->codec_type == CODEC_TYPE_VIDEO) {
             videoStream = i;
             break;
