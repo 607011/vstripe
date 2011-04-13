@@ -36,7 +36,7 @@ private:
     qreal frameAspectRatio;
     QRect destRect;
     QMutex frameMutex;
-
+    int mStripeWidth;
     void calcDestRect(void);
 
 
@@ -44,6 +44,7 @@ signals:
 
 public slots:
     void setFrameSize(const QSize&);
+    void setStripeWidth(int);
 };
 
 #endif // VIDEOWIDGET_H

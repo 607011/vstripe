@@ -9,16 +9,19 @@
 
 #include "videowidget.h"
 
+
 VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
 {
     setBaseSize(480, 270);
     setMinimumSize(384, 216);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setSizeIncrement(16, 9);
+    mStripeWidth = 5;
 }
 
 
-VideoWidget::~VideoWidget() {
+VideoWidget::~VideoWidget()
+{
 }
 
 
@@ -39,6 +42,11 @@ void VideoWidget::setFrameSize(const QSize& sz) {
     calcDestRect();
 }
 
+
+void VideoWidget::setStripeWidth(int stripeWidth)
+{
+    mStripeWidth = stripeWidth;
+}
 
 void VideoWidget::setFrame(const QImage& img)
 {
@@ -64,4 +72,7 @@ void VideoWidget::paintEvent(QPaintEvent*)
     frameMutex.lock();
     painter.drawImage(destRect, image);
     frameMutex.unlock();
+    painter.setBrush(Qt::transparent);
+    painter.setPen(Qt::red);
+    painter.drawRect(0, 0, mStripeWidth, destRect.height());
 }

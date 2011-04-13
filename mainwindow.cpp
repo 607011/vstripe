@@ -48,6 +48,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     markB = -1;
     connect(ui->AButton, SIGNAL(clicked()), this, SLOT(setMarkA()));
     connect(ui->BButton, SIGNAL(clicked()), this, SLOT(setMarkB()));
+
+    connect(ui->renderButton, SIGNAL(clicked()), this, SLOT(loadFrames()));
+    connect(ui->action_Save_picture, SIGNAL(triggered()), this, SLOT(savePicture()));
+
+    mStripeWidth = 1;
+    mFrameSkip = 1;
 }
 
 
@@ -67,6 +73,13 @@ void MainWindow::frameChanged(int n)
     videoReaderThread->decoder()->seekMs(n);
     videoReaderThread->decoder()->getFrame(img);
     videoWidget->setFrame(img);
+}
+
+
+void MainWindow::loadFrames(void)
+{
+    ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(nFrames));
+    videoReaderThread->startReading(nFrames, &images);
 }
 
 
@@ -126,6 +139,19 @@ void MainWindow::togglePictureWidget(bool visible)
     if (visible)
         pictureWidget->showNormal();
     setWindowState(Qt::WindowActive);
+    // ui->actionPreview_picture->setChecked(!visible);
+}
+
+
+void MainWindow::showPictureWidget(void)
+{
+    ui->actionPreview_picture->setChecked(true);
+}
+
+
+void MainWindow::hidePictureWidget(void)
+{
+    ui->actionPreview_picture->setChecked(false);
 }
 
 
@@ -134,6 +160,10 @@ void MainWindow::openVideoFile(void)
     videoFileName = QFileDialog::getOpenFileName(this, tr("Open Video File"));
     videoReaderThread->setFile(videoFileName);
     videoWidget->setFrameSize(videoReaderThread->decoder()->frameSize());
+    ui->action_CloseVideoFile->setEnabled(true);
+    pictureWidget->resize(videoReaderThread->decoder()->frameSize());
+    showPictureWidget();
+    nFrames = videoReaderThread->decoder()->frameSize().width() * mFrameSkip / mStripeWidth;
     ui->frameSlider->setMinimum(0);
     ui->frameSlider->setMaximum(videoReaderThread->decoder()->getVideoLengthMs());
     ui->frameSlider->setSingleStep(1000);
@@ -154,8 +184,12 @@ void MainWindow::openVideoFile(void)
 void MainWindow::closeVideoFile(void)
 {
     images.clear();
+    ui->action_CloseVideoFile->setEnabled(false);
+    ui->action_Save_picture->setEnabled(false);
     ui->frameSlider->setValue(0);
     videoWidget->setFrame(QImage());
+    pictureWidget->setPicture(QImage());
+    hidePictureWidget();
     ui->frameSlider->setEnabled(false);
     ui->AButton->setEnabled(false);
     ui->BButton->setEnabled(true);
@@ -163,10 +197,27 @@ void MainWindow::closeVideoFile(void)
     ui->backwardButton->setEnabled(false);
     ui->fastForwardButton->setEnabled(false);
     ui->fastBackwardButton->setEnabled(false);
+    ui->statusBar->showMessage(tr("File closed."));
+}
+
+
+void MainWindow::savePicture(void)
+{
+    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save picture as ..."), QString(), "*.png");
+    pictureWidget->picture().save(saveFileName);
 }
 
 
 void MainWindow::decodingFinished(void)
 {
-    videoReaderThread->stopReading();
+    ui->action_Save_picture->setEnabled(true);
+    ui->statusBar->showMessage(tr("%1 frames ready.").arg(images.size()));
+    QImage dst(videoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
+    for (int i = 0, x0 = 0; i < images.size(); i += mFrameSkip, x0 += mStripeWidth) {
+        const QImage& src = images[i];
+        for (int x = 0; x < mStripeWidth; ++x)
+            for (int y = 0; y < dst.height(); ++y)
+                dst.setPixel(x0+x, y, src.pixel(x0+x, y));
+    }
+    pictureWidget->setPicture(dst);
 }

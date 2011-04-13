@@ -11,6 +11,7 @@
 #include <QImage>
 #include <QFile>
 #include <QVector>
+#include <QMutex>
 
 #include "videowidget.h"
 #include "videodecoder.h"
@@ -23,7 +24,7 @@ public:
     ~VideoReaderThread();
 
     void setFile(QString videoFileName);
-    void startReading(int numFrames, QVector<QImage>* images);
+    void startReading(int numFrames, QVector<QImage>* images, int skip = 1);
     void stopReading(void);
 
     VideoDecoder* decoder(void) { return &mDecoder; }
@@ -42,6 +43,7 @@ private:
     QVector<QImage>* mImages;
     int mMaxFrameCount;
     int mFrameCount;
+    int mSkip;
 };
 
 #endif // VIDEOREADERTHREAD_H

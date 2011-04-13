@@ -7,23 +7,31 @@
 #define PICTUREWIDGET_H
 
 #include <QWidget>
+#include <QImage>
 
 class PictureWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PictureWidget(QWidget* parent = 0);
+    explicit PictureWidget(QWidget* parent = NULL);
 
     QSize minimumSizeHint(void) const { return QSize(720, 576); }
     void setVisible(bool visible);
+    void setPicture(const QImage& img);
+    const QImage& picture(void) const { return mImage; }
 
 signals:
     void visibilityChanged(bool);
 
 protected:
+    void paintEvent(QPaintEvent*);
+    // void resizeEvent(QResizeEvent*);
     void closeEvent(QCloseEvent*);
 
 public slots:
+
+private:
+    QImage mImage;
 
 };
 

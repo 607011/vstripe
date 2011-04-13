@@ -4,13 +4,13 @@
  */
 
 #include <QDebug>
-#include <QTime>
+#include <QMutexLocker>
 #include "videoreaderthread.h"
 
 VideoReaderThread::VideoReaderThread(VideoWidget* videoWidget, QObject* parent)
     : QThread(parent), mVideoWidget(videoWidget)
 {
-    // ...
+    mSkip = 1;
 }
 
 
@@ -27,9 +27,12 @@ void VideoReaderThread::setFile(QString videoFileName)
 }
 
 
-void VideoReaderThread::startReading(int numFrames, QVector<QImage>* images)
+void VideoReaderThread::startReading(int numFrames, QVector<QImage>* images, int skip)
 {
+    stopReading();
+    mSkip = skip;
     mImages = images;
+    mImages->clear();
     mVideoWidget->setFrameSize(mDecoder.frameSize());
     mMaxFrameCount = numFrames;
     mFrameCount = 0;
@@ -48,8 +51,8 @@ void VideoReaderThread::stopReading(void)
 void VideoReaderThread::run(void)
 {
     while (!mAbort && mFrameCount < mMaxFrameCount) {
-        mDecoder.seekNextFrame();
         QImage img;
+        mDecoder.seekNextFrame(mSkip);
         mDecoder.getFrame(img);
         mVideoWidget->setFrame(img);
         mImages->append(img);

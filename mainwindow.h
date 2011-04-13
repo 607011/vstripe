@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget* parent = 0);
+    explicit MainWindow(QWidget* parent = NULL);
     ~MainWindow();
 
     QSize minimumSizeHint(void) const { return QSize(720, 576); }
@@ -39,6 +39,8 @@ public slots:
     void fastBackward(void);
     void setMarkA(void);
     void setMarkB(void);
+    void loadFrames(void);
+    void savePicture(void);
 
 private:
     Ui::MainWindow* ui;
@@ -49,6 +51,12 @@ private:
     QVector<QImage> images;
     int markA;
     int markB;
+    int nFrames;
+    int mStripeWidth;
+    int mFrameSkip;
+
+    void showPictureWidget(void);
+    void hidePictureWidget(void);
 };
 
 #endif // MAINWINDOW_H

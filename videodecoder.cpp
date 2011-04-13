@@ -218,11 +218,11 @@ bool VideoDecoder::decodeSeekFrame(int after)
 /**
    \brief Decodes the next frame in the video stream
 **/
-bool VideoDecoder::seekNextFrame()
+bool VideoDecoder::seekNextFrame(int skip)
 {
-    bool ret = decodeSeekFrame(DesiredFrameNumber+1);
+    bool ret = decodeSeekFrame(DesiredFrameNumber + skip);
     if (ret)
-        ++DesiredFrameNumber; // Only updates the DesiredFrameNumber if we were successful in getting that frame
+        DesiredFrameNumber += skip; // Only updates the DesiredFrameNumber if we were successful in getting that frame
     else
         LastFrameOk = false; // We didn't find the next frame (e.g. seek out of range) - mark we don't know where we are.
     return ret;

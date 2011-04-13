@@ -14,8 +14,8 @@
    <string>VStripe</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -175,6 +175,17 @@
         </item>
        </layout>
       </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QPushButton" name="renderButton">
+          <property name="text">
+           <string>Render</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
      </layout>
     </item>
    </layout>
@@ -194,6 +205,8 @@
     </property>
     <addaction name="action_OpenVideoFile"/>
     <addaction name="action_CloseVideoFile"/>
+    <addaction name="separator"/>
+    <addaction name="action_Save_picture"/>
     <addaction name="separator"/>
     <addaction name="actionE_xit"/>
    </widget>
@@ -232,8 +245,14 @@
    </property>
   </action>
   <action name="action_CloseVideoFile">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Close video file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
   <action name="actionPreview_picture">
@@ -241,10 +260,18 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Preview picture</string>
+   </property>
+  </action>
+  <action name="action_Save_picture">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Save picture ...</string>
    </property>
   </action>
  </widget>
