@@ -43,6 +43,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="fastBackwardButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>20</width>
@@ -62,6 +65,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="backwardButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>20</width>
@@ -81,6 +87,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="forwardButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>20</width>
@@ -100,6 +109,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="fastForwardButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>20</width>
@@ -119,6 +131,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="AButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="maximumSize">
            <size>
             <width>40</width>
@@ -128,10 +143,19 @@
           <property name="text">
            <string>[A</string>
           </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="BButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="maximumSize">
            <size>
             <width>40</width>
@@ -141,19 +165,11 @@
           <property name="text">
            <string>B]</string>
           </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QPushButton" name="startStopButton">
-          <property name="enabled">
-           <bool>false</bool>
+          <property name="checkable">
+           <bool>true</bool>
           </property>
-          <property name="text">
-           <string/>
+          <property name="checked">
+           <bool>false</bool>
           </property>
          </widget>
         </item>

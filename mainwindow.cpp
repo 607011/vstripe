@@ -25,9 +25,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->action_OpenVideoFile, SIGNAL(triggered()), this, SLOT(openVideoFile()));
     connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
 
-    connect(ui->startStopButton, SIGNAL(clicked()), this, SLOT(toggleReading()));
-    ui->startStopButton->setText(tr("Start"));
-
     ui->statusBar->showMessage(tr("Ready."), 3000);
 
     videoReaderThread = new VideoReaderThread(videoWidget);
@@ -65,7 +62,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::frameChanged(int n)
 {
-    videoWidget->setFrame(images[n]);
+    QImage img;
+    qDebug() << "seeking to " << n << " ms";
+    videoReaderThread->decoder()->seekMs(n);
+    videoReaderThread->decoder()->getFrame(img);
+    videoWidget->setFrame(img);
 }
 
 
@@ -83,25 +84,39 @@ void MainWindow::backward(int nFrames)
 
 void MainWindow::fastForward(void)
 {
-    forward(25);
+    forward(25 * 20);
 }
 
 
 void MainWindow::fastBackward(void)
 {
-    backward(25);
+    backward(25 * 20);
 }
 
 
 void MainWindow::setMarkA(void)
 {
-    markA = ui->frameSlider->value();
+    if (ui->AButton->isChecked()) {
+        markA = -1;
+        ui->AButton->setChecked(false);
+    }
+    else {
+        markA = ui->frameSlider->value();
+        ui->AButton->setChecked(true);
+    }
 }
 
 
 void MainWindow::setMarkB(void)
 {
-    markB = ui->frameSlider->value();
+    if (ui->BButton->isChecked()) {
+        markB = -1;
+        ui->BButton->setChecked(false);
+    }
+    else {
+        markB = ui->frameSlider->value();
+        ui->BButton->setChecked(true);
+    }
 }
 
 
@@ -114,28 +129,25 @@ void MainWindow::togglePictureWidget(bool visible)
 }
 
 
-void MainWindow::toggleReading(void)
-{
-    if (ui->startStopButton->text() == tr("Start")) {
-        qDebug() << "Starting decode ...";
-        ui->startStopButton->setText(tr("Stop"));
-        images.clear();
-        videoReaderThread->startReading(100, &images);
-    }
-    else {
-        qDebug() << "Stopping decode ...";
-        ui->startStopButton->setText(tr("Start"));
-        decodingFinished();
-    }
-}
-
-
 void MainWindow::openVideoFile(void)
 {
     videoFileName = QFileDialog::getOpenFileName(this, tr("Open Video File"));
     videoReaderThread->setFile(videoFileName);
-    ui->startStopButton->setEnabled(true);
-    toggleReading();
+    videoWidget->setFrameSize(videoReaderThread->decoder()->frameSize());
+    ui->frameSlider->setMinimum(0);
+    ui->frameSlider->setMaximum(videoReaderThread->decoder()->getVideoLengthMs());
+    ui->frameSlider->setSingleStep(1000);
+    ui->frameSlider->setPageStep(25*1000);
+    QImage img;
+    videoReaderThread->decoder()->getFrame(img);
+    videoWidget->setFrame(img);
+    ui->frameSlider->setEnabled(true);
+    ui->AButton->setEnabled(true);
+    ui->BButton->setEnabled(true);
+    ui->forwardButton->setEnabled(true);
+    ui->backwardButton->setEnabled(true);
+    ui->fastForwardButton->setEnabled(true);
+    ui->fastBackwardButton->setEnabled(true);
 }
 
 
@@ -143,20 +155,18 @@ void MainWindow::closeVideoFile(void)
 {
     images.clear();
     ui->frameSlider->setValue(0);
-    ui->frameSlider->setEnabled(false);
     videoWidget->setFrame(QImage());
+    ui->frameSlider->setEnabled(false);
+    ui->AButton->setEnabled(false);
+    ui->BButton->setEnabled(true);
+    ui->forwardButton->setEnabled(false);
+    ui->backwardButton->setEnabled(false);
+    ui->fastForwardButton->setEnabled(false);
+    ui->fastBackwardButton->setEnabled(false);
 }
 
 
 void MainWindow::decodingFinished(void)
 {
-    ui->startStopButton->setEnabled(false);
-    ui->startStopButton->setText(tr("Start"));
     videoReaderThread->stopReading();
-    ui->frameSlider->setEnabled(true);
-    ui->frameSlider->setMinimum(0);
-    ui->frameSlider->setMaximum(images.size() - 1);
-    ui->frameSlider->setValue(0);
-    frameChanged(0);
-    QMessageBox::information(this, tr("Ready."), tr("%1 frames decoded.").arg(images.size()));
 }

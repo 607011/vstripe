@@ -32,10 +32,9 @@ public slots:
     void closeVideoFile(void);
     void decodingFinished(void);
     void togglePictureWidget(bool);
-    void toggleReading(void);
     void frameChanged(int);
-    void forward(int nFrames = 1);
-    void backward(int nFrames = 1);
+    void forward(int nFrames = 20);
+    void backward(int nFrames = 20);
     void fastForward(void);
     void fastBackward(void);
     void setMarkA(void);
@@ -50,7 +49,6 @@ private:
     QVector<QImage> images;
     int markA;
     int markB;
-
 };
 
 #endif // MAINWINDOW_H

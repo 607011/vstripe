@@ -235,7 +235,7 @@ bool VideoDecoder::seekMs(int tsms)
 {
     if (!ok)
         return false;
-    DesiredFrameNumber = ffmpeg::av_rescale(tsms,pFormatCtx->streams[videoStream]->time_base.den,pFormatCtx->streams[videoStream]->time_base.num);
+    DesiredFrameNumber = ffmpeg::av_rescale(tsms, pFormatCtx->streams[videoStream]->time_base.den, pFormatCtx->streams[videoStream]->time_base.num);
     DesiredFrameNumber /= 1000;
     return seekFrame(DesiredFrameNumber);
 }

@@ -26,6 +26,8 @@ public:
     void startReading(int numFrames, QVector<QImage>* images);
     void stopReading(void);
 
+    VideoDecoder* decoder(void) { return &mDecoder; }
+
 signals:
 
 public slots:
