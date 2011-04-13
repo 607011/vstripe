@@ -17,8 +17,7 @@ VideoReaderThread::VideoReaderThread(VideoWidget* videoWidget, QObject* parent)
 
 VideoReaderThread::~VideoReaderThread()
 {
-    abort = true;
-    wait();
+    stopReading();
 }
 
 
@@ -34,7 +33,6 @@ void VideoReaderThread::stopReading(void)
 {
     abort = true;
     wait();
-    qDebug() << "End of VideoReaderThread::stopReading()";
 }
 
 
@@ -110,11 +108,11 @@ void VideoReaderThread::run(void)
     av_init_packet(&avpkt);
 
     int frameCount = 0;
+    SwsContext* img_convert_ctx = NULL;
     while (av_read_frame(pFormatCtx, &avpkt) >= 0 && !abort) {
         if (avpkt.stream_index == videoStream) {
             avcodec_decode_video2(pCodecCtx, pFrameRGB, &frameFinished, &avpkt);
             if (frameFinished) {
-                static struct SwsContext* img_convert_ctx;
                 if (img_convert_ctx == NULL) {
                     int w = pCodecCtx->width;
                     int h = pCodecCtx->height;
