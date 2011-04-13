@@ -33,6 +33,8 @@ public slots:
     void decodingFinished(void);
     void togglePictureWidget(bool);
     void frameChanged(int);
+    void nextFrame(void);
+    void previousFrame(void);
     void forward(int nFrames = 20);
     void backward(int nFrames = 20);
     void fastForward(void);
@@ -41,6 +43,10 @@ public slots:
     void setMarkB(void);
     void loadFrames(void);
     void savePicture(void);
+    void showPercentReady(int);
+
+protected:
+    void closeEvent(QCloseEvent*);
 
 private:
     Ui::MainWindow* ui;

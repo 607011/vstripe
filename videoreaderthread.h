@@ -30,6 +30,7 @@ public:
     VideoDecoder* decoder(void) { return &mDecoder; }
 
 signals:
+    void percentReady(int);
 
 public slots:
 

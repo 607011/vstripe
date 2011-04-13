@@ -50,6 +50,7 @@ void VideoReaderThread::stopReading(void)
 
 void VideoReaderThread::run(void)
 {
+    int percent = 0, prevPercent = 0;
     while (!mAbort && mFrameCount < mMaxFrameCount) {
         QImage img;
         mDecoder.seekNextFrame(mSkip);
@@ -57,5 +58,9 @@ void VideoReaderThread::run(void)
         mVideoWidget->setFrame(img);
         mImages->append(img);
         ++mFrameCount;
+        percent = 100 * mFrameCount / mMaxFrameCount;
+        if (percent != prevPercent)
+            emit percentReady(percent);
+        prevPercent = percent;
     }
 }
