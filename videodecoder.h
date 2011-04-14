@@ -30,6 +30,7 @@ public:
     bool isOk() const;
     QSize frameSize(void) const;
     int frameNumber(void) const  { return LastFrameNumber; }
+    int ms(void) const { return Ms; }
 
 protected:
     // Basic FFmpeg stuff
@@ -50,6 +51,7 @@ protected:
     int LastFrameTime, LastLastFrameTime, LastLastFrameNumber, LastFrameNumber;
     int DesiredFrameTime, DesiredFrameNumber;
     bool LastFrameOk; // Set upon start or after a seek we don't have a frame yet
+    int Ms;
 
     // Initialization functions
     virtual bool initCodec();

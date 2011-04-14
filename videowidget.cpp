@@ -16,64 +16,105 @@ VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
     setMinimumSize(384, 216);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setSizeIncrement(16, 9);
-    mStripeWidth = 5;
-}
-
-
-VideoWidget::~VideoWidget()
-{
+    mStripeWidth = 1;
+    mDragging = false;
+    setFocus();
 }
 
 
 void VideoWidget::calcDestRect(void) {
-    if (windowAspectRatio < frameAspectRatio) {
-        const int h = (int)(width() / frameAspectRatio);
-        destRect = QRect(0, (height()-h)/2, width(), h);
+    if (mWindowAspectRatio < mFrameAspectRatio) {
+        const int h = (int)(width() / mFrameAspectRatio);
+        mDestRect = QRect(0, (height()-h)/2, width(), h);
     }
     else {
-        const int w = (int)(height() * frameAspectRatio);
-        destRect = QRect((width()-w)/2, 0, w, height());
+        const int w = (int)(height() * mFrameAspectRatio);
+        mDestRect = QRect((width()-w)/2, 0, w, height());
     }
 }
 
 
 void VideoWidget::setFrameSize(const QSize& sz) {
-    frameAspectRatio = (qreal)sz.width() / (qreal)sz.height();
+    mFrameAspectRatio = (qreal)sz.width() / (qreal)sz.height();
     calcDestRect();
+    update();
 }
 
 
 void VideoWidget::setStripeWidth(int stripeWidth)
 {
     mStripeWidth = stripeWidth;
+    update();
 }
 
 
-void VideoWidget::setFrame(const QImage& img)
+int VideoWidget::stripePos(void) const
 {
-    frameMutex.lock();
-    image = img;
-    frameMutex.unlock();
+    int x = mStripeX * mImage.width() / mDestRect.width();
+    qDebug() << "stripePos() = " << x;
+    return x;
+}
+
+
+void VideoWidget::setFrame(QImage img)
+{
+    mImage = img;
     update();
 }
 
 
 void VideoWidget::resizeEvent(QResizeEvent* e)
 {
-    windowAspectRatio = (qreal)e->size().width() / (qreal)e->size().height();
+    mWindowAspectRatio = (qreal)e->size().width() / (qreal)e->size().height();
     calcDestRect();
+    update();
 }
 
 
 void VideoWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
+
+    // draw background
+    painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(30, 30, 30));
     painter.drawRect(0, 0, width(), height());
-    frameMutex.lock();
-    painter.drawImage(destRect, image);
-    frameMutex.unlock();
-    painter.setBrush(Qt::transparent);
-    painter.setPen(Qt::red);
-    painter.drawRect(0, 0, mStripeWidth, destRect.height());
+
+    // draw image
+    painter.drawImage(mDestRect, mImage);
+
+    // draw stripe
+    painter.setBrush(QColor(qRgba(0xff, 0x00, 0x00, 0x7f)));
+    painter.drawRect(mStripeX + mDestRect.x(), mDestRect.y(), mStripeWidth, mDestRect.height());
+}
+
+
+void VideoWidget::mouseMoveEvent(QMouseEvent* event)
+{
+    if (mDragging) {
+        mStripeX = event->x() - mDestRect.x();
+        if (mStripeX < 0)
+            mStripeX = 0;
+        else if (mStripeX >= mDestRect.width())
+            mStripeX = mDestRect.width() - 1;
+        update();
+        stripePos();
+    }
+}
+
+
+void VideoWidget::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton) {
+        mDragging = true;
+        mDragStartPos = event->pos();
+    }
+}
+
+
+void VideoWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton && mDragging)  {
+
+    }
 }

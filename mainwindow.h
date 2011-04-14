@@ -12,6 +12,7 @@
 #include "videoreaderthread.h"
 #include "videowidget.h"
 #include "picturewidget.h"
+#include "markableslider.h"
 
 namespace Ui {
     class MainWindow;
@@ -44,23 +45,27 @@ public slots:
     void loadFrames(void);
     void savePicture(void);
     void showPercentReady(int);
+    void frameReady(QImage, int);
 
 protected:
     void closeEvent(QCloseEvent*);
 
-private:
+private: // variables
     Ui::MainWindow* ui;
-    QString videoFileName;
-    VideoWidget* videoWidget;
-    PictureWidget* pictureWidget;
-    VideoReaderThread* videoReaderThread;
-    QVector<QImage> images;
-    int markA;
-    int markB;
+    QString mVideoFileName;
+    MarkableSlider* mFrameSlider;
+    VideoWidget* mVideoWidget;
+    PictureWidget* mPictureWidget;
+    VideoReaderThread* mVideoReaderThread;
+    int markA, markAms;
+    int markB, markBms;
     int nFrames;
     int mStripeWidth;
     int mFrameSkip;
+    bool mFixedStripe;
+    QImage mFrame;
 
+private: // methods
     void showPictureWidget(void);
     void hidePictureWidget(void);
 };

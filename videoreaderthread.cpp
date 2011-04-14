@@ -7,10 +7,9 @@
 #include <QMutexLocker>
 #include "videoreaderthread.h"
 
-VideoReaderThread::VideoReaderThread(VideoWidget* videoWidget, QObject* parent)
-    : QThread(parent), mVideoWidget(videoWidget)
+VideoReaderThread::VideoReaderThread(QObject* parent)
+    : QThread(parent), mSkip(1)
 {
-    mSkip = 1;
 }
 
 
@@ -23,17 +22,13 @@ VideoReaderThread::~VideoReaderThread()
 void VideoReaderThread::setFile(QString videoFileName)
 {
     mDecoder.openFile(videoFileName.toLatin1().constData());
-    qDebug() << "Video length: " << 1e-3 * mDecoder.getVideoLengthMs() / 3600.0 << " hours";
 }
 
 
-void VideoReaderThread::startReading(int numFrames, QVector<QImage>* images, int skip)
+void VideoReaderThread::startReading(int numFrames, int skip)
 {
     stopReading();
     mSkip = skip;
-    mImages = images;
-    mImages->clear();
-    mVideoWidget->setFrameSize(mDecoder.frameSize());
     mMaxFrameCount = numFrames;
     mFrameCount = 0;
     mAbort = false;
@@ -55,8 +50,8 @@ void VideoReaderThread::run(void)
         QImage img;
         mDecoder.seekNextFrame(mSkip);
         mDecoder.getFrame(img);
-        mVideoWidget->setFrame(img);
-        mImages->append(img);
+        emit frameReady(img, mFrameCount);
+        emit frameReady(img);
         ++mFrameCount;
         percent = 100 * mFrameCount / mMaxFrameCount;
         if (percent != prevPercent)

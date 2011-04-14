@@ -11,9 +11,6 @@
 #include <QRect>
 #include <QPaintEvent>
 #include <QResizeEvent>
-#include <QMutex>
-#include <QVector>
-
 #include "ffmpeg.h"
 
 class VideoWidget : public QWidget
@@ -21,30 +18,38 @@ class VideoWidget : public QWidget
     Q_OBJECT
 public:
     explicit VideoWidget(QWidget* parent = NULL);
-    ~VideoWidget();
-    void setFrame(const QImage&);
-
     QSize minimumSizeHint(void) const { return QSize(384, 216); }
+    QSize sizeHint(void) const { return QSize(720, 576); }
+    int stripePos(void) const;
+
+public slots:
+    void setFrameSize(const QSize&);
+    void setStripeWidth(int);
+    void setFrame(QImage);
 
 protected:
     void paintEvent(QPaintEvent*);
     void resizeEvent(QResizeEvent*);
+    void mouseMoveEvent(QMouseEvent*);
+    void mousePressEvent(QMouseEvent*);
+    void mouseReleaseEvent(QMouseEvent*);
 
 private:
-    QImage image;
-    qreal windowAspectRatio;
-    qreal frameAspectRatio;
-    QRect destRect;
-    QMutex frameMutex;
+    QImage mImage;
+    qreal mWindowAspectRatio;
+    qreal mFrameAspectRatio;
+    QRect mDestRect;
     int mStripeWidth;
+    bool mDragging;
+    QPoint mDragStartPos;
+    int mStripeX;
+    int mStripeY;
+
     void calcDestRect(void);
 
 
 signals:
 
-public slots:
-    void setFrameSize(const QSize&);
-    void setStripeWidth(int);
 };
 
 #endif // VIDEOWIDGET_H

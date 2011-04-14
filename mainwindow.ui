@@ -18,29 +18,7 @@
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QSlider" name="frameSlider">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-            <horstretch>5</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="sizeIncrement">
-           <size>
-            <width>10</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
+       <layout class="QHBoxLayout" name="sliderLayout">
         <item>
          <widget class="QPushButton" name="fastBackwardButton">
           <property name="enabled">
@@ -57,6 +35,9 @@
             <width>40</width>
             <height>16777215</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>Fast Rewind</string>
           </property>
           <property name="text">
            <string>&lt;&lt;</string>
@@ -80,6 +61,9 @@
             <height>16777215</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Step backward</string>
+          </property>
           <property name="text">
            <string>&lt;</string>
           </property>
@@ -101,6 +85,9 @@
             <width>40</width>
             <height>16777215</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>Step forward</string>
           </property>
           <property name="text">
            <string>&gt;</string>
@@ -124,6 +111,9 @@
             <height>16777215</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Fast Forward</string>
+          </property>
           <property name="text">
            <string>&gt;&gt;</string>
           </property>
@@ -140,11 +130,14 @@
             <height>16777215</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Mark start</string>
+          </property>
           <property name="text">
            <string>[A</string>
           </property>
           <property name="checkable">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="checked">
            <bool>false</bool>
@@ -162,11 +155,14 @@
             <height>16777215</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Mark end</string>
+          </property>
           <property name="text">
            <string>B]</string>
           </property>
           <property name="checkable">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="checked">
            <bool>false</bool>
@@ -176,7 +172,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="renderButtonLayout">
         <item>
          <widget class="QPushButton" name="renderButton">
           <property name="enabled">
@@ -275,6 +271,9 @@
    </property>
    <property name="text">
     <string>&amp;Save picture ...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

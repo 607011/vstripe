@@ -20,13 +20,15 @@ SOURCES += main.cpp\
     videowidget.cpp \
     videoreaderthread.cpp \
     picturewidget.cpp \
-    videodecoder.cpp
+    videodecoder.cpp \
+    markableslider.cpp
 
 HEADERS  += mainwindow.h \
     videowidget.h \
     videoreaderthread.h \
     picturewidget.h \
     videodecoder.h \
-    ffmpeg.h
+    ffmpeg.h \
+    markableslider.h
 
 FORMS    += mainwindow.ui

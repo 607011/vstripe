@@ -11,7 +11,6 @@
 #include <QImage>
 #include <QFile>
 #include <QVector>
-#include <QMutex>
 
 #include "videowidget.h"
 #include "videodecoder.h"
@@ -20,17 +19,19 @@ class VideoReaderThread : public QThread
 {
     Q_OBJECT
 public:
-    explicit VideoReaderThread(VideoWidget* videoWidget, QObject* parent = NULL);
+    explicit VideoReaderThread(QObject* parent = NULL);
     ~VideoReaderThread();
 
     void setFile(QString videoFileName);
-    void startReading(int numFrames, QVector<QImage>* images, int skip = 1);
+    void startReading(int numFrames, int skip = 1);
     void stopReading(void);
 
     VideoDecoder* decoder(void) { return &mDecoder; }
 
 signals:
     void percentReady(int);
+    void frameReady(QImage, int);
+    void frameReady(QImage);
 
 public slots:
 
@@ -38,10 +39,8 @@ protected:
     void run(void);
 
 private:
-    VideoWidget* mVideoWidget;
     VideoDecoder mDecoder;
     bool mAbort;
-    QVector<QImage>* mImages;
     int mMaxFrameCount;
     int mFrameCount;
     int mSkip;
