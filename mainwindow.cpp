@@ -7,6 +7,7 @@
 #include <QtDebug>
 #include <QImage>
 #include <QMessageBox>
+#include <QTime>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -79,6 +80,15 @@ void MainWindow::closeEvent(QCloseEvent*)
 }
 
 
+static void ms2hmsz(int ms, int* h, int* m, int* s, int* z)
+{
+    *h = ms / 1000 / 60 / 60;
+    *m = (ms - *h * 1000 * 60 * 60) / 1000 / 60;
+    *s = (ms - *h * 1000 * 60 * 60 - *m * 1000 * 60) / 1000;
+    *z = (ms - *h * 1000 * 60 * 60 - *m * 1000 * 60 - *s * 1000);
+}
+
+
 void MainWindow::frameChanged(int ms)
 {
     QImage img;
@@ -87,6 +97,10 @@ void MainWindow::frameChanged(int ms)
     mVideoReaderThread->decoder()->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime);
     mVideoWidget->setFrame(img);
     ui->statusBar->showMessage(tr("@ Frame # %1 (%2 ms) ...").arg(mEffectiveFrameNumber).arg(mEffectiveFrameTime), 1600);
+    ui->frameNumberLineEdit->setText(tr("%1").arg(mEffectiveFrameNumber));
+    int h, m, s, z;
+    ms2hmsz(ms, &h, &m, &s, &z);
+    ui->frameTimeLineEdit->setText(QTime(h,m,s,z).toString("HH:mm:ss.z"));
 }
 
 
@@ -154,7 +168,7 @@ void MainWindow::setMarkB(void)
 {
     markB = ui->AButton->isChecked()? mVideoReaderThread->decoder()->frameNumber() : -1;
     markBms = mVideoReaderThread->decoder()->ms();
-    mFrameSlider->setB(ui->AButton->isChecked()? markBms : -1);
+    mFrameSlider->setB(ui->BButton->isChecked()? markBms : -1);
     ui->statusBar->showMessage(tr("B = %1").arg(markB), 5000);
 }
 
@@ -196,7 +210,7 @@ void MainWindow::openVideoFile(void)
     mFrameSlider->setValue(0);
     QImage img;
     mVideoReaderThread->decoder()->seekFrame(0);
-    mVideoReaderThread->decoder()->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime);
+    frameChanged(0);
     mVideoWidget->setFrame(img);
     ui->renderButton->setEnabled(true);
     mFrameSlider->setEnabled(true);
