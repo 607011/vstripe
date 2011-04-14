@@ -22,13 +22,14 @@ public:
     ~VideoDecoder();
     bool openFile(const char* file);
     void close();
-    bool getFrame(QImage&img ,int *effectiveframenumber=0, int *effectiveframetime=0, int *desiredframenumber=0, int *desiredframetime=0);
+    bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0);
     bool seekNextFrame(int skip = 1);
     bool seekMs(int ts);
     bool seekFrame(int64_t frame);
     int getVideoLengthMs();
     bool isOk() const;
     QSize frameSize(void) const;
+    int frameNumber(void) const  { return LastFrameNumber; }
 
 protected:
     // Basic FFmpeg stuff

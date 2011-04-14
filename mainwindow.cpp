@@ -133,27 +133,15 @@ void MainWindow::fastBackward(void)
 
 void MainWindow::setMarkA(void)
 {
-    if (ui->AButton->isChecked()) {
-        markA = -1;
-        ui->AButton->setChecked(false);
-    }
-    else {
-        markA = ui->frameSlider->value();
-        ui->AButton->setChecked(true);
-    }
+    markA = ui->AButton->isChecked()? videoReaderThread->decoder()->frameNumber() : -1;
+    qDebug() << "A = " << markA;
 }
 
 
 void MainWindow::setMarkB(void)
 {
-    if (ui->BButton->isChecked()) {
-        markB = -1;
-        ui->BButton->setChecked(false);
-    }
-    else {
-        markB = ui->frameSlider->value();
-        ui->BButton->setChecked(true);
-    }
+    markB = ui->BButton->isChecked()? videoReaderThread->decoder()->frameNumber() : -1;
+    qDebug() << "B = " << markB;
 }
 
 

@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESS OR IMPL
 
 #include <QDebug>
 #include <QObject>
+#include <QMessageBox>
 
 #include "videodecoder.h"
 #include <limits.h>
@@ -200,8 +201,13 @@ bool VideoDecoder::decodeSeekFrame(int after)
                         qDebug() << QObject::tr("Cannot initialize the conversion context!");
                         return false;
                     }
-                    ffmpeg::sws_scale(img_convert_ctx, pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
+                    int outputHeight = ffmpeg::sws_scale(img_convert_ctx, pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
+                    qDebug() << "sws_scale() returned " << outputHeight;
                     LastFrame = QImage(w, h, QImage::Format_RGB888);
+                    if (LastFrame.isNull()) {
+                        QMessageBox::critical(0, tr("Out of memory"), tr("Out of memory!"));
+                        return false;
+                    }
                     for (int y = 0; y < h; ++y)
                         memcpy(LastFrame.scanLine(y), pFrameRGB->data[0]+y*pFrameRGB->linesize[0], w*3);
                     DesiredFrameTime = ffmpeg::av_rescale_q(after, pFormatCtx->streams[videoStream]->time_base, millisecondbase);

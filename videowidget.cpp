@@ -48,6 +48,7 @@ void VideoWidget::setStripeWidth(int stripeWidth)
     mStripeWidth = stripeWidth;
 }
 
+
 void VideoWidget::setFrame(const QImage& img)
 {
     frameMutex.lock();

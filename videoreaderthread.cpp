@@ -55,7 +55,7 @@ void VideoReaderThread::run(void)
         QImage img;
         mDecoder.seekNextFrame(mSkip);
         mDecoder.getFrame(img);
-        mVideoWidget->setFrame(img); // TODO: Kann einen SegFault verursachen, wenn der Thread ein QImage beschreibt, das anderswo gelesen wird
+        mVideoWidget->setFrame(img);
         mImages->append(img);
         ++mFrameCount;
         percent = 100 * mFrameCount / mMaxFrameCount;
