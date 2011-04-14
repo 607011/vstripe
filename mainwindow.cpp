@@ -82,10 +82,11 @@ void MainWindow::closeEvent(QCloseEvent*)
 void MainWindow::frameChanged(int ms)
 {
     QImage img;
-    ui->statusBar->showMessage(tr("Seeking to %1 ms ...").arg(ms), 1000);
+    ui->statusBar->showMessage(tr("Seeking to %1 ms ...").arg(ms));
     mVideoReaderThread->decoder()->seekMs(ms);
-    mVideoReaderThread->decoder()->getFrame(img);
+    mVideoReaderThread->decoder()->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime);
     mVideoWidget->setFrame(img);
+    ui->statusBar->showMessage(tr("@ Frame # %1 (%2 ms) ...").arg(mEffectiveFrameNumber).arg(mEffectiveFrameTime), 1600);
 }
 
 
@@ -195,7 +196,7 @@ void MainWindow::openVideoFile(void)
     mFrameSlider->setValue(0);
     QImage img;
     mVideoReaderThread->decoder()->seekFrame(0);
-    mVideoReaderThread->decoder()->getFrame(img);
+    mVideoReaderThread->decoder()->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime);
     mVideoWidget->setFrame(img);
     ui->renderButton->setEnabled(true);
     mFrameSlider->setEnabled(true);

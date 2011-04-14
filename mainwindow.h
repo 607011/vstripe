@@ -65,6 +65,8 @@ private: // variables
     int mFrameSkip;
     bool mFixedStripe;
     QImage mFrame;
+    int mEffectiveFrameNumber;
+    int mEffectiveFrameTime;
 
 private: // methods
     void showPictureWidget(void);
