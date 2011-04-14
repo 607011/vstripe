@@ -53,16 +53,10 @@ protected:
     bool LastFrameOk; // Set upon start or after a seek we don't have a frame yet
     int Ms;
 
-    // Initialization functions
-    virtual bool initCodec();
-    virtual void InitVars();
+    bool initCodec();
+    void InitVars();
 
-    // Helpers
-    virtual void dumpFormat(ffmpeg::AVFormatContext *ic, int index, const char *url, int is_output);
-    virtual void saveFramePPM(ffmpeg::AVFrame *pFrame, int width, int height, int iFrame);
-
-    // Seek
-    virtual bool decodeSeekFrame(int after);
+    bool decodeSeekFrame(int after);
 
 };
 

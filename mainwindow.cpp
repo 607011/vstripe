@@ -99,6 +99,7 @@ void MainWindow::loadFrames(void)
 {
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(nFrames));
     ui->renderButton->setEnabled(false);
+    mFrame.fill(qRgb(33, 251, 95));
     mVideoReaderThread->startReading(nFrames, mFrameSkip);
 }
 
@@ -141,18 +142,18 @@ void MainWindow::fastBackward(void)
 
 void MainWindow::setMarkA(void)
 {
-    markA = mVideoReaderThread->decoder()->frameNumber();
+    markA = ui->AButton->isChecked()? mVideoReaderThread->decoder()->frameNumber() : -1;
     markAms = mVideoReaderThread->decoder()->ms();
-    mFrameSlider->setA(markAms);
+    mFrameSlider->setA(ui->AButton->isChecked()? markAms : -1);
     ui->statusBar->showMessage(tr("A = %1").arg(markA), 5000);
 }
 
 
 void MainWindow::setMarkB(void)
 {
-    markB = mVideoReaderThread->decoder()->frameNumber();
+    markB = ui->AButton->isChecked()? mVideoReaderThread->decoder()->frameNumber() : -1;
     markBms = mVideoReaderThread->decoder()->ms();
-    mFrameSlider->setB(markBms);
+    mFrameSlider->setB(ui->AButton->isChecked()? markBms : -1);
     ui->statusBar->showMessage(tr("B = %1").arg(markB), 5000);
 }
 
@@ -193,6 +194,7 @@ void MainWindow::openVideoFile(void)
     mFrameSlider->setMaximum(mVideoReaderThread->decoder()->getVideoLengthMs());
     mFrameSlider->setValue(0);
     QImage img;
+    mVideoReaderThread->decoder()->seekFrame(0);
     mVideoReaderThread->decoder()->getFrame(img);
     mVideoWidget->setFrame(img);
     ui->renderButton->setEnabled(true);

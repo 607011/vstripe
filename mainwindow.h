@@ -27,6 +27,7 @@ public:
     ~MainWindow();
 
     QSize minimumSizeHint(void) const { return QSize(720, 576); }
+    QSize sizeHint(void) const { return QSize(1280, 720); }
 
 public slots:
     void openVideoFile(void);

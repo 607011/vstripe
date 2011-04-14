@@ -84,9 +84,11 @@ bool VideoDecoder::initCodec()
     ffmpeg::avcodec_init();
     ffmpeg::avcodec_register_all();
     ffmpeg::av_register_all();
+#if DEBUG
     qDebug() << QObject::tr("License: %1").arg(ffmpeg::avformat_license());
     qDebug() << QObject::tr("AVCodec version %1").arg(ffmpeg::avformat_version());
     qDebug() << QObject::tr("AVFormat configuration: %1").arg(ffmpeg::avformat_configuration());
+#endif
     return true;
 }
 
@@ -262,7 +264,6 @@ bool VideoDecoder::seekFrame(int64_t frame)
 }
 
 
-
 bool VideoDecoder::getFrame(QImage& img, int *effectiveframenumber, int *effectiveframetime, int *desiredframenumber, int *desiredframetime)
 {
     img = LastFrame;
@@ -276,115 +277,6 @@ bool VideoDecoder::getFrame(QImage& img, int *effectiveframenumber, int *effecti
         *desiredframetime = DesiredFrameTime;
     return LastFrameOk;
 }
-
-
-/**
-  \brief Debug function: saves a frame as PPM
-**/
-void VideoDecoder::saveFramePPM(ffmpeg::AVFrame *pFrame, int width, int height, int iFrame)
-{
-    FILE *pFile;
-    char szFilename[32];
-    int  y;
-
-    // Open file
-    sprintf(szFilename, "frame%d.ppm", iFrame);
-    pFile = fopen(szFilename, "wb");
-    if (pFile == NULL)
-        return;
-
-    // Write header
-    fprintf(pFile, "P6\n%d %d\n255\n", width, height);
-
-    // Write pixel data
-    for(y=0; y  <height; y++)
-        fwrite(pFrame->data[0]+y*pFrame->linesize[0], 1, width*3, pFile);
-
-    // Close file
-    fclose(pFile);
-}
-
-
-void VideoDecoder::dumpFormat(ffmpeg::AVFormatContext *ic,
-                               int index,
-                               const char *url,
-                               int is_output)
-{
-    //int i;
-    uint8_t *printed = (uint8_t*)ffmpeg::av_mallocz(ic->nb_streams);
-    if (ic->nb_streams && !printed)
-        return;
-
-    printf("AV_TIME_BASE: %d\n",AV_TIME_BASE);
-
-    printf("%s #%d, %s,\n %s '%s':\n",
-           is_output ? "Output" : "Input",
-           index,
-           is_output ? ic->oformat->name : ic->iformat->name,
-           is_output ? "to" : "from", url);
-    if (!is_output) {
-        printf("  Duration: ");
-        //if (ic->duration != AV_NOPTS_VALUE)
-        {
-            int hours, mins, secs, us;
-            secs = ic->duration / AV_TIME_BASE;
-            us = ic->duration % AV_TIME_BASE;
-            mins = secs / 60;
-            secs %= 60;
-            hours = mins / 60;
-            mins %= 60;
-            printf("%02d:%02d:%02d.%02d\n", hours, mins, secs,
-                   (100 * us) / AV_TIME_BASE);
-        } //else {
-        //printf("N/A");
-        //}
-        //if (ic->start_time != AV_NOPTS_VALUE)
-        {
-            int secs, us;
-            printf(", start: ");
-            secs = ic->start_time / AV_TIME_BASE;
-            us = ic->start_time % AV_TIME_BASE;
-            printf("%d.%06d\n",
-                   secs, (int)ffmpeg::av_rescale(us, 1000000, AV_TIME_BASE));
-        }
-        printf(", bitrate: ");
-        if (ic->bit_rate) {
-            printf("%d kb/s\n", ic->bit_rate / 1000);
-        } else {
-            printf("N/A\n");
-        }
-        printf("\n");
-    }
-    if(ic->nb_programs) {
-        unsigned int j, total=0;
-        for(j=0; j<ic->nb_programs; j++) {
-            ffmpeg::AVMetadataTag *name = av_metadata_get(ic->programs[j]->metadata,
-                                                          "name", NULL, 0);
-            printf("  Program %d %s\n", ic->programs[j]->id,
-                   name ? name->value : "");
-            /*for(k=0; k<ic->programs[j]->nb_stream_indexes; k++) {
-                dump_stream_format(ic, ic->programs[j]->stream_index[k], index, is_output);
-                printed[ic->programs[j]->stream_index[k]] = 1;
-            }*/
-            total += ic->programs[j]->nb_stream_indexes;
-        }
-        if (total < ic->nb_streams)
-            printf( "  No Program\n");
-    }
-    /*for(i=0;i<ic->nb_streams;i++)
-        if (!printed[i])
-            ffmpeg::dump_stream_format(ic, i, index, is_output);*/
-
-    if (ic->metadata) {
-        ffmpeg::AVMetadataTag *tag=NULL;
-        printf("  Metadata\n");
-        while((tag=av_metadata_get(ic->metadata, "", tag, AV_METADATA_IGNORE_SUFFIX))) {
-            printf("    %-16s: %s\n", tag->key, tag->value);
-        }
-    }
-    ffmpeg::av_free(printed);
-}
-
 
 int VideoDecoder::getVideoLengthMs()
 {

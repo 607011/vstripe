@@ -7,7 +7,7 @@
 #include "picturewidget.h"
 
 
-PictureWidget::PictureWidget(QWidget *parent) : QWidget(parent)
+PictureWidget::PictureWidget(QWidget* parent) : QWidget(parent)
 {
     setWindowTitle(tr("VStripe - Picture Preview"));
     setStyleSheet("background: #444");
