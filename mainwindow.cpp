@@ -134,7 +134,7 @@ void MainWindow::render(void)
     }
     mFrameCount = ((mVideoWidget->stripeIsVertical())? mVideoReaderThread->decoder()->frameSize().width() : mVideoReaderThread->decoder()->frameSize().height()) * mFrameSkip / mStripeWidth;
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
-    mVideoReaderThread->startReading(firstFrame, mFrameCount, mVideoWidget->stripeIsVertical(), mFrameSkip);
+    mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameSkip);
 }
 
 
@@ -272,19 +272,11 @@ void MainWindow::frameReady(QImage src, int frameNumber)
     int srcpos = mFixedStripe? mVideoWidget->stripePos() : frameNumber * mStripeWidth;
     int dstpos = frameNumber * mStripeWidth;
     if (mVideoWidget->stripeIsVertical()) {
-        if (frameNumber >= mFrame.width()) {
-            qDebug() << "frameNumber >= mFrame.width(): " << frameNumber;
-            return;
-        }
         for (int x = 0; x < mStripeWidth; ++x)
             for (int y = 0; y < src.height(); ++y)
                 mFrame.setPixel(dstpos + x, y, src.pixel(srcpos + x, y));
     }
     else {
-        if (frameNumber >= mFrame.height()) {
-            qDebug() << "frameNumber >= mFrame.height(): " << frameNumber;
-            return;
-        }
         for (int y = 0; y < mStripeWidth; ++y)
             for (int x = 0; x < src.width(); ++x)
                 mFrame.setPixel(x, dstpos + y, src.pixel(x, srcpos + y));

@@ -129,7 +129,7 @@ void VideoWidget::paintEvent(QPaintEvent*)
 void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 {
     if (mDragging) {
-        mVerticalStripe = (event->modifiers() & Qt::ControlModifier) == 0;
+        mVerticalStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
         if (mVerticalStripe) {
             mStripeX = event->x() - mDestRect.x();
             if (mStripeX >= mDestRect.width())

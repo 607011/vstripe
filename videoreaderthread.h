@@ -23,7 +23,7 @@ public:
     ~VideoReaderThread();
 
     void setFile(QString videoFileName);
-    void startReading(int firstFrameNumber, int numFrames, bool stripeIsVertical, qreal skip = 1);
+    void startReading(int firstFrameNumber, int numFrames, qreal skip = 1);
     void stopReading(void);
 
     VideoDecoder* decoder(void) { return &mDecoder; }
@@ -42,7 +42,6 @@ private:
     bool mAbort;
     int mMaxFrameCount;
     int mFrameCount;
-    bool mStripeIsVertical;
     qreal mFrameNumber;
     qreal mFrameSkip;
 };
