@@ -65,7 +65,6 @@ void VideoWidget::setStripeWidth(int stripeWidth)
 void VideoWidget::setFrame(QImage img)
 {
     mImage = img;
-    // mImage.convertToFormat(QImage::Format_ARGB32_Premultiplied, Qt::ColorOnly);
     update();
 }
 

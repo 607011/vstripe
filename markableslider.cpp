@@ -39,8 +39,10 @@ void MarkableSlider::paintEvent(QPaintEvent* event)
         QPainterPath pathA;
         qreal xa = (qreal)mA * (qreal)width() /(qreal)maximum();
         pathA.moveTo(xa, 0);
+        pathA.lineTo(xa+height()/2, 0);
+        pathA.lineTo(xa, height()/2);
+        pathA.lineTo(xa+height()/2, height());
         pathA.lineTo(xa, height());
-        pathA.lineTo(xa+height()/2, height()/2);
         pathA.lineTo(xa, 0);
         painter.setBrush(QColor(0, 0xcc, 0));
         painter.drawPath(pathA);
@@ -51,8 +53,10 @@ void MarkableSlider::paintEvent(QPaintEvent* event)
         QPainterPath pathB;
         qreal xb = (qreal)mB * (qreal)width() /(qreal)maximum();
         pathB.moveTo(xb, 0);
+        pathB.lineTo(xb-height()/2, 0);
+        pathB.lineTo(xb, height()/2);
+        pathB.lineTo(xb-height()/2, height());
         pathB.lineTo(xb, height());
-        pathB.lineTo(xb-height()/2, height()/2);
         pathB.lineTo(xb, 0);
         painter.setBrush(QColor(0xcc, 0, 0));
         painter.drawPath(pathB);
