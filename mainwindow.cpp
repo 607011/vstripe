@@ -106,25 +106,25 @@ void MainWindow::frameChanged(int n)
 
 void MainWindow::showPercentReady(int percent)
 {
-    ui->statusBar->showMessage(tr("Loading %1 frames ... %2%").arg(nFrames).arg(percent), 1000);
+    ui->statusBar->showMessage(tr("Loading %1 frames ... %2%").arg(mFrameCount).arg(percent), 1000);
 }
 
 
-void MainWindow::pictureWidthSet(int w)
+void MainWindow::pictureWidthSet(int)
 {
-
+    // TODO
+    qDebug() << "MainWindow::pictureWidthSet() is not implemented yet.";
 }
 
 
 void MainWindow::render(void)
 {
-    ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(nFrames));
     ui->renderButton->setText(tr("Stop rendering"));
     mFixedStripe = mVideoWidget->stripeFixed();
     mFrame.fill(qRgb(33, 251, 95));
     int firstFrame;
     if (markA >= 0 && markB >= 0 && markB > markA) {
-        mFrameSkip = (qreal)(markB - markA) / (qreal)mFrame.width();
+        mFrameSkip = (qreal)(markB - markA) / (mVideoWidget->stripeIsVertical())? (qreal)mFrame.width() : (qreal)mFrame.height();
         mFrameSlider->setValue(markA);
         firstFrame = markA;
     }
@@ -132,7 +132,9 @@ void MainWindow::render(void)
         mFrameSkip = 1;
         firstFrame = mEffectiveFrameNumber;
     }
-    mVideoReaderThread->startReading(firstFrame, nFrames, mFrameSkip);
+    mFrameCount = ((mVideoWidget->stripeIsVertical())? mVideoReaderThread->decoder()->frameSize().width() : mVideoReaderThread->decoder()->frameSize().height()) * mFrameSkip / mStripeWidth;
+    ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
+    mVideoReaderThread->startReading(firstFrame, mFrameCount, mVideoWidget->stripeIsVertical(), mFrameSkip);
 }
 
 
@@ -230,7 +232,6 @@ void MainWindow::openVideoFile(void)
     mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize());
     mPictureWidget->setPicture(QImage());
     showPictureWidget();
-    nFrames = mVideoReaderThread->decoder()->frameSize().width() * mFrameSkip / mStripeWidth;
     mFrameSlider->setValue(0);
     QImage img;
     int lastFrameNumber;
@@ -249,6 +250,8 @@ void MainWindow::openVideoFile(void)
 void MainWindow::closeVideoFile(void)
 {
     disableGuiButtons();
+    ui->frameNumberLineEdit->setText(QString());
+    ui->frameTimeLineEdit->setText(QString());
     mFrameSlider->setValue(0);
     mVideoWidget->setFrame(QImage());
     mPictureWidget->setPicture(QImage());
@@ -259,23 +262,33 @@ void MainWindow::closeVideoFile(void)
 
 void MainWindow::savePicture(void)
 {
-    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save picture as ..."), QString(), "*.png *.jpg");
+    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save picture as ..."), QString(), "*.png, *.jpg");
     mPictureWidget->picture().save(saveFileName);
 }
 
 
 void MainWindow::frameReady(QImage src, int frameNumber)
 {
-    if (frameNumber >= mFrame.width()) {
-        qDebug() << "frameNumber >= mFrame.width(): " << frameNumber;
-        return;
+    int srcpos = mFixedStripe? mVideoWidget->stripePos() : frameNumber * mStripeWidth;
+    int dstpos = frameNumber * mStripeWidth;
+    if (mVideoWidget->stripeIsVertical()) {
+        if (frameNumber >= mFrame.width()) {
+            qDebug() << "frameNumber >= mFrame.width(): " << frameNumber;
+            return;
+        }
+        for (int x = 0; x < mStripeWidth; ++x)
+            for (int y = 0; y < src.height(); ++y)
+                mFrame.setPixel(dstpos + x, y, src.pixel(srcpos + x, y));
     }
-    int srcx = mFixedStripe? (mFrame.width() - mStripeWidth) / 2 : frameNumber * mStripeWidth;
-    int dstx = frameNumber * mStripeWidth;
-    for (int x = 0; x < mStripeWidth; ++x)
-        for (int y = 0; y < src.height(); ++y)
-            mFrame.setPixel(dstx + x, y, src.pixel(srcx + x, y));
-    qDebug() << "received frame number " << frameNumber;
+    else {
+        if (frameNumber >= mFrame.height()) {
+            qDebug() << "frameNumber >= mFrame.height(): " << frameNumber;
+            return;
+        }
+        for (int y = 0; y < mStripeWidth; ++y)
+            for (int x = 0; x < src.width(); ++x)
+                mFrame.setPixel(x, dstpos + y, src.pixel(x, srcpos + y));
+    }
     mPictureWidget->setPicture(mFrame);
 }
 
@@ -315,8 +328,6 @@ void MainWindow::disableGuiButtons(void)
     ui->backwardButton->setEnabled(false);
     ui->fastForwardButton->setEnabled(false);
     ui->fastBackwardButton->setEnabled(false);
-    ui->frameNumberLineEdit->setText(QString());
-    ui->frameTimeLineEdit->setText(QString());
     ui->action_CloseVideoFile->setEnabled(false);
     ui->action_Save_picture->setEnabled(false);
 }

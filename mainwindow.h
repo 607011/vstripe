@@ -62,10 +62,10 @@ private: // variables
     VideoReaderThread* mVideoReaderThread;
     int markA;
     int markB;
-    int nFrames;
     int mStripeWidth; // Streifen dieser Breite (Pixel) werden von jedem eingelesenen Frame behalten
     qreal mFrameSkip; // so viel Frames werden pro Frame beim Einlesen übersprungen
     bool mFixedStripe; // true: der Streifen bleibt fest an der gewählten Position; false: der Streifen bewegt sich mit jedem Frame um mStripeWidth Pixel weiter
+    int mFrameCount;
     QImage mFrame;
     int mEffectiveFrameNumber;
     int mEffectiveFrameTime;

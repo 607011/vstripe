@@ -207,7 +207,7 @@
            <string>Current frame</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
+           <item row="1" column="0">
             <layout class="QFormLayout" name="formLayout">
              <property name="fieldGrowthPolicy">
               <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
@@ -223,6 +223,9 @@
               <widget class="QLineEdit" name="frameNumberLineEdit">
                <property name="enabled">
                 <bool>false</bool>
+               </property>
+               <property name="inputMask">
+                <string/>
                </property>
               </widget>
              </item>
@@ -242,8 +245,11 @@
              </item>
             </layout>
            </item>
-           <item row="1" column="0">
+           <item row="0" column="0">
             <widget class="QPushButton" name="setParamsButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Set #</string>
              </property>
@@ -283,8 +289,18 @@
      <string>Window</string>
     </property>
     <addaction name="actionPreview_picture"/>
+    <addaction name="separator"/>
+    <addaction name="actionHelp"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>Options</string>
+    </property>
+    <addaction name="actionVertical_stripes"/>
    </widget>
    <addaction name="menu_File"/>
+   <addaction name="menuOptions"/>
    <addaction name="menuWindow"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -343,6 +359,27 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionVertical_stripes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Vertical stripes</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

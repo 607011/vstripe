@@ -20,7 +20,8 @@ public:
     explicit VideoWidget(QWidget* parent = NULL);
     QSize minimumSizeHint(void) const { return QSize(384, 216); }
     QSize sizeHint(void) const { return QSize(720, 576); }
-    bool stripeFixed(void) const { return mStripeX >= 0; }
+    inline bool stripeFixed(void) const { return mStripeX >= 0; }
+    inline bool stripeIsVertical(void) const { return mVerticalStripe; }
     int stripePos(void) const;
 
 public slots:
@@ -42,7 +43,7 @@ private:
     QRect mDestRect;
     int mStripeWidth;
     bool mDragging;
-    QPoint mDragStartPos;
+    bool mVerticalStripe;
     int mStripeX;
     int mStripeY;
 

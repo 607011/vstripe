@@ -8,7 +8,7 @@
 #include "videoreaderthread.h"
 
 VideoReaderThread::VideoReaderThread(QObject* parent)
-    : QThread(parent), mFrameSkip(1)
+    : QThread(parent), mStripeIsVertical(true), mFrameSkip(1)
 {
 }
 
@@ -25,12 +25,13 @@ void VideoReaderThread::setFile(QString videoFileName)
 }
 
 
-void VideoReaderThread::startReading(int firstFrameNumber, int numFrames, qreal skip)
+void VideoReaderThread::startReading(int firstFrameNumber, int nFrames, bool stripeIsVertical, qreal skip)
 {
     stopReading();
     mFrameNumber = (qreal)firstFrameNumber;
+    mMaxFrameCount = nFrames;
+    mStripeIsVertical = stripeIsVertical;
     mFrameSkip = skip;
-    mMaxFrameCount = numFrames;
     mFrameCount = 0;
     mAbort = false;
     start();

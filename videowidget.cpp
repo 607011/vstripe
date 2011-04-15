@@ -18,7 +18,15 @@ VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
     setSizeIncrement(16, 9);
     mStripeWidth = 1;
     mDragging = false;
-    setFocus();
+    mVerticalStripe = true;
+}
+
+
+int VideoWidget::stripePos(void) const
+{
+    return mVerticalStripe
+            ? mStripeX * mImage.width() / mDestRect.width()
+            : mStripeY * mImage.height() / mDestRect.height();
 }
 
 
@@ -45,14 +53,6 @@ void VideoWidget::setStripeWidth(int stripeWidth)
 {
     mStripeWidth = stripeWidth;
     update();
-}
-
-
-int VideoWidget::stripePos(void) const
-{
-    int x = mStripeX * mImage.width() / mDestRect.width();
-    qDebug() << "stripePos() = " << x;
-    return x;
 }
 
 
@@ -84,9 +84,17 @@ void VideoWidget::paintEvent(QPaintEvent*)
     painter.drawImage(mDestRect, mImage);
 
     // draw stripe
-    if (mStripeX >= 0) {
-        painter.setBrush(QColor(qRgba(0xff, 0x00, 0x00, 0x7f)));
-        painter.drawRect(mStripeX + mDestRect.x(), mDestRect.y(), mStripeWidth, mDestRect.height());
+    if (mVerticalStripe) {
+        if (mStripeX >= 0) {
+            painter.setBrush(QColor(qRgb(0xff, 0x00, 0x00)));
+            painter.drawRect(mStripeX + mDestRect.x(), mDestRect.y(), mStripeWidth, mDestRect.height());
+        }
+    }
+    else {
+        if (mStripeY >= 0) {
+            painter.setBrush(QColor(qRgb(0xff, 0x00, 0x00)));
+            painter.drawRect(mDestRect.x(), mStripeY + mDestRect.y(), mDestRect.width(), mStripeWidth);
+        }
     }
 }
 
@@ -94,9 +102,17 @@ void VideoWidget::paintEvent(QPaintEvent*)
 void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 {
     if (mDragging) {
-        mStripeX = event->x() - mDestRect.x();
-        if (mStripeX >= mDestRect.width())
-            mStripeX = mDestRect.width() - 1;
+        mVerticalStripe = (event->modifiers() & Qt::ControlModifier) == 0;
+        if (mVerticalStripe) {
+            mStripeX = event->x() - mDestRect.x();
+            if (mStripeX >= mDestRect.width())
+                mStripeX = -1;
+        }
+        else {
+            mStripeY = event->y() - mDestRect.y();
+            if (mStripeY >= mDestRect.height())
+                mStripeY = -1;
+        }
         update();
     }
 }
@@ -105,8 +121,8 @@ void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 void VideoWidget::mousePressEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton) {
+        mVerticalStripe = (event->modifiers() & Qt::ControlModifier) == 0;
         mDragging = true;
-        mDragStartPos = event->pos();
     }
 }
 
