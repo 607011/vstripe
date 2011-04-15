@@ -43,5 +43,5 @@ void PictureWidget::closeEvent(QCloseEvent*)
 
 void PictureWidget::resizeEvent(QResizeEvent*)
 {
-    setWindowTitle(winTitle + QString(" - %1 x %2").arg(width()).arg(height()));
+    setWindowTitle(QString("%1 - %2x%3").arg(winTitle).arg(width()).arg(height()));
 }
