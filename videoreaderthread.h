@@ -23,7 +23,7 @@ public:
     ~VideoReaderThread();
 
     void setFile(QString videoFileName);
-    void startReading(int numFrames, int skip = 1);
+    void startReading(int firstFrameNumber, int numFrames, qreal skip = 1);
     void stopReading(void);
 
     VideoDecoder* decoder(void) { return &mDecoder; }
@@ -31,7 +31,6 @@ public:
 signals:
     void percentReady(int);
     void frameReady(QImage, int);
-    void frameReady(QImage);
 
 public slots:
 
@@ -43,7 +42,8 @@ private:
     bool mAbort;
     int mMaxFrameCount;
     int mFrameCount;
-    int mSkip;
+    qreal mFrameNumber;
+    qreal mFrameSkip;
 };
 
 #endif // VIDEOREADERTHREAD_H

@@ -185,7 +185,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Render</string>
+           <string>Start rendering</string>
           </property>
          </widget>
         </item>
@@ -241,6 +241,13 @@
               </widget>
              </item>
             </layout>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="setParamsButton">
+             <property name="text">
+              <string>Set #</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>

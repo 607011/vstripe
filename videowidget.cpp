@@ -84,8 +84,10 @@ void VideoWidget::paintEvent(QPaintEvent*)
     painter.drawImage(mDestRect, mImage);
 
     // draw stripe
-    painter.setBrush(QColor(qRgba(0xff, 0x00, 0x00, 0x7f)));
-    painter.drawRect(mStripeX + mDestRect.x(), mDestRect.y(), mStripeWidth, mDestRect.height());
+    if (mStripeX >= 0) {
+        painter.setBrush(QColor(qRgba(0xff, 0x00, 0x00, 0x7f)));
+        painter.drawRect(mStripeX + mDestRect.x(), mDestRect.y(), mStripeWidth, mDestRect.height());
+    }
 }
 
 
@@ -93,12 +95,9 @@ void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 {
     if (mDragging) {
         mStripeX = event->x() - mDestRect.x();
-        if (mStripeX < 0)
-            mStripeX = 0;
-        else if (mStripeX >= mDestRect.width())
+        if (mStripeX >= mDestRect.width())
             mStripeX = mDestRect.width() - 1;
         update();
-        stripePos();
     }
 }
 

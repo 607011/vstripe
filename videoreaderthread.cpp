@@ -8,7 +8,7 @@
 #include "videoreaderthread.h"
 
 VideoReaderThread::VideoReaderThread(QObject* parent)
-    : QThread(parent), mSkip(1)
+    : QThread(parent), mFrameSkip(1)
 {
 }
 
@@ -25,10 +25,11 @@ void VideoReaderThread::setFile(QString videoFileName)
 }
 
 
-void VideoReaderThread::startReading(int numFrames, int skip)
+void VideoReaderThread::startReading(int firstFrameNumber, int numFrames, qreal skip)
 {
     stopReading();
-    mSkip = skip;
+    mFrameNumber = (qreal)firstFrameNumber;
+    mFrameSkip = skip;
     mMaxFrameCount = numFrames;
     mFrameCount = 0;
     mAbort = false;
@@ -46,13 +47,18 @@ void VideoReaderThread::stopReading(void)
 void VideoReaderThread::run(void)
 {
     int percent = 0, prevPercent = 0;
+    qreal prevFrameNumber = mFrameNumber;
+    mDecoder.seekFrame((qint64)mFrameNumber);
     while (!mAbort && mFrameCount < mMaxFrameCount) {
+        if ((mFrameNumber - prevFrameNumber) >= 1) {
+            mDecoder.seekNextFrame((int)(mFrameNumber - prevFrameNumber));
+            prevFrameNumber = mFrameNumber;
+        }
+        ++mFrameCount;
         QImage img;
-        mDecoder.seekNextFrame(mSkip);
         mDecoder.getFrame(img);
         emit frameReady(img, mFrameCount);
-        emit frameReady(img);
-        ++mFrameCount;
+        mFrameNumber += mFrameSkip;
         percent = 100 * mFrameCount / mMaxFrameCount;
         if (percent != prevPercent)
             emit percentReady(percent);

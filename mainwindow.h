@@ -41,10 +41,11 @@ public slots:
     void fastBackward(void);
     void setMarkA(void);
     void setMarkB(void);
-    void loadFrames(void);
     void savePicture(void);
     void showPercentReady(int);
     void frameReady(QImage, int);
+    void renderButtonClicked(void);
+    void setParamsButtonClicked(void);
 
     void pictureWidthSet(int);
 
@@ -63,7 +64,7 @@ private: // variables
     int markB;
     int nFrames;
     int mStripeWidth; // Streifen dieser Breite (Pixel) werden von jedem eingelesenen Frame behalten
-    int mFrameSkip; // so viel Frames werden pro Frame beim Einlesen übersprungen
+    qreal mFrameSkip; // so viel Frames werden pro Frame beim Einlesen übersprungen
     bool mFixedStripe; // true: der Streifen bleibt fest an der gewählten Position; false: der Streifen bewegt sich mit jedem Frame um mStripeWidth Pixel weiter
     QImage mFrame;
     int mEffectiveFrameNumber;
@@ -72,6 +73,11 @@ private: // variables
 private: // methods
     void showPictureWidget(void);
     void hidePictureWidget(void);
+    void render(void);
+    void stopRendering(void);
+    void enableGuiButtons(void);
+    void disableGuiButtons(void);
+
 };
 
 #endif // MAINWINDOW_H

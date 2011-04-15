@@ -47,9 +47,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->backwardButton, SIGNAL(clicked()), this, SLOT(backward()));
     connect(ui->fastForwardButton, SIGNAL(clicked()), this, SLOT(fastForward()));
     connect(ui->fastBackwardButton, SIGNAL(clicked()), this, SLOT(fastBackward()));
-
-
-    connect(ui->renderButton, SIGNAL(clicked()), this, SLOT(loadFrames()));
+    connect(ui->setParamsButton, SIGNAL(clicked()), this, SLOT(setParamsButtonClicked()));
+    connect(ui->renderButton, SIGNAL(clicked()), this, SLOT(renderButtonClicked()));
     connect(ui->action_Save_picture, SIGNAL(triggered()), this, SLOT(savePicture()));
 
     mStripeWidth = 1;
@@ -117,12 +116,39 @@ void MainWindow::pictureWidthSet(int w)
 }
 
 
-void MainWindow::loadFrames(void)
+void MainWindow::render(void)
 {
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(nFrames));
-    ui->renderButton->setEnabled(false);
+    ui->renderButton->setText(tr("Stop rendering"));
+    mFixedStripe = mVideoWidget->stripeFixed();
     mFrame.fill(qRgb(33, 251, 95));
-    mVideoReaderThread->startReading(nFrames, mFrameSkip);
+    int firstFrame;
+    if (markA >= 0 && markB >= 0 && markB > markA) {
+        mFrameSkip = (qreal)(markB - markA) / (qreal)mFrame.width();
+        mFrameSlider->setValue(markA);
+        firstFrame = markA;
+    }
+    else {
+        mFrameSkip = 1;
+        firstFrame = mEffectiveFrameNumber;
+    }
+    mVideoReaderThread->startReading(firstFrame, nFrames, mFrameSkip);
+}
+
+
+void MainWindow::stopRendering(void) {
+    ui->statusBar->showMessage(tr("Rendering stopped."), 5000);
+    ui->renderButton->setText(tr("Start rendering"));
+    mVideoReaderThread->stopReading();
+}
+
+
+void MainWindow::renderButtonClicked(void)
+{
+    if (ui->renderButton->text() == tr("Start rendering"))
+        render();
+    else
+        stopRendering();
 }
 
 
@@ -161,6 +187,12 @@ void MainWindow::setMarkB(void)
 {
     markB = ui->AButton->isChecked()? mEffectiveFrameNumber : -1;
     mFrameSlider->setB(markB);
+}
+
+
+void MainWindow::setParamsButtonClicked(void)
+{
+    mFrameSlider->setValue(ui->frameNumberLineEdit->text().toInt());
 }
 
 
@@ -210,35 +242,17 @@ void MainWindow::openVideoFile(void)
     mVideoReaderThread->decoder()->seekFrame(0);
     frameChanged(0);
     mFrameSlider->setMaximum(lastFrameNumber);
-    ui->renderButton->setEnabled(true);
-    mFrameSlider->setEnabled(true);
-    ui->AButton->setEnabled(true);
-    ui->BButton->setEnabled(true);
-    ui->forwardButton->setEnabled(true);
-    ui->backwardButton->setEnabled(true);
-    ui->fastForwardButton->setEnabled(true);
-    ui->fastBackwardButton->setEnabled(true);
+    enableGuiButtons();
 }
 
 
 void MainWindow::closeVideoFile(void)
 {
-    ui->action_CloseVideoFile->setEnabled(false);
-    ui->action_Save_picture->setEnabled(false);
+    disableGuiButtons();
     mFrameSlider->setValue(0);
     mVideoWidget->setFrame(QImage());
     mPictureWidget->setPicture(QImage());
     hidePictureWidget();
-    ui->renderButton->setEnabled(false);
-    mFrameSlider->setEnabled(false);
-    ui->AButton->setEnabled(false);
-    ui->BButton->setEnabled(true);
-    ui->forwardButton->setEnabled(false);
-    ui->backwardButton->setEnabled(false);
-    ui->fastForwardButton->setEnabled(false);
-    ui->fastBackwardButton->setEnabled(false);
-    ui->frameNumberLineEdit->setText(QString());
-    ui->frameTimeLineEdit->setText(QString());
     ui->statusBar->showMessage(tr("File closed."));
 }
 
@@ -252,8 +266,11 @@ void MainWindow::savePicture(void)
 
 void MainWindow::frameReady(QImage src, int frameNumber)
 {
-    int i = frameNumber * mFrameSkip;
-    int srcx = (mFixedStripe)? (mFrame.width() - mStripeWidth) / 2 : i * mStripeWidth;
+    if (frameNumber >= mFrame.width()) {
+        qDebug() << "frameNumber >= mFrame.width(): " << frameNumber;
+        return;
+    }
+    int srcx = mFixedStripe? (mFrame.width() - mStripeWidth) / 2 : frameNumber * mStripeWidth;
     int dstx = frameNumber * mStripeWidth;
     for (int x = 0; x < mStripeWidth; ++x)
         for (int y = 0; y < src.height(); ++y)
@@ -266,5 +283,40 @@ void MainWindow::frameReady(QImage src, int frameNumber)
 void MainWindow::decodingFinished()
 {
     ui->action_Save_picture->setEnabled(true);
+    ui->renderButton->setText(tr("Start rendering"));
+}
+
+
+void MainWindow::enableGuiButtons(void)
+{
+    ui->frameNumberLineEdit->setEnabled(true);
+    ui->setParamsButton->setEnabled(true);
     ui->renderButton->setEnabled(true);
+    mFrameSlider->setEnabled(true);
+    ui->AButton->setEnabled(true);
+    ui->BButton->setEnabled(true);
+    ui->forwardButton->setEnabled(true);
+    ui->backwardButton->setEnabled(true);
+    ui->fastForwardButton->setEnabled(true);
+    ui->fastBackwardButton->setEnabled(true);
+    ui->action_CloseVideoFile->setEnabled(true);
+    ui->action_Save_picture->setEnabled(true);
+}
+
+void MainWindow::disableGuiButtons(void)
+{
+    ui->frameNumberLineEdit->setEnabled(false);
+    ui->setParamsButton->setEnabled(false);
+    ui->renderButton->setEnabled(false);
+    mFrameSlider->setEnabled(false);
+    ui->AButton->setEnabled(false);
+    ui->BButton->setEnabled(true);
+    ui->forwardButton->setEnabled(false);
+    ui->backwardButton->setEnabled(false);
+    ui->fastForwardButton->setEnabled(false);
+    ui->fastBackwardButton->setEnabled(false);
+    ui->frameNumberLineEdit->setText(QString());
+    ui->frameTimeLineEdit->setText(QString());
+    ui->action_CloseVideoFile->setEnabled(false);
+    ui->action_Save_picture->setEnabled(false);
 }
