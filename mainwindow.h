@@ -35,10 +35,8 @@ public slots:
     void decodingFinished(void);
     void togglePictureWidget(bool);
     void frameChanged(int);
-    void nextFrame(void);
-    void previousFrame(void);
-    void forward(int nFrames = 20);
-    void backward(int nFrames = 20);
+    void forward(int nFrames = 1);
+    void backward(int nFrames = 1);
     void fastForward(void);
     void fastBackward(void);
     void setMarkA(void);
@@ -47,6 +45,9 @@ public slots:
     void savePicture(void);
     void showPercentReady(int);
     void frameReady(QImage, int);
+
+    void pictureWidthSet(int);
+
 
 protected:
     void closeEvent(QCloseEvent*);
@@ -58,12 +59,12 @@ private: // variables
     VideoWidget* mVideoWidget;
     PictureWidget* mPictureWidget;
     VideoReaderThread* mVideoReaderThread;
-    int markA, markAms;
-    int markB, markBms;
+    int markA;
+    int markB;
     int nFrames;
-    int mStripeWidth;
-    int mFrameSkip;
-    bool mFixedStripe;
+    int mStripeWidth; // Streifen dieser Breite (Pixel) werden von jedem eingelesenen Frame behalten
+    int mFrameSkip; // so viel Frames werden pro Frame beim Einlesen übersprungen
+    bool mFixedStripe; // true: der Streifen bleibt fest an der gewählten Position; false: der Streifen bewegt sich mit jedem Frame um mStripeWidth Pixel weiter
     QImage mFrame;
     int mEffectiveFrameNumber;
     int mEffectiveFrameTime;

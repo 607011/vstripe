@@ -26,11 +26,9 @@ public:
     bool seekNextFrame(int skip = 1);
     bool seekMs(int ts);
     bool seekFrame(int64_t frame);
-    int getVideoLengthMs();
+    int getVideoLengthMs(void);
     bool isOk() const;
     QSize frameSize(void) const;
-    int frameNumber(void) const  { return LastFrameNumber; }
-    int ms(void) const { return Ms; }
 
 protected:
     // Basic FFmpeg stuff
@@ -51,7 +49,6 @@ protected:
     int LastFrameTime, LastLastFrameTime, LastLastFrameNumber, LastFrameNumber;
     int DesiredFrameTime, DesiredFrameNumber;
     bool LastFrameOk; // Set upon start or after a seek we don't have a frame yet
-    int Ms;
 
     bool initCodec();
     void InitVars();

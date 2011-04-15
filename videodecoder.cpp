@@ -184,8 +184,8 @@ bool VideoDecoder::decodeSeekFrame(int after)
                 int t = ffmpeg::av_rescale_q(packet.dts,pFormatCtx->streams[videoStream]->time_base,millisecondbase);
                 if (!LastFrameOk) {
                     LastFrameOk = true;
-                    LastLastFrameTime = LastFrameTime=t;
-                    LastLastFrameNumber = LastFrameNumber=f;
+                    LastLastFrameTime = LastFrameTime = t;
+                    LastLastFrameNumber = LastFrameNumber = f;
                 }
                 else {
                     // If we decoded 2 frames in a row, the last times are okay
@@ -240,7 +240,6 @@ bool VideoDecoder::seekMs(int tsms)
         return false;
     DesiredFrameNumber = ffmpeg::av_rescale(tsms, pFormatCtx->streams[videoStream]->time_base.den, pFormatCtx->streams[videoStream]->time_base.num);
     DesiredFrameNumber /= 1000;
-    Ms = tsms;
     return seekFrame(DesiredFrameNumber);
 }
 
@@ -278,12 +277,14 @@ bool VideoDecoder::getFrame(QImage& img, int *effectiveframenumber, int *effecti
     return LastFrameOk;
 }
 
+
 int VideoDecoder::getVideoLengthMs()
 {
     if (!isOk())
         return -1;
     int secs = pFormatCtx->duration / AV_TIME_BASE;
     int us = pFormatCtx->duration % AV_TIME_BASE;
-    int l = secs*1000 + us/1000;
+    int l = secs * 1000 + us / 1000;
     return l;
 }
+

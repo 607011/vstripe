@@ -25,7 +25,7 @@ signals:
 
 protected:
     void paintEvent(QPaintEvent*);
-    // void resizeEvent(QResizeEvent*);
+    void resizeEvent(QResizeEvent*);
     void closeEvent(QCloseEvent*);
 
 public slots:
@@ -33,6 +33,7 @@ public slots:
 private:
     QImage mImage;
 
+    static const QString winTitle;
 };
 
 #endif // PICTUREWIDGET_H

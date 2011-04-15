@@ -9,10 +9,11 @@
 
 PictureWidget::PictureWidget(QWidget* parent) : QWidget(parent)
 {
-    setWindowTitle(tr("VStripe - Picture Preview"));
     setStyleSheet("background: #444");
 }
 
+
+const QString PictureWidget::winTitle = QObject::tr("VStripe - Picture Preview");
 
 void PictureWidget::setPicture(const QImage& img)
 {
@@ -37,4 +38,10 @@ void PictureWidget::setVisible(bool visible)
 void PictureWidget::closeEvent(QCloseEvent*)
 {
     emit visibilityChanged(false);
+}
+
+
+void PictureWidget::resizeEvent(QResizeEvent*)
+{
+    setWindowTitle(winTitle + QString(" - %1 x %2").arg(width()).arg(height()));
 }
