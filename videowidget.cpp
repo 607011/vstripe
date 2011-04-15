@@ -4,6 +4,7 @@
  */
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QDebug>
 #include <QtGlobal>
 
@@ -22,11 +23,16 @@ VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
 }
 
 
+bool VideoWidget::stripeFixed(void) const
+{
+    return mVerticalStripe? (mStripeX >= 0) : (mStripeY >= 0);
+}
+
+
 int VideoWidget::stripePos(void) const
 {
-    return mVerticalStripe
-            ? mStripeX * mImage.width() / mDestRect.width()
-            : mStripeY * mImage.height() / mDestRect.height();
+    return mVerticalStripe? mStripeX * mImage.width()  / mDestRect.width()
+        : mStripeY * mImage.height() / mDestRect.height();
 }
 
 
@@ -59,6 +65,7 @@ void VideoWidget::setStripeWidth(int stripeWidth)
 void VideoWidget::setFrame(QImage img)
 {
     mImage = img;
+    // mImage.convertToFormat(QImage::Format_ARGB32_Premultiplied, Qt::ColorOnly);
     update();
 }
 
@@ -74,6 +81,7 @@ void VideoWidget::resizeEvent(QResizeEvent* e)
 void VideoWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
 
     // draw background
     painter.setPen(Qt::NoPen);
@@ -86,14 +94,34 @@ void VideoWidget::paintEvent(QPaintEvent*)
     // draw stripe
     if (mVerticalStripe) {
         if (mStripeX >= 0) {
-            painter.setBrush(QColor(qRgb(0xff, 0x00, 0x00)));
+            painter.setBrush(QColor(0xff, 0x00, 0x00, 0xcc));
             painter.drawRect(mStripeX + mDestRect.x(), mDestRect.y(), mStripeWidth, mDestRect.height());
+        }
+        else {
+            painter.setPen(QColor(0x00, 0x00, 0xff, 0x99));
+            painter.setBrush(QColor(0x00, 0x00, 0xff, 0x66));
+            QPainterPath path;
+            path.moveTo(width()/2+width()/20, height()/2);
+            path.lineTo(width()/2-width()/20, height()/2-height()/10);
+            path.lineTo(width()/2-width()/20, height()/2+height()/10);
+            path.lineTo(width()/2+width()/20, height()/2);
+            painter.drawPath(path);
         }
     }
     else {
         if (mStripeY >= 0) {
-            painter.setBrush(QColor(qRgb(0xff, 0x00, 0x00)));
+            painter.setBrush(QColor(0xff, 0x00, 0x00, 0xcc));
             painter.drawRect(mDestRect.x(), mStripeY + mDestRect.y(), mDestRect.width(), mStripeWidth);
+        }
+        else {
+            painter.setPen(QColor(0x00, 0x00, 0xff, 0x99));
+            painter.setBrush(QColor(0x00, 0x00, 0xff, 0x66));
+            QPainterPath path;
+            path.moveTo(width()/2,            height()/2+height()/20);
+            path.lineTo(width()/2-width()/20, height()/2-height()/20);
+            path.lineTo(width()/2+width()/20, height()/2-height()/20);
+            path.lineTo(width()/2,            height()/2+height()/20);
+            painter.drawPath(path);
         }
     }
 }
@@ -120,16 +148,5 @@ void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 
 void VideoWidget::mousePressEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton) {
-        mVerticalStripe = (event->modifiers() & Qt::ControlModifier) == 0;
-        mDragging = true;
-    }
-}
-
-
-void VideoWidget::mouseReleaseEvent(QMouseEvent* event)
-{
-    if (event->button() == Qt::LeftButton && mDragging)  {
-
-    }
+    mDragging = (event->button() == Qt::LeftButton);
 }

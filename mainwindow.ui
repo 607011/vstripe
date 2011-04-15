@@ -297,7 +297,6 @@
     <property name="title">
      <string>Options</string>
     </property>
-    <addaction name="actionVertical_stripes"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuOptions"/>
