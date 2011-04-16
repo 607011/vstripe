@@ -50,6 +50,7 @@ void VideoReaderThread::run(void)
     qreal prevFrameNumber = mFrameNumber;
     mDecoder.seekFrame((qint64)mFrameNumber);
     while (!mAbort && mFrameCount < mMaxFrameCount) {
+        qDebug() << QString("VideoReaderThread::run() -> mFrameCount = %1 (%2)").arg(mFrameCount, 3, 10, QChar('0')).arg(mFrameNumber);
         if ((mFrameNumber - prevFrameNumber) >= 1) {
             mDecoder.seekNextFrame((int)(mFrameNumber - prevFrameNumber));
             prevFrameNumber = mFrameNumber;

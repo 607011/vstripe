@@ -4,16 +4,21 @@
  */
 
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QtDebug>
 #include <QImage>
 #include <QMessageBox>
 #include <QTime>
+#include <QSettings>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+const QString MainWindow::Company = "ersatzworld";
+const QString MainWindow::AppName = "VStripe";
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -43,6 +48,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         mPictureWidget->show();
     connect(mPictureWidget, SIGNAL(visibilityChanged(bool)), ui->actionPreview_picture, SLOT(setChecked(bool)));
 
+    for (int i = 0; i < MaxRecentFiles; ++i) {
+        recentFileActs[i] = new QAction(this);
+        recentFileActs[i]->setVisible(false);
+        connect(recentFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentFile()));
+    }
+
     connect(ui->forwardButton, SIGNAL(clicked()), this, SLOT(forward()));
     connect(ui->backwardButton, SIGNAL(clicked()), this, SLOT(backward()));
     connect(ui->fastForwardButton, SIGNAL(clicked()), this, SLOT(fastForward()));
@@ -50,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->setParamsButton, SIGNAL(clicked()), this, SLOT(setParamsButtonClicked()));
     connect(ui->renderButton, SIGNAL(clicked()), this, SLOT(renderButtonClicked()));
     connect(ui->action_Save_picture, SIGNAL(triggered()), this, SLOT(savePicture()));
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
 
     mStripeWidth = 1;
     mFrameSkip = 1;
@@ -61,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->AButton, SIGNAL(clicked()), this, SLOT(setMarkA()));
     connect(ui->BButton, SIGNAL(clicked()), this, SLOT(setMarkB()));
 
+    restoreAppSettings();
     ui->statusBar->showMessage(tr("Ready."), 3000);
 }
 
@@ -74,10 +87,84 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::closeEvent(QCloseEvent*)
+void MainWindow::closeEvent(QCloseEvent* event)
 {
+    saveAppSettings();
+    QMainWindow::closeEvent(event);
     mPictureWidget->close();
 }
+
+
+void MainWindow::saveAppSettings(void)
+{
+    QSettings settings(MainWindow::Company, MainWindow::AppName);
+    settings.setValue("MainWindow/geometry", saveGeometry());
+    settings.setValue("MainWindow/windowState", saveState());
+    settings.setValue("PictureWidget/geometry", mPictureWidget->saveGeometry());
+}
+
+
+void MainWindow::restoreAppSettings(void)
+{
+    QSettings settings(MainWindow::Company, MainWindow::AppName);
+    restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
+    restoreState(settings.value("MainWindow/windowState").toByteArray());
+    mPictureWidget->restoreGeometry(settings.value("PictureWidget/geometry").toByteArray());
+    updateRecentFileActions();
+    for (int i = 0; i < MaxRecentFiles; ++i)
+        ui->menuOpen_recent_video->addAction(recentFileActs[i]);
+}
+
+
+void MainWindow::setCurrentFile(const QString& fileName)
+{
+    setWindowFilePath(fileName);
+    QSettings settings(MainWindow::Company, MainWindow::AppName);
+    QStringList files = settings.value("recentFileList").toStringList();
+    files.removeAll(fileName);
+    files.prepend(fileName);
+    while (files.size() > MaxRecentFiles)
+        files.removeLast();
+    settings.setValue("recentFileList", files);
+    foreach (QWidget* widget, QApplication::topLevelWidgets()) {
+        MainWindow *mainWin = qobject_cast<MainWindow *>(widget);
+        if (mainWin)
+            mainWin->updateRecentFileActions();
+    }
+}
+
+
+void MainWindow::updateRecentFileActions(void)
+{
+    QSettings settings(MainWindow::Company, MainWindow::AppName);
+    QStringList files = settings.value("recentFileList").toStringList();
+    int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
+    for (int i = 0; i < numRecentFiles; ++i) {
+        QString text = tr("&%1 %2").arg(i + 1).arg(strippedName(files[i]));
+        recentFileActs[i]->setText(text);
+        recentFileActs[i]->setData(files[i]);
+        recentFileActs[i]->setVisible(true);
+    }
+    for (int j = numRecentFiles; j < MaxRecentFiles; ++j)
+        recentFileActs[j]->setVisible(false);
+}
+
+
+QString MainWindow::strippedName(const QString& fullFileName)
+{
+    return QFileInfo(fullFileName).fileName();
+}
+
+
+void MainWindow::openRecentFile(void)
+{
+    QAction* action = qobject_cast<QAction *>(sender());
+    if (action) {
+        mVideoFileName = action->data().toString();
+        loadVideoFile();
+    }
+}
+
 
 
 static QString ms2hmsz(int ms)
@@ -225,6 +312,13 @@ void MainWindow::openVideoFile(void)
     mVideoFileName = QFileDialog::getOpenFileName(this, tr("Open Video File"));
     if (mVideoFileName.isNull())
         return;
+    setCurrentFile(mVideoFileName);
+    loadVideoFile();
+}
+
+
+void MainWindow::loadVideoFile(void)
+{
     mVideoReaderThread->setFile(mVideoFileName);
     mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
     ui->action_CloseVideoFile->setEnabled(true);
@@ -269,6 +363,7 @@ void MainWindow::savePicture(void)
 
 void MainWindow::frameReady(QImage src, int frameNumber)
 {
+    qDebug() << QString("frameReady(..., %1)").arg(frameNumber, 3, 10, QChar('0'));
     int srcpos = mFixedStripe? mVideoWidget->stripePos() : frameNumber * mStripeWidth;
     int dstpos = frameNumber * mStripeWidth;
     if (mVideoWidget->stripeIsVertical()) {
@@ -322,4 +417,14 @@ void MainWindow::disableGuiButtons(void)
     ui->fastBackwardButton->setEnabled(false);
     ui->action_CloseVideoFile->setEnabled(false);
     ui->action_Save_picture->setEnabled(false);
+}
+
+
+void MainWindow::about(void)
+{
+    QMessageBox::about(this, tr("About %1").arg(MainWindow::AppName),
+        tr("<p><strong>%1</strong> &ndash; Produce images from video like in synchroballistic photography.</p>"
+           "<p>Copyright (c) 2011 Oliver Lau &lt;oliver@ersatzworld.net&gt;</p>"
+           "<p>VideoDecoder Copyright (c) 2009-2010 by Daniel Roggen &lt;droggen@gmail.com&gt;</p>"
+           "<p>All rights reserved.</p>").arg(MainWindow::AppName));
 }

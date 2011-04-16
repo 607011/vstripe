@@ -9,6 +9,7 @@
 #include <QString>
 #include <QMainWindow>
 
+
 #include "videoreaderthread.h"
 #include "videowidget.h"
 #include "picturewidget.h"
@@ -29,9 +30,14 @@ public:
     QSize minimumSizeHint(void) const { return QSize(720, 576); }
     QSize sizeHint(void) const { return QSize(1280, 720); }
 
+    static const QString Company;
+    static const QString AppName;
+
 public slots:
     void openVideoFile(void);
     void closeVideoFile(void);
+    void openRecentFile(void);
+    void loadVideoFile(void);
     void decodingFinished(void);
     void togglePictureWidget(bool);
     void frameChanged(int);
@@ -46,7 +52,7 @@ public slots:
     void frameReady(QImage, int);
     void renderButtonClicked(void);
     void setParamsButtonClicked(void);
-
+    void about(void);
     void pictureWidthSet(int);
 
 
@@ -70,6 +76,9 @@ private: // variables
     int mEffectiveFrameNumber;
     int mEffectiveFrameTime;
 
+    static const int MaxRecentFiles = 5;
+    QAction* recentFileActs[MaxRecentFiles];
+
 private: // methods
     void showPictureWidget(void);
     void hidePictureWidget(void);
@@ -77,7 +86,11 @@ private: // methods
     void stopRendering(void);
     void enableGuiButtons(void);
     void disableGuiButtons(void);
-
+    void restoreAppSettings(void);
+    void saveAppSettings(void);
+    void setCurrentFile(const QString& fileName);
+    void updateRecentFileActions(void);
+    QString strippedName(const QString& fullFileName);
 };
 
 #endif // MAINWINDOW_H

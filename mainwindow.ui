@@ -277,7 +277,14 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <widget class="QMenu" name="menuOpen_recent_video">
+     <property name="title">
+      <string>Open recent video</string>
+     </property>
+     <addaction name="separator"/>
+    </widget>
     <addaction name="action_OpenVideoFile"/>
+    <addaction name="menuOpen_recent_video"/>
     <addaction name="action_CloseVideoFile"/>
     <addaction name="separator"/>
     <addaction name="action_Save_picture"/>
