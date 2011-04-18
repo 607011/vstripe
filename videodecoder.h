@@ -21,42 +21,43 @@ public:
     explicit VideoDecoder(QString file);
     ~VideoDecoder();
     bool openFile(const char* file);
-    void close();
+    void close(void);
     bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0) const;
     bool seekNextFrame(int skip = 0);
     bool seekMs(int ts);
     bool seekFrame(int64_t frame);
     int getVideoLengthMs(void);
     int getDefaultSkip(void) const { return mDefaultSkip; }
-    bool isOk() const;
+    inline bool isOk(void) const {return mOk; }
     QSize frameSize(void) const;
-    ffmpeg::AVFormatContext* formatCtx(void) const { return pFormatCtx; }
-    ffmpeg::AVCodecContext* codecCtx(void) const { return pCodecCtx; }
-    ffmpeg::AVCodec* codec(void) const { return pCodec; }
+    ffmpeg::AVFormatContext* formatCtx(void) const { return mFormatCtx; }
+    ffmpeg::AVCodecContext* codecCtx(void) const { return mCodecCtx; }
+    ffmpeg::AVCodec* codec(void) const { return mCodec; }
 
-protected:
+private: // variables
     // Basic FFmpeg stuff
-    ffmpeg::AVFormatContext* pFormatCtx;
-    int videoStream;
-    ffmpeg::AVCodecContext* pCodecCtx;
-    ffmpeg::AVCodec* pCodec;
-    ffmpeg::AVFrame* pFrame;
-    ffmpeg::AVFrame* pFrameRGB;
-    ffmpeg::AVPacket packet;
-    ffmpeg::SwsContext* img_convert_ctx;
-    uint8_t* buffer;
-    int numBytes;
+    int mVideoStream;
+    ffmpeg::AVFormatContext* mFormatCtx;
+    ffmpeg::AVCodecContext* mCodecCtx;
+    ffmpeg::AVCodec* mCodec;
+    ffmpeg::AVFrame* mFrame;
+    ffmpeg::AVFrame* mFrameRGB;
+    ffmpeg::AVPacket mPacket;
+    ffmpeg::SwsContext* mImgConvCtx;
+    uint8_t* mBuf;
+    int mByteCount;
 
     // State infos for the wrapper
-    bool ok;
-    QImage LastFrame;
-    int LastFrameTime, LastLastFrameTime, LastLastFrameNumber, LastFrameNumber;
-    int DesiredFrameTime, DesiredFrameNumber;
-    bool LastFrameOk; // Set upon start or after a seek we don't have a frame yet
+    bool mOk;
+    QImage mLastFrame;
+    int mLastFrameTime, mLastLastFrameTime, mLastLastFrameNumber, mLastFrameNumber;
+    int mDesiredFrameTime, mDesiredFrameNumber;
+    bool mLastFrameOk; // Set upon start or after a seek we don't have a frame yet
     int mDefaultSkip;
 
+private: // methods
     bool initCodec();
-    void InitVars();
+    void initVars();
 
     bool decodeSeekFrame(int after);
 

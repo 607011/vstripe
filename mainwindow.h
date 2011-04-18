@@ -9,7 +9,6 @@
 #include <QString>
 #include <QMainWindow>
 
-
 #include "videoreaderthread.h"
 #include "videowidget.h"
 #include "picturewidget.h"
@@ -79,13 +78,13 @@ private: // variables
     int mDesiredFrameNumber;
     int mDesiredFrameTime;
 
-    static const int MaxRecentFiles = 10;
+    static const int MaxRecentFiles = 16;
     QAction* recentFileActs[MaxRecentFiles];
 
 private: // methods
     void showPictureWidget(void);
     void hidePictureWidget(void);
-    void render(void);
+    void startRendering(void);
     void stopRendering(void);
     void enableGuiButtons(void);
     void disableGuiButtons(void);
@@ -93,7 +92,9 @@ private: // methods
     void saveAppSettings(void);
     void setCurrentFile(const QString& fileName);
     void updateRecentFileActions(void);
-    QString strippedName(const QString& fullFileName);
+
+    static QString ms2hmsz(int ms);
+    static QString strippedName(const QString& fullFileName);
 };
 
 #endif // MAINWINDOW_H

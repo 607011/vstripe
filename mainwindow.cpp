@@ -140,7 +140,7 @@ void MainWindow::updateRecentFileActions(void)
     QStringList files = settings.value("recentFileList").toStringList();
     int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
     for (int i = 0; i < numRecentFiles; ++i) {
-        QString text = tr("&%1 %2").arg(i + 1).arg(strippedName(files[i]));
+        QString text = tr("&%1 %2").arg(i+1).arg(strippedName(files[i]));
         recentFileActs[i]->setText(text);
         recentFileActs[i]->setData(files[i]);
         recentFileActs[i]->setVisible(true);
@@ -167,7 +167,7 @@ void MainWindow::openRecentFile(void)
 
 
 
-static QString ms2hmsz(int ms)
+QString MainWindow::ms2hmsz(int ms)
 {
     int h, m, s, z;
     h = ms / 1000 / 60 / 60;
@@ -204,7 +204,7 @@ void MainWindow::pictureWidthSet(int)
 }
 
 
-void MainWindow::render(void)
+void MainWindow::startRendering(void)
 {
     ui->renderButton->setText(tr("Stop rendering"));
     mFixedStripe = mVideoWidget->stripeFixed();
@@ -235,7 +235,7 @@ void MainWindow::stopRendering(void) {
 void MainWindow::renderButtonClicked(void)
 {
     if (ui->renderButton->text() == tr("Start rendering"))
-        render();
+        startRendering();
     else
         stopRendering();
 }
@@ -411,7 +411,7 @@ void MainWindow::disableGuiButtons(void)
     ui->renderButton->setEnabled(false);
     mFrameSlider->setEnabled(false);
     ui->AButton->setEnabled(false);
-    ui->BButton->setEnabled(true);
+    ui->BButton->setEnabled(false);
     ui->forwardButton->setEnabled(false);
     ui->backwardButton->setEnabled(false);
     ui->fastForwardButton->setEnabled(false);
