@@ -22,13 +22,17 @@ public:
     ~VideoDecoder();
     bool openFile(const char* file);
     void close();
-    bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0);
-    bool seekNextFrame(int skip = 1);
+    bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0) const;
+    bool seekNextFrame(int skip = 0);
     bool seekMs(int ts);
     bool seekFrame(int64_t frame);
     int getVideoLengthMs(void);
+    int getDefaultSkip(void) const { return mDefaultSkip; }
     bool isOk() const;
     QSize frameSize(void) const;
+    ffmpeg::AVFormatContext* formatCtx(void) const { return pFormatCtx; }
+    ffmpeg::AVCodecContext* codecCtx(void) const { return pCodecCtx; }
+    ffmpeg::AVCodec* codec(void) const { return pCodec; }
 
 protected:
     // Basic FFmpeg stuff
@@ -49,6 +53,7 @@ protected:
     int LastFrameTime, LastLastFrameTime, LastLastFrameNumber, LastFrameNumber;
     int DesiredFrameTime, DesiredFrameNumber;
     bool LastFrameOk; // Set upon start or after a seek we don't have a frame yet
+    int mDefaultSkip;
 
     bool initCodec();
     void InitVars();

@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     mFrameSlider = new MarkableSlider;
     mFrameSlider->setEnabled(false);
     ui->sliderLayout->insertWidget(0, mFrameSlider);
-    connect(mFrameSlider, SIGNAL(valueChanged(int)), this, SLOT(frameChanged(int)));
+    connect(mFrameSlider, SIGNAL(valueChanged(int)), this, SLOT(frameSliderChanged(int)));
 
     mVideoReaderThread = new VideoReaderThread;
     connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
@@ -178,14 +178,14 @@ static QString ms2hmsz(int ms)
 }
 
 
-void MainWindow::frameChanged(int n)
+void MainWindow::frameSliderChanged(int n)
 {
     QImage img;
-    ui->statusBar->showMessage(tr("Seeking to frame #%1 ...").arg(n));
+    ui->statusBar->showMessage(tr("Seeking to frame #%1 ...").arg(n), 3000);
     mVideoReaderThread->decoder()->seekFrame(n);
-    mVideoReaderThread->decoder()->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime);
+    mVideoReaderThread->decoder()->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime, &mDesiredFrameNumber, &mDesiredFrameTime);
+    qDebug() << QString("effective: %1 (%2 ms), desired: %3 (%4 ms)").arg(mEffectiveFrameNumber).arg(mEffectiveFrameTime).arg(mDesiredFrameNumber).arg(mDesiredFrameTime);
     mVideoWidget->setFrame(img);
-    ui->statusBar->showMessage(QString());
     ui->frameNumberLineEdit->setText(tr("%1").arg(mEffectiveFrameNumber));
     ui->frameTimeLineEdit->setText(ms2hmsz(mEffectiveFrameTime));
 }
@@ -208,10 +208,10 @@ void MainWindow::render(void)
 {
     ui->renderButton->setText(tr("Stop rendering"));
     mFixedStripe = mVideoWidget->stripeFixed();
-    mFrame.fill(qRgb(33, 251, 95));
+    mCurrentFrame.fill(qRgb(33, 251, 95));
     int firstFrame;
     if (markA >= 0 && markB >= 0 && markB > markA) {
-        mFrameSkip = (qreal)(markB - markA) / (mVideoWidget->stripeIsVertical())? (qreal)mFrame.width() : (qreal)mFrame.height();
+        mFrameSkip = (qreal)(markB - markA) / (mVideoWidget->stripeIsVertical())? (qreal)mCurrentFrame.width() : (qreal)mCurrentFrame.height();
         mFrameSlider->setValue(markA);
         firstFrame = markA;
     }
@@ -243,13 +243,13 @@ void MainWindow::renderButtonClicked(void)
 
 void MainWindow::forward(int nFrames)
 {
-    mFrameSlider->setValue(mFrameSlider->value() + nFrames);
+    mFrameSlider->setValue(mFrameSlider->value() + nFrames * mVideoReaderThread->decoder()->getDefaultSkip());
 }
 
 
 void MainWindow::backward(int nFrames)
 {
-    mFrameSlider->setValue(mFrameSlider->value() - nFrames);
+    mFrameSlider->setValue(mFrameSlider->value() - nFrames * mVideoReaderThread->decoder()->getDefaultSkip());
 }
 
 
@@ -322,20 +322,21 @@ void MainWindow::loadVideoFile(void)
     mVideoReaderThread->setFile(mVideoFileName);
     mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
     ui->action_CloseVideoFile->setEnabled(true);
-    mFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
+    mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
     mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize());
     mPictureWidget->setPicture(QImage());
     showPictureWidget();
     mFrameSlider->setValue(0);
     QImage img;
     int lastFrameNumber;
+    ui->infoPlainTextEdit->appendPlainText(QString("%1 (%2)").arg(mVideoReaderThread->decoder()->formatCtx()->iformat->long_name).arg(mVideoReaderThread->decoder()->codec()->long_name));
     ui->statusBar->showMessage(tr("Finding last frame ..."));
     mVideoReaderThread->decoder()->seekMs(mVideoReaderThread->decoder()->getVideoLengthMs());
     mVideoReaderThread->decoder()->getFrame(img, &lastFrameNumber);
     qDebug() << "Last frame is # " << lastFrameNumber;
     qDebug() << "Video length is " << mVideoReaderThread->decoder()->getVideoLengthMs() << " ms";
     mVideoReaderThread->decoder()->seekFrame(0);
-    frameChanged(0);
+    frameSliderChanged(0);
     mFrameSlider->setMaximum(lastFrameNumber);
     enableGuiButtons();
 }
@@ -369,14 +370,14 @@ void MainWindow::frameReady(QImage src, int frameNumber)
     if (mVideoWidget->stripeIsVertical()) {
         for (int x = 0; x < mStripeWidth; ++x)
             for (int y = 0; y < src.height(); ++y)
-                mFrame.setPixel(dstpos + x, y, src.pixel(srcpos + x, y));
+                mCurrentFrame.setPixel(dstpos + x, y, src.pixel(srcpos + x, y));
     }
     else {
         for (int y = 0; y < mStripeWidth; ++y)
             for (int x = 0; x < src.width(); ++x)
-                mFrame.setPixel(x, dstpos + y, src.pixel(x, srcpos + y));
+                mCurrentFrame.setPixel(x, dstpos + y, src.pixel(x, srcpos + y));
     }
-    mPictureWidget->setPicture(mFrame);
+    mPictureWidget->setPicture(mCurrentFrame);
 }
 
 

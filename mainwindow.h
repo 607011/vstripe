@@ -40,9 +40,11 @@ public slots:
     void loadVideoFile(void);
     void decodingFinished(void);
     void togglePictureWidget(bool);
-    void frameChanged(int);
-    void forward(int nFrames = 1);
-    void backward(int nFrames = 1);
+    void frameSliderChanged(int);
+    void forward(int nFrames);
+    void backward(int nFrames);
+    void forward(void) { forward(1); }
+    void backward(void) { backward(1); }
     void fastForward(void);
     void fastBackward(void);
     void setMarkA(void);
@@ -54,7 +56,6 @@ public slots:
     void setParamsButtonClicked(void);
     void about(void);
     void pictureWidthSet(int);
-
 
 protected:
     void closeEvent(QCloseEvent*);
@@ -72,11 +73,13 @@ private: // variables
     qreal mFrameSkip; // so viel Frames werden pro Frame beim Einlesen übersprungen
     bool mFixedStripe; // true: der Streifen bleibt fest an der gewählten Position; false: der Streifen bewegt sich mit jedem Frame um mStripeWidth Pixel weiter
     int mFrameCount;
-    QImage mFrame;
+    QImage mCurrentFrame;
     int mEffectiveFrameNumber;
     int mEffectiveFrameTime;
+    int mDesiredFrameNumber;
+    int mDesiredFrameTime;
 
-    static const int MaxRecentFiles = 5;
+    static const int MaxRecentFiles = 10;
     QAction* recentFileActs[MaxRecentFiles];
 
 private: // methods
