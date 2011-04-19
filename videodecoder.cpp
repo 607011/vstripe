@@ -190,9 +190,9 @@ bool VideoDecoder::decodeSeekFrame(int after)
                 }
                 if (after == -1 || mLastFrameNumber >= after) {
                     // Convert the image format (init the context the first time)
-                    int w = mCodecCtx->width;
-                    int h = mCodecCtx->height;
-                    mImgConvCtx = ffmpeg::sws_getCachedContext(mImgConvCtx,w, h, mCodecCtx->pix_fmt, w, h, ffmpeg::PIX_FMT_RGB24, SWS_BICUBIC, NULL, NULL, NULL);
+                    const int w = mCodecCtx->width;
+                    const int h = mCodecCtx->height;
+                    mImgConvCtx = ffmpeg::sws_getCachedContext(mImgConvCtx, w, h, mCodecCtx->pix_fmt, w, h, ffmpeg::PIX_FMT_RGB24, SWS_BICUBIC, NULL, NULL, NULL);
                     if (mImgConvCtx == NULL) {
                         qDebug() << QObject::tr("Cannot initialize the conversion context!");
                         return false;
