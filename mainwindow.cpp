@@ -133,12 +133,12 @@ void MainWindow::setCurrentVideoFile(const QString& fileName)
     setWindowTitle(tr("%1 - %2").arg(MainWindow::AppName).arg(mVideoFileName));
     setWindowFilePath(mVideoFileName);
     QSettings settings(MainWindow::Company, MainWindow::AppName);
-    QStringList files = settings.value("recentFileList").toStringList();
+    QStringList files = settings.value("recentVideoFileList").toStringList();
     files.removeAll(mVideoFileName);
     files.prepend(mVideoFileName);
     while (files.size() > MaxRecentFiles)
         files.removeLast();
-    settings.setValue("recentFileList", files);
+    settings.setValue("recentVideoFileList", files);
     updateRecentVideoFileActions();
     if (sender() == mVideoWidget)
         loadVideoFile();
@@ -380,13 +380,14 @@ void MainWindow::loadVideoFile(void)
     QImage img;
     int lastFrameNumber;
     ui->infoPlainTextEdit->appendPlainText(QString("%1 (%2)").arg(mVideoReaderThread->decoder()->formatCtx()->iformat->long_name).arg(mVideoReaderThread->decoder()->codec()->long_name));
-    ui->statusBar->showMessage(tr("Finding last frame ..."));
+    ui->statusBar->showMessage(tr("Seeking last frame ..."));
     mVideoReaderThread->decoder()->seekMs(mVideoReaderThread->decoder()->getVideoLengthMs());
     mVideoReaderThread->decoder()->getFrame(img, &lastFrameNumber);
-    qDebug() << "Last frame is # " << lastFrameNumber;
-    qDebug() << "Video length is " << mVideoReaderThread->decoder()->getVideoLengthMs() << " ms";
+    ui->infoPlainTextEdit->appendPlainText(tr("Last frame is # %1").arg(lastFrameNumber));
+    ui->infoPlainTextEdit->appendPlainText(tr("Video length is %1 ms").arg(mVideoReaderThread->decoder()->getVideoLengthMs()));
     mFrameSlider->setMaximum(lastFrameNumber);
     mFrameSlider->setValue(0);
+    ui->statusBar->showMessage(tr("Ready."), 2000);
     ui->actionSave_project->setEnabled(true);
     ui->actionSave_project_as->setEnabled(true);
     enableGuiButtons();
@@ -545,5 +546,5 @@ void MainWindow::updateRecentProjectFileActions(void)
 
 void MainWindow::openRecentProjectFile(void)
 {
-
+    QMessageBox::information(this, QString(), tr("<p>Not implemented yet</p>"));
 }
