@@ -1,14 +1,12 @@
 TODO
 ====
 
-[ ] Drag'n'Drop von Dateien auf GUI implementieren
+[ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
 
 [ ] Einlesen der Bilder von [A nach B] funktioniert nicht: Der Lesevorgang geht über die zweite Marke hinaus?
 
 [ ] Mehr Informationen über das Video in infoPlainTextEdit ausgeben, z.B. Framerate, Codec-Kurzname, Format-Kurzname, ...
 
-[ ] Menüpunkt "Options" streichen
-
 [ ] Unter Linux und Mac OS X testen
 
-[ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
+[ ] Hilfe implementieren (actionHelp)

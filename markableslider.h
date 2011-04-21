@@ -7,6 +7,7 @@
 #define MARKABLESLIDER_H
 
 #include <QSlider>
+#include <QVector>
 
 class MarkableSlider : public QSlider
 {
@@ -18,6 +19,7 @@ public:
 
     void setA(int);
     void setB(int);
+    void setMarks(const QVector<int>&);
 
 protected:
     void paintEvent(QPaintEvent*);
@@ -29,6 +31,7 @@ public slots:
 private:
     int mA;
     int mB;
+    QVector<int> mMarks;
 
 };
 

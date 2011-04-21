@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QTime>
 #include <QSettings>
+#include <QtAlgorithms>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -35,7 +36,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     mFrameSlider = new MarkableSlider;
     mFrameSlider->setEnabled(false);
     ui->sliderLayout->insertWidget(0, mFrameSlider);
-    connect(mFrameSlider, SIGNAL(valueChanged(int)), this, SLOT(frameSliderChanged(int)));
+    connect(mFrameSlider, SIGNAL(valueChanged(int)), this, SLOT(seekToFrame(int)));
 
     mVideoReaderThread = new VideoReaderThread;
     connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
@@ -74,6 +75,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     mPreRenderFrameNumber = 0;
     connect(ui->AButton, SIGNAL(clicked()), this, SLOT(setMarkA()));
     connect(ui->BButton, SIGNAL(clicked()), this, SLOT(setMarkB()));
+    connect(ui->markButton, SIGNAL(clicked()), this, SLOT(setMark()));
+    connect(ui->actionClear_marks, SIGNAL(triggered()), this, SLOT(clearMarks()));
+    connect(ui->prevMarkButton, SIGNAL(clicked()), this, SLOT(jumpToPrevMark()));
+    connect(ui->nextMarkButton, SIGNAL(clicked()), this, SLOT(jumpToNextMark()));
 
     restoreAppSettings();
     ui->statusBar->showMessage(tr("Ready."), 3000);
@@ -179,7 +184,7 @@ QString MainWindow::ms2hmsz(int ms)
 }
 
 
-void MainWindow::frameSliderChanged(int n)
+void MainWindow::seekToFrame(int n)
 {
     QImage img;
     ui->statusBar->showMessage(tr("Seeking to frame #%1 ...").arg(n), 3000);
@@ -208,7 +213,7 @@ void MainWindow::pictureWidthSet(int)
 void MainWindow::startRendering(void)
 {
     ui->renderButton->setText(tr("Stop rendering"));
-    mFixedStripe = mVideoWidget->stripeFixed();
+    mFixedStripe = mVideoWidget->stripeIsFixed();
     mCurrentFrame.fill(qRgb(33, 251, 95));
     int firstFrame;
     if (markA >= 0 && markB >= 0 && markB > markA) {
@@ -277,7 +282,43 @@ void MainWindow::setMarkA(void)
 void MainWindow::setMarkB(void)
 {
     markB = ui->AButton->isChecked()? mEffectiveFrameNumber : -1;
+    qSort(mMarks);
     mFrameSlider->setB(markB);
+}
+
+
+void MainWindow::setMark(void)
+{
+    mMarks.append(mEffectiveFrameNumber);
+    qSort(mMarks);
+    mFrameSlider->setMarks(mMarks);
+}
+
+
+void MainWindow::clearMarks(void)
+{
+    mMarks.clear();
+    mFrameSlider->setMarks(mMarks);
+}
+
+
+void MainWindow::jumpToNextMark(void)
+{
+    for (int i = 0; i < mMarks.count(); ++i)
+        if (mMarks[i] > mEffectiveFrameNumber) {
+            mFrameSlider->setValue(mMarks[i]);
+            break;
+        }
+}
+
+
+void MainWindow::jumpToPrevMark(void)
+{
+    for (int i = mMarks.count()-1; i >= 0; --i)
+        if (mMarks[i] < mEffectiveFrameNumber) {
+            mFrameSlider->setValue(mMarks[i]);
+            break;
+        }
 }
 
 
@@ -338,7 +379,7 @@ void MainWindow::loadVideoFile(void)
     qDebug() << "Last frame is # " << lastFrameNumber;
     qDebug() << "Video length is " << mVideoReaderThread->decoder()->getVideoLengthMs() << " ms";
     mVideoReaderThread->decoder()->seekFrame(0);
-    frameSliderChanged(0);
+    seekToFrame(0);
     mFrameSlider->setMaximum(lastFrameNumber);
     enableGuiButtons();
 }
@@ -402,12 +443,16 @@ void MainWindow::enableGuiButtons(void)
     mFrameSlider->setEnabled(true);
     ui->AButton->setEnabled(true);
     ui->BButton->setEnabled(true);
+    ui->prevMarkButton->setEnabled(true);
+    ui->nextMarkButton->setEnabled(true);
+    ui->markButton->setEnabled(true);
     ui->forwardButton->setEnabled(true);
     ui->backwardButton->setEnabled(true);
     ui->fastForwardButton->setEnabled(true);
     ui->fastBackwardButton->setEnabled(true);
     ui->action_CloseVideoFile->setEnabled(true);
     ui->action_Save_picture->setEnabled(true);
+    ui->actionClear_marks->setEnabled(true);
 }
 
 void MainWindow::disableGuiButtons(void)
@@ -418,12 +463,16 @@ void MainWindow::disableGuiButtons(void)
     mFrameSlider->setEnabled(false);
     ui->AButton->setEnabled(false);
     ui->BButton->setEnabled(false);
+    ui->prevMarkButton->setEnabled(false);
+    ui->nextMarkButton->setEnabled(false);
+    ui->markButton->setEnabled(false);
     ui->forwardButton->setEnabled(false);
     ui->backwardButton->setEnabled(false);
     ui->fastForwardButton->setEnabled(false);
     ui->fastBackwardButton->setEnabled(false);
     ui->action_CloseVideoFile->setEnabled(false);
     ui->action_Save_picture->setEnabled(false);
+    ui->actionClear_marks->setEnabled(false);
 }
 
 

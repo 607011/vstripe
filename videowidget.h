@@ -28,7 +28,7 @@ public:
     QSize sizeHint(void) const { return QSize(720, 576); }
     inline bool stripeIsVertical(void) const { return mVerticalStripe; }
     int stripePos(void) const;
-    bool stripeFixed(void) const;
+    bool stripeIsFixed(void) const;
 
 public slots:
     void setFrameSize(const QSize&);

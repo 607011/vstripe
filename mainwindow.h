@@ -8,6 +8,7 @@
 
 #include <QString>
 #include <QMainWindow>
+#include <QVector>
 
 #include "videoreaderthread.h"
 #include "videowidget.h"
@@ -39,7 +40,7 @@ public slots:
     void loadVideoFile(void);
     void decodingFinished(void);
     void togglePictureWidget(bool);
-    void frameSliderChanged(int);
+    void seekToFrame(int);
     void forward(int nFrames);
     void backward(int nFrames);
     void forward(void) { forward(1); }
@@ -48,6 +49,10 @@ public slots:
     void fastBackward(void);
     void setMarkA(void);
     void setMarkB(void);
+    void setMark(void);
+    void clearMarks(void);
+    void jumpToNextMark(void);
+    void jumpToPrevMark(void);
     void savePicture(void);
     void showPercentReady(int);
     void frameReady(QImage, int);
@@ -79,6 +84,7 @@ private: // variables
     int mDesiredFrameNumber;
     int mDesiredFrameTime;
     int mPreRenderFrameNumber;
+    QVector<int> mMarks;
 
     static const int MaxRecentFiles = 16;
     QAction* recentFileActs[MaxRecentFiles];

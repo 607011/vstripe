@@ -13,18 +13,17 @@
 
 VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
 {
+    setAcceptDrops(true);
     setBaseSize(480, 270);
     setMinimumSize(384, 216);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    setSizeIncrement(16, 9);
     mStripeWidth = 1;
     mDragging = false;
     mVerticalStripe = true;
-    setAcceptDrops(true);
 }
 
 
-bool VideoWidget::stripeFixed(void) const
+bool VideoWidget::stripeIsFixed(void) const
 {
     return mVerticalStripe? (mStripeX >= 0) : (mStripeY >= 0);
 }
@@ -170,9 +169,10 @@ void VideoWidget::dragEnterEvent(QDragEnterEvent* event)
 
 void VideoWidget::dropEvent(QDropEvent* event)
 {
+    if (!event->mimeData()->hasUrls())
+        return;
     QList<QUrl> urls = event->mimeData()->urls();
     if (urls.isEmpty())
         return;
-    qDebug() << "File dropped: " << urls.first().toLocalFile();
     emit fileDropped(urls.first().toLocalFile());
 }
