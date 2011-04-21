@@ -78,6 +78,7 @@ private: // variables
     int mEffectiveFrameTime;
     int mDesiredFrameNumber;
     int mDesiredFrameTime;
+    int mPreRenderFrameNumber;
 
     static const int MaxRecentFiles = 16;
     QAction* recentFileActs[MaxRecentFiles];

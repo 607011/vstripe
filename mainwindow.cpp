@@ -71,6 +71,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     mEffectiveFrameTime = -1;
     markA = -1;
     markB = -1;
+    mPreRenderFrameNumber = 0;
     connect(ui->AButton, SIGNAL(clicked()), this, SLOT(setMarkA()));
     connect(ui->BButton, SIGNAL(clicked()), this, SLOT(setMarkB()));
 
@@ -221,6 +222,7 @@ void MainWindow::startRendering(void)
     }
     mFrameCount = ((mVideoWidget->stripeIsVertical())? mVideoReaderThread->decoder()->frameSize().width() : mVideoReaderThread->decoder()->frameSize().height()) * mFrameSkip / mStripeWidth;
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
+    mPreRenderFrameNumber = mFrameSlider->value();
     mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameSkip);
 }
 
@@ -378,6 +380,9 @@ void MainWindow::frameReady(QImage src, int frameNumber)
                 mCurrentFrame.setPixel(x, dstpos + y, src.pixel(x, srcpos + y));
     }
     mPictureWidget->setPicture(mCurrentFrame);
+    mFrameSlider->blockSignals(true);
+    mFrameSlider->setValue(mPreRenderFrameNumber + (int)(frameNumber * mFrameSkip));
+    mFrameSlider->blockSignals(false);
 }
 
 
@@ -385,6 +390,7 @@ void MainWindow::decodingFinished()
 {
     ui->action_Save_picture->setEnabled(true);
     ui->renderButton->setText(tr("Start rendering"));
+    mPreRenderFrameNumber = mFrameSlider->value();
 }
 
 
