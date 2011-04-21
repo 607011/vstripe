@@ -59,6 +59,7 @@ public slots:
     void renderButtonClicked(void);
     void setParamsButtonClicked(void);
     void about(void);
+    void help(void);
     void pictureWidthSet(int);
     void setCurrentFile(const QString& fileName);
 

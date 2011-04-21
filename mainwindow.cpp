@@ -64,6 +64,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->renderButton, SIGNAL(clicked()), this, SLOT(renderButtonClicked()));
     connect(ui->action_Save_picture, SIGNAL(triggered()), this, SLOT(savePicture()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+    connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(help()));
 
     mStripeWidth = 1;
     mFrameSkip = 1;
@@ -394,7 +395,7 @@ void MainWindow::closeVideoFile(void)
     mVideoWidget->setFrame(QImage());
     mPictureWidget->setPicture(QImage());
     hidePictureWidget();
-    ui->statusBar->showMessage(tr("File closed."));
+    ui->statusBar->showMessage(tr("File closed."), 5000);
 }
 
 
@@ -407,7 +408,7 @@ void MainWindow::savePicture(void)
 
 void MainWindow::frameReady(QImage src, int frameNumber)
 {
-    qDebug() << QString("frameReady(..., %1)").arg(frameNumber, 3, 10, QChar('0'));
+    // qDebug() << QString("frameReady(..., %1)").arg(frameNumber, 3, 10, QChar('0'));
     int srcpos = mFixedStripe? mVideoWidget->stripePos() : frameNumber * mStripeWidth;
     int dstpos = frameNumber * mStripeWidth;
     if (mVideoWidget->stripeIsVertical()) {
@@ -483,4 +484,11 @@ void MainWindow::about(void)
            "<p>Copyright (c) 2011 Oliver Lau &lt;oliver@ersatzworld.net&gt;</p>"
            "<p>VideoDecoder Copyright (c) 2009-2010 by Daniel Roggen &lt;droggen@gmail.com&gt;</p>"
            "<p>All rights reserved.</p>").arg(MainWindow::AppName));
+}
+
+
+void MainWindow::help(void)
+{
+    QMessageBox::information(this, tr("Help on %1").arg(MainWindow::AppName),
+        tr("<p>Not implemented yet</p>"));
 }
