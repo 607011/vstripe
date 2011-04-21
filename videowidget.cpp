@@ -20,6 +20,7 @@ VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
     mStripeWidth = 1;
     mDragging = false;
     mVerticalStripe = true;
+    setAcceptDrops(true);
 }
 
 
@@ -148,4 +149,30 @@ void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 void VideoWidget::mousePressEvent(QMouseEvent* event)
 {
     mDragging = (event->button() == Qt::LeftButton);
+}
+
+
+void VideoWidget::dragEnterEvent(QDragEnterEvent* event)
+{
+    // only accept local files
+    if (event->mimeData()->hasUrls()) {
+        bool accepted = true;
+        foreach (const QUrl& url, event->mimeData()->urls()) {
+            accepted &= !url.toLocalFile().isEmpty();
+            if (!accepted)
+                break;
+        }
+        if (accepted)
+            event->acceptProposedAction();
+    }
+}
+
+
+void VideoWidget::dropEvent(QDropEvent* event)
+{
+    QList<QUrl> urls = event->mimeData()->urls();
+    if (urls.isEmpty())
+        return;
+    qDebug() << "File dropped: " << urls.first().toLocalFile();
+    emit fileDropped(urls.first().toLocalFile());
 }

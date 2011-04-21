@@ -11,6 +11,12 @@
 #include <QRect>
 #include <QPaintEvent>
 #include <QResizeEvent>
+// #include <QDrag>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeSource>
+#include <QUrl>
+
 #include "ffmpeg.h"
 
 class VideoWidget : public QWidget
@@ -34,6 +40,9 @@ protected:
     void resizeEvent(QResizeEvent*);
     void mouseMoveEvent(QMouseEvent*);
     void mousePressEvent(QMouseEvent*);
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+
 
 private:
     QImage mImage;
@@ -50,7 +59,7 @@ private:
 
 
 signals:
-
+    void fileDropped(QString fileName);
 };
 
 #endif // VIDEOWIDGET_H

@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     mVideoWidget = new VideoWidget;
     ui->verticalLayout->insertWidget(0, mVideoWidget);
+    connect(mVideoWidget, SIGNAL(fileDropped(QString)), this, SLOT(setCurrentFile(QString)));
 
     ui->AButton->setStyleSheet("background: green");
     ui->BButton->setStyleSheet("background: red");
@@ -118,19 +119,19 @@ void MainWindow::restoreAppSettings(void)
 
 void MainWindow::setCurrentFile(const QString& fileName)
 {
-    setWindowFilePath(fileName);
+    mVideoFileName = fileName;
+    setWindowTitle(tr("%1 - %2").arg(MainWindow::AppName).arg(mVideoFileName));
+    setWindowFilePath(mVideoFileName);
     QSettings settings(MainWindow::Company, MainWindow::AppName);
     QStringList files = settings.value("recentFileList").toStringList();
-    files.removeAll(fileName);
-    files.prepend(fileName);
+    files.removeAll(mVideoFileName);
+    files.prepend(mVideoFileName);
     while (files.size() > MaxRecentFiles)
         files.removeLast();
     settings.setValue("recentFileList", files);
-    foreach (QWidget* widget, QApplication::topLevelWidgets()) {
-        MainWindow *mainWin = qobject_cast<MainWindow *>(widget);
-        if (mainWin)
-            mainWin->updateRecentFileActions();
-    }
+    updateRecentFileActions();
+    if (sender() == mVideoWidget)
+        loadVideoFile();
 }
 
 
@@ -164,7 +165,6 @@ void MainWindow::openRecentFile(void)
         loadVideoFile();
     }
 }
-
 
 
 QString MainWindow::ms2hmsz(int ms)
@@ -309,10 +309,10 @@ void MainWindow::hidePictureWidget(void)
 
 void MainWindow::openVideoFile(void)
 {
-    mVideoFileName = QFileDialog::getOpenFileName(this, tr("Open Video File"));
-    if (mVideoFileName.isNull())
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Video File"));
+    if (fileName.isNull())
         return;
-    setCurrentFile(mVideoFileName);
+    setCurrentFile(fileName);
     loadVideoFile();
 }
 

@@ -55,6 +55,7 @@ public slots:
     void setParamsButtonClicked(void);
     void about(void);
     void pictureWidthSet(int);
+    void setCurrentFile(const QString& fileName);
 
 protected:
     void closeEvent(QCloseEvent*);
@@ -90,7 +91,6 @@ private: // methods
     void disableGuiButtons(void);
     void restoreAppSettings(void);
     void saveAppSettings(void);
-    void setCurrentFile(const QString& fileName);
     void updateRecentFileActions(void);
 
     static QString ms2hmsz(int ms);
