@@ -5,6 +5,7 @@
 
 #include <QPainter>
 #include <QPainterPath>
+#include <QDebug>
 #include "markableslider.h"
 
 MarkableSlider::MarkableSlider(QSlider* parent) : QSlider(Qt::Horizontal, parent), mA(-1), mB(-1)
@@ -16,6 +17,7 @@ MarkableSlider::MarkableSlider(QSlider* parent) : QSlider(Qt::Horizontal, parent
 void MarkableSlider::setA(int a)
 {
     mA = a;
+    qDebug() << "mark A = " << mA;
     update();
 }
 
@@ -23,6 +25,7 @@ void MarkableSlider::setA(int a)
 void MarkableSlider::setB(int b)
 {
     mB = b;
+    qDebug() << "mark B = " << mB;
     update();
 }
 

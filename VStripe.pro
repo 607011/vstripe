@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui xml
 
 TARGET = VStripe
 TEMPLATE = app

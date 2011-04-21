@@ -10,12 +10,12 @@
 #include <QMessageBox>
 #include <QTime>
 #include <QSettings>
-#include <QtAlgorithms>
+#include <QTextStream>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-const QString MainWindow::Company = "ersatzworld";
+const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 
 
@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     mVideoWidget = new VideoWidget;
     ui->verticalLayout->insertWidget(0, mVideoWidget);
-    connect(mVideoWidget, SIGNAL(fileDropped(QString)), this, SLOT(setCurrentFile(QString)));
+    connect(mVideoWidget, SIGNAL(fileDropped(QString)), this, SLOT(setCurrentVideoFile(QString)));
 
     ui->AButton->setStyleSheet("background: green");
     ui->BButton->setStyleSheet("background: red");
@@ -51,9 +51,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(mPictureWidget, SIGNAL(visibilityChanged(bool)), ui->actionPreview_picture, SLOT(setChecked(bool)));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
-        recentFileActs[i] = new QAction(this);
-        recentFileActs[i]->setVisible(false);
-        connect(recentFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentFile()));
+        recentVideoFileActs[i] = new QAction(this);
+        recentVideoFileActs[i]->setVisible(false);
+        connect(recentVideoFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentVideoFile()));
+        recentProjectFileActs[i] = new QAction(this);
+        recentProjectFileActs[i]->setVisible(false);
+        connect(recentProjectFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentProjectFile()));
     }
 
     connect(ui->forwardButton, SIGNAL(clicked()), this, SLOT(forward()));
@@ -118,13 +121,13 @@ void MainWindow::restoreAppSettings(void)
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     restoreState(settings.value("MainWindow/windowState").toByteArray());
     mPictureWidget->restoreGeometry(settings.value("PictureWidget/geometry").toByteArray());
-    updateRecentFileActions();
+    updateRecentVideoFileActions();
     for (int i = 0; i < MaxRecentFiles; ++i)
-        ui->menuOpen_recent_video->addAction(recentFileActs[i]);
+        ui->menuOpen_recent_video->addAction(recentVideoFileActs[i]);
 }
 
 
-void MainWindow::setCurrentFile(const QString& fileName)
+void MainWindow::setCurrentVideoFile(const QString& fileName)
 {
     mVideoFileName = fileName;
     setWindowTitle(tr("%1 - %2").arg(MainWindow::AppName).arg(mVideoFileName));
@@ -136,25 +139,27 @@ void MainWindow::setCurrentFile(const QString& fileName)
     while (files.size() > MaxRecentFiles)
         files.removeLast();
     settings.setValue("recentFileList", files);
-    updateRecentFileActions();
+    updateRecentVideoFileActions();
     if (sender() == mVideoWidget)
         loadVideoFile();
 }
 
 
-void MainWindow::updateRecentFileActions(void)
+void MainWindow::updateRecentVideoFileActions(void)
 {
     QSettings settings(MainWindow::Company, MainWindow::AppName);
-    QStringList files = settings.value("recentFileList").toStringList();
+    QStringList files = settings.value("recentVideoFileList").toStringList();
     int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
     for (int i = 0; i < numRecentFiles; ++i) {
         QString text = tr("&%1 %2").arg(i+1).arg(strippedName(files[i]));
-        recentFileActs[i]->setText(text);
-        recentFileActs[i]->setData(files[i]);
-        recentFileActs[i]->setVisible(true);
+        recentVideoFileActs[i]->setText(text);
+        recentVideoFileActs[i]->setData(files[i]);
+        recentVideoFileActs[i]->setVisible(true);
     }
     for (int j = numRecentFiles; j < MaxRecentFiles; ++j)
-        recentFileActs[j]->setVisible(false);
+        recentVideoFileActs[j]->setVisible(false);
+    if (numRecentFiles > 0)
+        ui->menuOpen_recent_video->setEnabled(true);
 }
 
 
@@ -164,7 +169,7 @@ QString MainWindow::strippedName(const QString& fullFileName)
 }
 
 
-void MainWindow::openRecentFile(void)
+void MainWindow::openRecentVideoFile(void)
 {
     QAction* action = qobject_cast<QAction *>(sender());
     if (action) {
@@ -217,8 +222,9 @@ void MainWindow::startRendering(void)
     mFixedStripe = mVideoWidget->stripeIsFixed();
     mCurrentFrame.fill(qRgb(33, 251, 95));
     int firstFrame;
+    qreal nStripes = mVideoWidget->stripeIsVertical()? (qreal)mCurrentFrame.width() : (qreal)mCurrentFrame.height();
     if (markA >= 0 && markB >= 0 && markB > markA) {
-        mFrameSkip = (qreal)(markB - markA) / (mVideoWidget->stripeIsVertical())? (qreal)mCurrentFrame.width() : (qreal)mCurrentFrame.height();
+        mFrameSkip = (qreal)(markB - markA) / nStripes;
         mFrameSlider->setValue(markA);
         firstFrame = markA;
     }
@@ -226,7 +232,7 @@ void MainWindow::startRendering(void)
         mFrameSkip = 1;
         firstFrame = mEffectiveFrameNumber;
     }
-    mFrameCount = ((mVideoWidget->stripeIsVertical())? mVideoReaderThread->decoder()->frameSize().width() : mVideoReaderThread->decoder()->frameSize().height()) * mFrameSkip / mStripeWidth;
+    mFrameCount = nStripes / mStripeWidth;
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
     mPreRenderFrameNumber = mFrameSlider->value();
     mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameSkip);
@@ -353,10 +359,10 @@ void MainWindow::hidePictureWidget(void)
 
 void MainWindow::openVideoFile(void)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Video File"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open video file"));
     if (fileName.isNull())
         return;
-    setCurrentFile(fileName);
+    setCurrentVideoFile(fileName);
     loadVideoFile();
 }
 
@@ -379,9 +385,10 @@ void MainWindow::loadVideoFile(void)
     mVideoReaderThread->decoder()->getFrame(img, &lastFrameNumber);
     qDebug() << "Last frame is # " << lastFrameNumber;
     qDebug() << "Video length is " << mVideoReaderThread->decoder()->getVideoLengthMs() << " ms";
-    mVideoReaderThread->decoder()->seekFrame(0);
-    seekToFrame(0);
     mFrameSlider->setMaximum(lastFrameNumber);
+    mFrameSlider->setValue(0);
+    ui->actionSave_project->setEnabled(true);
+    ui->actionSave_project_as->setEnabled(true);
     enableGuiButtons();
 }
 
@@ -491,4 +498,52 @@ void MainWindow::help(void)
 {
     QMessageBox::information(this, tr("Help on %1").arg(MainWindow::AppName),
         tr("<p>Not implemented yet</p>"));
+}
+
+
+void MainWindow::openProject(void)
+{
+    QMessageBox::information(this, QString(), tr("<p>Not implemented yet</p>"));
+}
+
+
+void MainWindow::saveProject(void)
+{
+    if (mProjectFileName.isEmpty()) {
+        saveProjectAs();
+        return;
+    }
+    QMessageBox::information(this, QString(), tr("<p>Not implemented yet</p>"));
+}
+
+
+void MainWindow::saveProjectAs(void)
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save project file as ..."));
+    if (fileName.isNull())
+        return;
+    mProjectFileName = fileName;
+
+}
+
+
+void MainWindow::updateRecentProjectFileActions(void)
+{
+    QSettings settings(MainWindow::Company, MainWindow::AppName);
+    QStringList files = settings.value("recentProjectFileList").toStringList();
+    int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
+    for (int i = 0; i < numRecentFiles; ++i) {
+        QString text = tr("&%1 %2").arg(i+1).arg(strippedName(files[i]));
+        recentProjectFileActs[i]->setText(text);
+        recentProjectFileActs[i]->setData(files[i]);
+        recentProjectFileActs[i]->setVisible(true);
+    }
+    for (int j = numRecentFiles; j < MaxRecentFiles; ++j)
+        recentProjectFileActs[j]->setVisible(false);
+}
+
+
+void MainWindow::openRecentProjectFile(void)
+{
+
 }

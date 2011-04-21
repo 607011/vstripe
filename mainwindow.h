@@ -6,9 +6,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QString>
 #include <QMainWindow>
+#include <QString>
 #include <QVector>
+#include <QtXml/QDomDocument>
 
 #include "videoreaderthread.h"
 #include "videowidget.h"
@@ -36,7 +37,8 @@ public:
 public slots:
     void openVideoFile(void);
     void closeVideoFile(void);
-    void openRecentFile(void);
+    void openRecentVideoFile(void);
+    void openRecentProjectFile(void);
     void loadVideoFile(void);
     void decodingFinished(void);
     void togglePictureWidget(bool);
@@ -61,7 +63,10 @@ public slots:
     void about(void);
     void help(void);
     void pictureWidthSet(int);
-    void setCurrentFile(const QString& fileName);
+    void setCurrentVideoFile(const QString&);
+    void saveProject(void);
+    void saveProjectAs(void);
+    void openProject(void);
 
 protected:
     void closeEvent(QCloseEvent*);
@@ -69,6 +74,7 @@ protected:
 private: // variables
     Ui::MainWindow* ui;
     QString mVideoFileName;
+    QString mProjectFileName;
     MarkableSlider* mFrameSlider;
     VideoWidget* mVideoWidget;
     PictureWidget* mPictureWidget;
@@ -86,9 +92,11 @@ private: // variables
     int mDesiredFrameTime;
     int mPreRenderFrameNumber;
     QVector<int> mMarks;
+    QDomDocument mProject;
 
     static const int MaxRecentFiles = 16;
-    QAction* recentFileActs[MaxRecentFiles];
+    QAction* recentVideoFileActs[MaxRecentFiles];
+    QAction* recentProjectFileActs[MaxRecentFiles];
 
 private: // methods
     void showPictureWidget(void);
@@ -99,7 +107,8 @@ private: // methods
     void disableGuiButtons(void);
     void restoreAppSettings(void);
     void saveAppSettings(void);
-    void updateRecentFileActions(void);
+    void updateRecentVideoFileActions(void);
+    void updateRecentProjectFileActions(void);
 
     static QString ms2hmsz(int ms);
     static QString strippedName(const QString& fullFileName);
