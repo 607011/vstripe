@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->action_OpenVideoFile, SIGNAL(triggered()), this, SLOT(openVideoFile()));
     connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
 
-    mFrameSlider = new MarkableSlider;
+    mFrameSlider = new MarkableSlider(&mProject);
     mFrameSlider->setEnabled(false);
     ui->sliderLayout->insertWidget(0, mFrameSlider);
     connect(mFrameSlider, SIGNAL(valueChanged(int)), this, SLOT(seekToFrame(int)));
@@ -68,14 +68,11 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->action_Save_picture, SIGNAL(triggered()), this, SLOT(savePicture()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(help()));
+    connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(openProject()));
+    connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(saveProject()));
 
-    mStripeWidth = 1;
-    mFrameSkip = 1;
-    mFixedStripe = false;
     mEffectiveFrameNumber = -1;
     mEffectiveFrameTime = -1;
-    markA = -1;
-    markB = -1;
     mPreRenderFrameNumber = 0;
     connect(ui->AButton, SIGNAL(clicked()), this, SLOT(setMarkA()));
     connect(ui->BButton, SIGNAL(clicked()), this, SLOT(setMarkB()));
@@ -129,13 +126,13 @@ void MainWindow::restoreAppSettings(void)
 
 void MainWindow::setCurrentVideoFile(const QString& fileName)
 {
-    mVideoFileName = fileName;
-    setWindowTitle(tr("%1 - %2").arg(MainWindow::AppName).arg(mVideoFileName));
-    setWindowFilePath(mVideoFileName);
+    mProject.setVideoFileName(fileName);
+    setWindowTitle(tr("%1 - %2").arg(MainWindow::AppName).arg(mProject.videoFileName()));
+    setWindowFilePath(mProject.videoFileName());
     QSettings settings(MainWindow::Company, MainWindow::AppName);
     QStringList files = settings.value("recentVideoFileList").toStringList();
-    files.removeAll(mVideoFileName);
-    files.prepend(mVideoFileName);
+    files.removeAll(mProject.videoFileName());
+    files.prepend(mProject.videoFileName());
     while (files.size() > MaxRecentFiles)
         files.removeLast();
     settings.setValue("recentVideoFileList", files);
@@ -173,7 +170,7 @@ void MainWindow::openRecentVideoFile(void)
 {
     QAction* action = qobject_cast<QAction *>(sender());
     if (action) {
-        mVideoFileName = action->data().toString();
+        mProject.setVideoFileName(action->data().toString());
         loadVideoFile();
     }
 }
@@ -219,20 +216,20 @@ void MainWindow::pictureWidthSet(int)
 void MainWindow::startRendering(void)
 {
     ui->renderButton->setText(tr("Stop rendering"));
-    mFixedStripe = mVideoWidget->stripeIsFixed();
+    mProject.setFixed(mVideoWidget->stripeIsFixed());
     mCurrentFrame.fill(qRgb(33, 251, 95));
     int firstFrame;
     qreal nStripes = mVideoWidget->stripeIsVertical()? (qreal)mCurrentFrame.width() : (qreal)mCurrentFrame.height();
-    if (markA >= 0 && markB >= 0 && markB > markA) {
-        mFrameSkip = (qreal)(markB - markA) / nStripes;
-        mFrameSlider->setValue(markA);
-        firstFrame = markA;
+    if (mProject.markA() >= 0 && mProject.markB() >= 0 && mProject.markB() > mProject.markA()) {
+        mFrameSkip = (qreal)(mProject.markB() - mProject.markA()) / nStripes;
+        mFrameSlider->setValue(mProject.markA());
+        firstFrame = mProject.markA();
     }
     else {
         mFrameSkip = 1;
         firstFrame = mEffectiveFrameNumber;
     }
-    mFrameCount = nStripes / mStripeWidth;
+    mFrameCount = nStripes / mProject.stripeWidth();
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
     mPreRenderFrameNumber = mFrameSlider->value();
     mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameSkip);
@@ -281,39 +278,37 @@ void MainWindow::fastBackward(void)
 
 void MainWindow::setMarkA(void)
 {
-    markA = ui->AButton->isChecked()? mEffectiveFrameNumber : -1;
-    mFrameSlider->setA(markA);
+    mProject.setMarkA(ui->AButton->isChecked()? mEffectiveFrameNumber : -1);
+    mFrameSlider->update();
 }
 
 
 void MainWindow::setMarkB(void)
 {
-    markB = ui->AButton->isChecked()? mEffectiveFrameNumber : -1;
-    qSort(mMarks);
-    mFrameSlider->setB(markB);
+    mProject.setMarkB(ui->BButton->isChecked()? mEffectiveFrameNumber : -1);
+    mFrameSlider->update();
 }
 
 
 void MainWindow::setMark(void)
 {
-    mMarks.append(mEffectiveFrameNumber);
-    qSort(mMarks);
-    mFrameSlider->setMarks(mMarks);
+    mProject.appendMark(qMakePair(mEffectiveFrameNumber, QString()));
+    mFrameSlider->update();
 }
 
 
 void MainWindow::clearMarks(void)
 {
-    mMarks.clear();
-    mFrameSlider->setMarks(mMarks);
+    mProject.clearMarks();
+    mFrameSlider->update();
 }
 
 
 void MainWindow::jumpToNextMark(void)
 {
-    for (int i = 0; i < mMarks.count(); ++i)
-        if (mMarks[i] > mEffectiveFrameNumber) {
-            mFrameSlider->setValue(mMarks[i]);
+    for (int i = 0; i < mProject.marks().count(); ++i)
+        if (mProject.marks()[i].first > mEffectiveFrameNumber) {
+            mFrameSlider->setValue(mProject.marks()[i].first);
             break;
         }
 }
@@ -321,9 +316,9 @@ void MainWindow::jumpToNextMark(void)
 
 void MainWindow::jumpToPrevMark(void)
 {
-    for (int i = mMarks.count()-1; i >= 0; --i)
-        if (mMarks[i] < mEffectiveFrameNumber) {
-            mFrameSlider->setValue(mMarks[i]);
+    for (int i = mProject.marks().count()-1; i >= 0; --i)
+        if (mProject.marks()[i].first < mEffectiveFrameNumber) {
+            mFrameSlider->setValue(mProject.marks()[i].first);
             break;
         }
 }
@@ -357,75 +352,18 @@ void MainWindow::hidePictureWidget(void)
 }
 
 
-void MainWindow::openVideoFile(void)
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open video file"));
-    if (fileName.isNull())
-        return;
-    setCurrentVideoFile(fileName);
-    loadVideoFile();
-}
-
-
-void MainWindow::loadVideoFile(void)
-{
-    mVideoReaderThread->setFile(mVideoFileName);
-    mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
-    ui->action_CloseVideoFile->setEnabled(true);
-    mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
-    mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize());
-    mPictureWidget->setPicture(QImage());
-    showPictureWidget();
-    mFrameSlider->setValue(0);
-    QImage img;
-    int lastFrameNumber;
-    ui->infoPlainTextEdit->appendPlainText(QString("%1 (%2)").arg(mVideoReaderThread->decoder()->formatCtx()->iformat->long_name).arg(mVideoReaderThread->decoder()->codec()->long_name));
-    ui->statusBar->showMessage(tr("Seeking last frame ..."));
-    mVideoReaderThread->decoder()->seekMs(mVideoReaderThread->decoder()->getVideoLengthMs());
-    mVideoReaderThread->decoder()->getFrame(img, &lastFrameNumber);
-    ui->infoPlainTextEdit->appendPlainText(tr("Last frame is # %1").arg(lastFrameNumber));
-    ui->infoPlainTextEdit->appendPlainText(tr("Video length is %1 ms").arg(mVideoReaderThread->decoder()->getVideoLengthMs()));
-    mFrameSlider->setMaximum(lastFrameNumber);
-    mFrameSlider->setValue(0);
-    ui->statusBar->showMessage(tr("Ready."), 2000);
-    ui->actionSave_project->setEnabled(true);
-    ui->actionSave_project_as->setEnabled(true);
-    enableGuiButtons();
-}
-
-
-void MainWindow::closeVideoFile(void)
-{
-    disableGuiButtons();
-    ui->frameNumberLineEdit->setText(QString());
-    ui->frameTimeLineEdit->setText(QString());
-    mFrameSlider->setValue(0);
-    mVideoWidget->setFrame(QImage());
-    mPictureWidget->setPicture(QImage());
-    hidePictureWidget();
-    ui->statusBar->showMessage(tr("File closed."), 5000);
-}
-
-
-void MainWindow::savePicture(void)
-{
-    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save picture as ..."), QString(), "*.png, *.jpg");
-    mPictureWidget->picture().save(saveFileName);
-}
-
-
 void MainWindow::frameReady(QImage src, int frameNumber)
 {
     // qDebug() << QString("frameReady(..., %1)").arg(frameNumber, 3, 10, QChar('0'));
-    int srcpos = mFixedStripe? mVideoWidget->stripePos() : frameNumber * mStripeWidth;
-    int dstpos = frameNumber * mStripeWidth;
+    int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : frameNumber * mProject.stripeWidth();
+    int dstpos = frameNumber * mProject.stripeWidth();
     if (mVideoWidget->stripeIsVertical()) {
-        for (int x = 0; x < mStripeWidth; ++x)
+        for (int x = 0; x < mProject.stripeWidth(); ++x)
             for (int y = 0; y < src.height(); ++y)
                 mCurrentFrame.setPixel(dstpos + x, y, src.pixel(srcpos + x, y));
     }
     else {
-        for (int y = 0; y < mStripeWidth; ++y)
+        for (int y = 0; y < mProject.stripeWidth(); ++y)
             for (int x = 0; x < src.width(); ++x)
                 mCurrentFrame.setPixel(x, dstpos + y, src.pixel(x, srcpos + y));
     }
@@ -504,17 +442,24 @@ void MainWindow::help(void)
 
 void MainWindow::openProject(void)
 {
-    QMessageBox::information(this, QString(), tr("<p>Not implemented yet</p>"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"));
+    if (fileName.isNull())
+        return;
+    mProject.load(fileName);
 }
 
 
 void MainWindow::saveProject(void)
 {
-    if (mProjectFileName.isEmpty()) {
+    mProject.save();
+#if 0
+    if (mProject.videoFileName().isEmpty()) {
         saveProjectAs();
         return;
     }
     QMessageBox::information(this, QString(), tr("<p>Not implemented yet</p>"));
+#endif
+    ui->statusBar->showMessage(tr("Project saved."), 5000);
 }
 
 
@@ -523,8 +468,7 @@ void MainWindow::saveProjectAs(void)
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save project file as ..."));
     if (fileName.isNull())
         return;
-    mProjectFileName = fileName;
-
+    mProject.save(fileName);
 }
 
 
@@ -547,4 +491,61 @@ void MainWindow::updateRecentProjectFileActions(void)
 void MainWindow::openRecentProjectFile(void)
 {
     QMessageBox::information(this, QString(), tr("<p>Not implemented yet</p>"));
+}
+
+
+void MainWindow::openVideoFile(void)
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open video file"));
+    if (fileName.isNull())
+        return;
+    setCurrentVideoFile(fileName);
+    loadVideoFile();
+}
+
+
+void MainWindow::loadVideoFile(void)
+{
+    mVideoReaderThread->setFile(mProject.videoFileName());
+    mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
+    ui->action_CloseVideoFile->setEnabled(true);
+    mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
+    mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize());
+    mPictureWidget->setPicture(QImage());
+    showPictureWidget();
+    mFrameSlider->setValue(0);
+    QImage img;
+    int lastFrameNumber;
+    ui->infoPlainTextEdit->appendPlainText(QString("%1 (%2)").arg(mVideoReaderThread->decoder()->formatCtx()->iformat->long_name).arg(mVideoReaderThread->decoder()->codec()->long_name));
+    ui->statusBar->showMessage(tr("Seeking last frame ..."));
+    mVideoReaderThread->decoder()->seekMs(mVideoReaderThread->decoder()->getVideoLengthMs());
+    mVideoReaderThread->decoder()->getFrame(img, &lastFrameNumber);
+    ui->infoPlainTextEdit->appendPlainText(tr("Last frame is # %1").arg(lastFrameNumber));
+    ui->infoPlainTextEdit->appendPlainText(tr("Video length is %1 ms").arg(mVideoReaderThread->decoder()->getVideoLengthMs()));
+    mFrameSlider->setMaximum(lastFrameNumber);
+    mFrameSlider->setValue(0);
+    ui->statusBar->showMessage(tr("Ready."), 2000);
+    ui->actionSave_project->setEnabled(true);
+    ui->actionSave_project_as->setEnabled(true);
+    enableGuiButtons();
+}
+
+
+void MainWindow::closeVideoFile(void)
+{
+    disableGuiButtons();
+    ui->frameNumberLineEdit->setText(QString());
+    ui->frameTimeLineEdit->setText(QString());
+    mFrameSlider->setValue(0);
+    mVideoWidget->setFrame(QImage());
+    mPictureWidget->setPicture(QImage());
+    hidePictureWidget();
+    ui->statusBar->showMessage(tr("File closed."), 5000);
+}
+
+
+void MainWindow::savePicture(void)
+{
+    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save picture as ..."), QString(), "*.png, *.jpg");
+    mPictureWidget->picture().save(saveFileName);
 }

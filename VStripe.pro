@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     videoreaderthread.cpp \
     picturewidget.cpp \
     videodecoder.cpp \
-    markableslider.cpp
+    markableslider.cpp \
+    project.cpp
 
 HEADERS  += mainwindow.h \
     videowidget.h \
@@ -29,6 +30,7 @@ HEADERS  += mainwindow.h \
     picturewidget.h \
     videodecoder.h \
     ffmpeg.h \
-    markableslider.h
+    markableslider.h \
+    project.h
 
 FORMS    += mainwindow.ui

@@ -8,37 +8,16 @@
 #include <QDebug>
 #include "markableslider.h"
 
-MarkableSlider::MarkableSlider(QSlider* parent) : QSlider(Qt::Horizontal, parent), mA(-1), mB(-1)
+MarkableSlider::MarkableSlider(const Project* project, QSlider* parent) : QSlider(Qt::Horizontal, parent), mProject(project)
 {
     setMinimum(0);
 }
 
 
-void MarkableSlider::setA(int a)
-{
-    mA = a;
-    qDebug() << "mark A = " << mA;
-    update();
-}
-
-
-void MarkableSlider::setB(int b)
-{
-    mB = b;
-    qDebug() << "mark B = " << mB;
-    update();
-}
-
-
-void MarkableSlider::setMarks(const QVector<int>& marks)
-{
-    mMarks = marks;
-    update();
-}
-
-
 void MarkableSlider::paintEvent(QPaintEvent* event)
 {
+    Q_ASSERT(mProject != NULL);
+
     QSlider::paintEvent(event);
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
@@ -47,9 +26,9 @@ void MarkableSlider::paintEvent(QPaintEvent* event)
     qreal scale = (qreal)width() / (qreal)maximum();
 
     // draw A marker
-    if (mA >= 0) {
+    if (mProject->markA() >= 0) {
         QPainterPath pathA;
-        qreal xa = mA * scale;
+        qreal xa = mProject->markA() * scale;
         pathA.moveTo(xa, 0);
         pathA.lineTo(xa+height()/2, 0);
         pathA.lineTo(xa, height()/2);
@@ -61,9 +40,9 @@ void MarkableSlider::paintEvent(QPaintEvent* event)
     }
 
     // draw B marker
-    if (mB >= 0) {
+    if (mProject->markB() >= 0) {
         QPainterPath pathB;
-        qreal xb = mB * scale;
+        qreal xb = mProject->markB() * scale;
         pathB.moveTo(xb, 0);
         pathB.lineTo(xb-height()/2, 0);
         pathB.lineTo(xb, height()/2);
@@ -74,10 +53,10 @@ void MarkableSlider::paintEvent(QPaintEvent* event)
         painter.drawPath(pathB);
     }
 
-    if (mMarks.count() > 0) {
+    if (mProject->marks().count() > 0) {
         QPainterPath path;
-        foreach (int i, mMarks) {
-            qreal x = i * scale;
+        foreach (Project::mark_type i, mProject->marks()) {
+            qreal x = i.first * scale;
             path.moveTo(x-height()/4, 0);
             path.lineTo(x+height()/4, 0);
             path.lineTo(x-height()/4, height());

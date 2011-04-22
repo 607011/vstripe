@@ -9,12 +9,13 @@
 #include <QMainWindow>
 #include <QString>
 #include <QVector>
-#include <QtXml/QDomDocument>
+#include <QPair>
 
 #include "videoreaderthread.h"
 #include "videowidget.h"
 #include "picturewidget.h"
 #include "markableslider.h"
+#include "project.h"
 
 namespace Ui {
     class MainWindow;
@@ -73,17 +74,11 @@ protected:
 
 private: // variables
     Ui::MainWindow* ui;
-    QString mVideoFileName;
-    QString mProjectFileName;
     MarkableSlider* mFrameSlider;
     VideoWidget* mVideoWidget;
     PictureWidget* mPictureWidget;
     VideoReaderThread* mVideoReaderThread;
-    int markA;
-    int markB;
-    int mStripeWidth; // Streifen dieser Breite (Pixel) werden von jedem eingelesenen Frame behalten
     qreal mFrameSkip; // so viel Frames werden pro Frame beim Einlesen übersprungen
-    bool mFixedStripe; // true: der Streifen bleibt fest an der gewählten Position; false: der Streifen bewegt sich mit jedem Frame um mStripeWidth Pixel weiter
     int mFrameCount;
     QImage mCurrentFrame;
     int mEffectiveFrameNumber;
@@ -91,8 +86,8 @@ private: // variables
     int mDesiredFrameNumber;
     int mDesiredFrameTime;
     int mPreRenderFrameNumber;
-    QVector<int> mMarks;
-    QDomDocument mProject;
+
+    Project mProject;
 
     static const int MaxRecentFiles = 16;
     QAction* recentVideoFileActs[MaxRecentFiles];

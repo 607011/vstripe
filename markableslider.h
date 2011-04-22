@@ -8,18 +8,16 @@
 
 #include <QSlider>
 #include <QVector>
+#include "project.h"
 
 class MarkableSlider : public QSlider
 {
+
     Q_OBJECT
 public:
-    explicit MarkableSlider(QSlider* parent = NULL);
+    explicit MarkableSlider(const Project* project, QSlider* parent = NULL);
     QSize minimumSizeHint(void) const { return QSize(200, 16); }
     QSize sizeHint(void) const { return QSize(384, 16); }
-
-    void setA(int);
-    void setB(int);
-    void setMarks(const QVector<int>&);
 
 protected:
     void paintEvent(QPaintEvent*);
@@ -29,9 +27,7 @@ signals:
 public slots:
 
 private:
-    int mA;
-    int mB;
-    QVector<int> mMarks;
+    const Project* mProject;
 
 };
 
