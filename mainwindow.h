@@ -68,6 +68,7 @@ public slots:
     void saveProject(void);
     void saveProjectAs(void);
     void openProject(void);
+    void openProject(const QString&);
 
 protected:
     void closeEvent(QCloseEvent*);
@@ -110,3 +111,4 @@ private: // methods
 };
 
 #endif // MAINWINDOW_H
+

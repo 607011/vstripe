@@ -39,7 +39,7 @@ VideoDecoder::VideoDecoder(QString file)
 
 VideoDecoder::~VideoDecoder()
 {
-    close();
+    closeFile();
 }
 
 
@@ -56,7 +56,7 @@ void VideoDecoder::initVars()
 }
 
 
-void VideoDecoder::close()
+void VideoDecoder::closeFile()
 {
     if (!isOk())
         return;
@@ -87,7 +87,7 @@ bool VideoDecoder::initCodec()
 
 bool VideoDecoder::openFile(const char* filename)
 {
-    close();
+    closeFile();
     mLastLastFrameTime = INT_MIN; // Last last must be small to handle the seek well
     mLastFrameTime = 0;
     mLastLastFrameNumber = INT_MIN;
@@ -134,10 +134,9 @@ bool VideoDecoder::openFile(const char* filename)
     else {
         mDefaultSkip = 1;
     }
-    qDebug() << "mDefaultSkip = " << mDefaultSkip;
     mFrame = ffmpeg::avcodec_alloc_frame();
     mFrameRGB = ffmpeg::avcodec_alloc_frame();
-    if (mFrameRGB == NULL)
+    if (mFrameRGB == NULL || mFrame == NULL)
         return false;
     mByteCount = ffmpeg::avpicture_get_size(ffmpeg::PIX_FMT_RGB24, mCodecCtx->width, mCodecCtx->height);
     mBuf = new quint8[mByteCount];

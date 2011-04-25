@@ -13,7 +13,8 @@ INCLUDEPATH += ../ffmpeg-32-bit-static/include \
 
 DEFINES += __STDC_CONSTANT_MACROS
 
-LIBS += -LC:/Workspace/ffmpeg-32-bit-static/lib -lavcodec.dll -lavformat.dll -lavutil.dll -lswscale.dll
+win32:LIBS += -L../ffmpeg-32-bit-static/lib -lavcodec.dll -lavformat.dll -lavutil.dll -lswscale.dll
+unix:LIBS += -L../ffmpeg-32-bit-static/lib -lavcodec -lavformat -lavutil -lswscale
 
 SOURCES += main.cpp\
     mainwindow.cpp \

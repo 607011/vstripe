@@ -21,7 +21,7 @@ public:
     explicit VideoDecoder(QString file);
     ~VideoDecoder();
     bool openFile(const char* file);
-    void close(void);
+    void closeFile(void);
     bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0) const;
     bool seekNextFrame(int skip = 0);
     bool seekMs(int);

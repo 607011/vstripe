@@ -119,9 +119,11 @@ void MainWindow::restoreAppSettings(void)
     restoreState(settings.value("MainWindow/windowState").toByteArray());
     mPictureWidget->restoreGeometry(settings.value("PictureWidget/geometry").toByteArray());
     updateRecentVideoFileActions();
+    updateRecentProjectFileActions();
     for (int i = 0; i < MaxRecentFiles; ++i)
         ui->menuOpen_recent_video->addAction(recentVideoFileActs[i]);
-}
+    for (int i = 0; i < MaxRecentFiles; ++i)
+        ui->menuOpen_recent_project->addAction(recentProjectFileActs[i]);}
 
 
 void MainWindow::setCurrentVideoFile(const QString& fileName)
@@ -440,25 +442,46 @@ void MainWindow::help(void)
 }
 
 
+void MainWindow::openRecentProjectFile(void)
+{
+    QAction* action = qobject_cast<QAction *>(sender());
+    if (action)
+        openProject(action->data().toString());
+}
+
+
+void MainWindow::openProject(const QString& fileName)
+{
+    QSettings settings(MainWindow::Company, MainWindow::AppName);
+    QStringList files = settings.value("recentProjectFileList").toStringList();
+    files.removeAll(fileName);
+    files.prepend(fileName);
+    while (files.size() > MaxRecentFiles)
+        files.removeLast();
+    settings.setValue("recentProjectFileList", files);
+    updateRecentProjectFileActions();
+    mProject.load(fileName);
+    if (!mProject.videoFileName().isNull())
+        loadVideoFile();
+}
+
+
 void MainWindow::openProject(void)
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open project file"));
     if (fileName.isNull())
         return;
-    mProject.load(fileName);
+    openProject(fileName);
 }
 
 
 void MainWindow::saveProject(void)
 {
-    mProject.save();
-#if 0
     if (mProject.videoFileName().isEmpty()) {
         saveProjectAs();
         return;
     }
-    QMessageBox::information(this, QString(), tr("<p>Not implemented yet</p>"));
-#endif
+    mProject.save();
     ui->statusBar->showMessage(tr("Project saved."), 5000);
 }
 
@@ -469,6 +492,7 @@ void MainWindow::saveProjectAs(void)
     if (fileName.isNull())
         return;
     mProject.save(fileName);
+    ui->statusBar->showMessage(tr("Project saved."), 5000);
 }
 
 
@@ -485,12 +509,8 @@ void MainWindow::updateRecentProjectFileActions(void)
     }
     for (int j = numRecentFiles; j < MaxRecentFiles; ++j)
         recentProjectFileActs[j]->setVisible(false);
-}
-
-
-void MainWindow::openRecentProjectFile(void)
-{
-    QMessageBox::information(this, QString(), tr("<p>Not implemented yet</p>"));
+    if (numRecentFiles > 0)
+        ui->menuOpen_recent_project->setEnabled(true);
 }
 
 

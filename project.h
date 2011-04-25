@@ -22,8 +22,9 @@ public:
 
     explicit Project(QObject* parent = NULL);
 
-    void readMarks(void);
-    void readInput(void);
+    int readMarkTag(void);
+    void readMarksTag(void);
+    void readInputTag(void);
     bool read(void);
 
     bool load(const QString&);

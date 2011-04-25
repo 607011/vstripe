@@ -12,32 +12,61 @@ Project::Project(QObject *parent) :
 }
 
 
-void Project::readMarks(void)
+int Project::readMarkTag(void)
 {
-    //Q_ASSERT(mXml.isStartElement() && mXml.name() == "marks");
+    Q_ASSERT(mXml.isStartElement() && mXml.name() == "mark");
 
-    qDebug() << "readMarks()";
+    qDebug() << "readMarkTag()";
     while (mXml.readNextStartElement()) {
         qDebug() << mXml.name();
+        if (mXml.name() == "frame")
+            return mXml.readElementText().toInt();
+        else
+            mXml.skipCurrentElement();
+    }
+    return -1;
+}
+
+
+void Project::readMarksTag(void)
+{
+    Q_ASSERT(mXml.isStartElement() && mXml.name() == "marks");
+
+    qDebug() << "readMarksTag()";
+    while (mXml.readNextStartElement()) {
+        if (mXml.error())
+            return;
+        qDebug() << mXml.name();
         if (mXml.name() == "mark") {
-            if (mXml.attributes().value("id") == "a")
-                mA = mXml.readElementText().toInt();
-            else if (mXml.attributes().value("id") == "b")
-                mB = mXml.readElementText().toInt();
-            else
-                mMarks.append(qMakePair(mXml.readElementText().toInt(), QString()));
+            qDebug() << "mark found.";
+            qDebug() << mXml.attributes().value("id");
+            if (mXml.attributes().value("id") == "a") {
+                mA = readMarkTag();
+                qDebug() << "mA = " << mA;
+            }
+            else if (mXml.attributes().value("id") == "b") {
+                mB = readMarkTag();
+                qDebug() << "mB = " << mB;
+            }
+            else {
+                const int mark = readMarkTag();
+                mMarks.append(qMakePair(mark, QString()));
+                qDebug() << "mark = " << mark;
+            }
         }
         else
             mXml.skipCurrentElement();
     }
+    if (mMarks.size() > 0)
+        qSort(mMarks);
 }
 
 
-void Project::readInput(void)
+void Project::readInputTag(void)
 {
-    //Q_ASSERT(mXml.isStartElement() && mXml.name() == "input");
+    Q_ASSERT(mXml.isStartElement() && mXml.name() == "input");
 
-    qDebug() << "readInput()";
+    qDebug() << "readInputTag()";
     while (mXml.readNextStartElement()) {
         if (mXml.name() == "file")
             mVideoFileName = mXml.readElementText();
@@ -55,9 +84,9 @@ bool Project::read(void)
     while (mXml.readNextStartElement()) {
         qDebug() << mXml.name();
         if (mXml.name() == "input")
-            readInput();
+            readInputTag();
         else if (mXml.name() == "marks")
-            readMarks();
+            readMarksTag();
         else
             mXml.skipCurrentElement();
     }
@@ -95,7 +124,6 @@ bool Project::load(const QString& fileName)
 void Project::save(void)
 {
     mFile.close();
-    mFileName = "C:/Workspace/VStripe/demo.xml";
     mFile.setFileName(mFileName);
     bool rc = mFile.open(QIODevice::WriteOnly);
     if (!rc)
@@ -106,7 +134,7 @@ void Project::save(void)
     mXmlOut.writeStartDocument();
     mXmlOut.writeStartElement("vstripe");
     mXmlOut.writeStartElement("input");
-    mXmlOut.writeTextElement("file", mFileName);
+    mXmlOut.writeTextElement("file", mVideoFileName);
     mXmlOut.writeEndElement();
 
     if (mA > 0 || mB > 0 || mMarks.size() > 0) {
