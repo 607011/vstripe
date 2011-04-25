@@ -140,7 +140,7 @@ bool VideoDecoder::openFile(const char* filename)
     if (mFrameRGB == NULL)
         return false;
     mByteCount = ffmpeg::avpicture_get_size(ffmpeg::PIX_FMT_RGB24, mCodecCtx->width, mCodecCtx->height);
-    mBuf = new uint8_t[mByteCount];
+    mBuf = new quint8[mByteCount];
     avpicture_fill((ffmpeg::AVPicture *)mFrameRGB, mBuf, ffmpeg::PIX_FMT_RGB24, mCodecCtx->width, mCodecCtx->height);
     mOk = true;
     return true;
@@ -266,7 +266,7 @@ bool VideoDecoder::getFrame(QImage& img, int* effectiveframenumber, int* effecti
 }
 
 
-int VideoDecoder::getVideoLengthMs()
+int VideoDecoder::getVideoLengthMs(void)
 {
     if (!isOk())
         return -1;

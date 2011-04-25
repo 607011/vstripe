@@ -3,13 +3,13 @@ QT       += core gui xml
 TARGET = VStripe
 TEMPLATE = app
 
-INCLUDEPATH += C:/Workspace/ffmpeg-32-bit-static/include \
-    C:/Workspace/ffmpeg-32-bit-static/include/libavcodec \
-    C:/Workspace/ffmpeg-32-bit-static/include/libavformat \
-    C:/Workspace/ffmpeg-32-bit-static/include/libavutil \
-    C:/Workspace/ffmpeg-32-bit-static/include/libavdevice \
-    C:/Workspace/ffmpeg-32-bit-static/include/libavfilter \
-    C:/Workspace/ffmpeg-32-bit-static/include/libswscale
+INCLUDEPATH += ../ffmpeg-32-bit-static/include \
+    ../ffmpeg-32-bit-static/include/libavcodec \
+    ../ffmpeg-32-bit-static/include/libavformat \
+    ../ffmpeg-32-bit-static/include/libavutil \
+    ../ffmpeg-32-bit-static/include/libavdevice \
+    ../ffmpeg-32-bit-static/include/libavfilter \
+    ../ffmpeg-32-bit-static/include/libswscale
 
 DEFINES += __STDC_CONSTANT_MACROS
 

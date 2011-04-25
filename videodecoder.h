@@ -24,8 +24,8 @@ public:
     void close(void);
     bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0) const;
     bool seekNextFrame(int skip = 0);
-    bool seekMs(int ts);
-    bool seekFrame(int64_t frame);
+    bool seekMs(int);
+    bool seekFrame(qint64);
     int getVideoLengthMs(void);
     int getDefaultSkip(void) const { return mDefaultSkip; }
     inline bool isOk(void) const {return mOk; }
@@ -44,7 +44,7 @@ private: // variables
     ffmpeg::AVFrame* mFrameRGB;
     ffmpeg::AVPacket mPacket;
     ffmpeg::SwsContext* mImgConvCtx;
-    uint8_t* mBuf;
+    quint8* mBuf;
     int mByteCount;
 
     // State infos for the wrapper
