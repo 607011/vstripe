@@ -101,7 +101,7 @@ bool VideoDecoder::openFile(const char* filename)
         return false; // Couldn't find stream information
     mVideoStream = -1;
     for (unsigned i = 0; i < mFormatCtx->nb_streams; ++i) {
-        if (mFormatCtx->streams[i]->codec->codec_type == ffmpeg::CODEC_TYPE_VIDEO) {
+        if (mFormatCtx->streams[i]->codec->codec_type == ffmpeg::AVMEDIA_TYPE_VIDEO) {
             mVideoStream = i;
             break;
         }
