@@ -25,10 +25,10 @@ public:
     int readMarkTag(void);
     void readMarksTag(void);
     void readInputTag(void);
-    bool read(void);
+    void read(void);
 
-    bool load(const QString&);
-    bool load(void);
+    void load(const QString&);
+    void load(void);
 
     void write(void);
 

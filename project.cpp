@@ -17,12 +17,18 @@ int Project::readMarkTag(void)
     Q_ASSERT(mXml.isStartElement() && mXml.name() == "mark");
 
     qDebug() << "readMarkTag()";
-    while (mXml.readNextStartElement()) {
+    while (!(mXml.tokenType() == QXmlStreamReader::EndElement && mXml.name() == "mark")) {
         qDebug() << mXml.name();
-        if (mXml.name() == "frame")
-            return mXml.readElementText().toInt();
-        else
-            mXml.skipCurrentElement();
+        if (mXml.tokenType() == QXmlStreamReader::StartElement) {
+            if (mXml.name() == "frame")
+                return mXml.readElementText().toInt();
+            else if (mXml.name() == "name") {
+                qDebug() << mXml.name();
+                continue;
+            }
+            else continue;
+        }
+        mXml.readNext();
     }
     return -1;
 }
@@ -33,29 +39,31 @@ void Project::readMarksTag(void)
     Q_ASSERT(mXml.isStartElement() && mXml.name() == "marks");
 
     qDebug() << "readMarksTag()";
-    while (mXml.readNextStartElement()) {
-        if (mXml.error())
-            return;
-        qDebug() << mXml.name();
-        if (mXml.name() == "mark") {
-            qDebug() << "mark found.";
-            qDebug() << mXml.attributes().value("id");
-            if (mXml.attributes().value("id") == "a") {
-                mA = readMarkTag();
-                qDebug() << "mA = " << mA;
-            }
-            else if (mXml.attributes().value("id") == "b") {
-                mB = readMarkTag();
-                qDebug() << "mB = " << mB;
-            }
-            else {
-                const int mark = readMarkTag();
-                mMarks.append(qMakePair(mark, QString()));
-                qDebug() << "mark = " << mark;
+    while (!(mXml.tokenType() == QXmlStreamReader::EndElement && mXml.name() == "marks")) {
+        if (mXml.tokenType() == QXmlStreamReader::StartElement) {
+            if (mXml.name() == "mark") {
+                qDebug() << "mark found.";
+                if (mXml.attributes().value("id") == "a") {
+                    const int mark = readMarkTag();
+                    if (mark >= 0)
+                        mA = mark;
+                    qDebug() << "mA = " << mA;
+                }
+                else if (mXml.attributes().value("id") == "b") {
+                    const int mark = readMarkTag();
+                    if (mark >= 0)
+                        mB = mark;
+                    qDebug() << "mB = " << mB;
+                }
+                else {
+                    // TODO
+                    const int mark = readMarkTag();
+                    if (mark >= 0)
+                        mMarks.append(qMakePair(mark, QString()));
+                }
             }
         }
-        else
-            mXml.skipCurrentElement();
+        mXml.readNext();
     }
     if (mMarks.size() > 0)
         qSort(mMarks);
@@ -70,54 +78,46 @@ void Project::readInputTag(void)
     while (mXml.readNextStartElement()) {
         if (mXml.name() == "file")
             mVideoFileName = mXml.readElementText();
-        else
-            mXml.skipCurrentElement();
+        else mXml.skipCurrentElement();
     }
 }
 
 
-bool Project::read(void)
+void Project::read(void)
 {
-    Q_ASSERT(mXml.isStartElement() && mXml.name() == "vstripe");
-
     mDirty = false;
-    while (mXml.readNextStartElement()) {
-        qDebug() << mXml.name();
+    while (!mXml.atEnd() && !mXml.hasError() && mXml.readNextStartElement()) {
         if (mXml.name() == "input")
             readInputTag();
         else if (mXml.name() == "marks")
             readMarksTag();
-        else
-            mXml.skipCurrentElement();
+        else mXml.skipCurrentElement();
     }
-    return true;
+    mXml.clear();
 }
 
 
-bool Project::load(void)
+void Project::load(void)
 {
     mFile.close();
     mFile.setFileName(mFileName);
     bool rc = mFile.open(QIODevice::ReadOnly);
     if (!rc)
-        return false;
+        return;
     mXml.setDevice(&mFile);
-    if (mXml.readNextStartElement()) {
-        qDebug() << mXml.name();
-        if (mXml.name() != "vstripe") {
-            mXml.raiseError(QObject::tr("The file is not an VStripe version 0.1 project file."));
-            return false;
-        }
-        return read();
+    if (!mXml.atEnd() && !mXml.hasError() && mXml.readNextStartElement()) {
+        if (mXml.name() == "vstripe")
+            read();
+        else
+            mXml.raiseError(QObject::tr("The file is not an VStripe project file."));
     }
-    return !mXml.error();
 }
 
 
-bool Project::load(const QString& fileName)
+void Project::load(const QString& fileName)
 {
     mFileName = fileName;
-    return load();
+    load();
 }
 
 

@@ -39,7 +39,7 @@ protected:
 
 private:
     VideoDecoder mDecoder;
-    bool mAbort;
+    volatile bool mAbort;
     int mMaxFrameCount;
     int mFrameCount;
     qreal mFrameNumber;
