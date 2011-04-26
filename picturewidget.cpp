@@ -7,13 +7,14 @@
 #include "picturewidget.h"
 
 
+const QString PictureWidget::WinTitle = QObject::tr("VStripe - Picture Preview");
+
+
 PictureWidget::PictureWidget(QWidget* parent) : QWidget(parent)
 {
     setStyleSheet("background: #444");
 }
 
-
-const QString PictureWidget::winTitle = QObject::tr("VStripe - Picture Preview");
 
 void PictureWidget::setPicture(const QImage& img)
 {
@@ -25,7 +26,7 @@ void PictureWidget::setPicture(const QImage& img)
 void PictureWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
-    painter.drawImage(0, 0, mImage);
+    painter.drawImage(QPoint(0, 0), mImage);
 }
 
 
@@ -43,5 +44,5 @@ void PictureWidget::closeEvent(QCloseEvent*)
 
 void PictureWidget::resizeEvent(QResizeEvent*)
 {
-    setWindowTitle(QString("%1 - %2x%3").arg(winTitle).arg(width()).arg(height()));
+    setWindowTitle(QString("%1 - %2x%3").arg(WinTitle).arg(width()).arg(height()));
 }

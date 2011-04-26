@@ -35,3 +35,6 @@ HEADERS  += mainwindow.h \
     project.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    vstripe.qrc

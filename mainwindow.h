@@ -26,11 +26,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget* parent = NULL);
+    explicit MainWindow(int argc, char* argv[], QWidget* parent = NULL);
     ~MainWindow();
 
-    QSize minimumSizeHint(void) const { return QSize(720, 576); }
-    QSize sizeHint(void) const { return QSize(1280, 720); }
+    virtual QSize minimumSizeHint(void) const { return QSize(720, 576); }
+    virtual QSize sizeHint(void) const { return QSize(1280, 720); }
 
     static const QString Company;
     static const QString AppName;
@@ -54,8 +54,8 @@ public slots:
     void setMarkB(void);
     void setMark(void);
     void clearMarks(void);
-    void jumpToNextMark(void);
     void jumpToPrevMark(void);
+    void jumpToNextMark(void);
     void savePicture(void);
     void showPercentReady(int);
     void frameReady(QImage, int);
@@ -64,11 +64,11 @@ public slots:
     void about(void);
     void help(void);
     void pictureWidthSet(int);
-    void setCurrentVideoFile(const QString&);
     void saveProject(void);
     void saveProjectAs(void);
     void openProject(void);
     void openProject(const QString&);
+    void fileDropped(const QString&);
 
 protected:
     void closeEvent(QCloseEvent*);
@@ -105,8 +105,10 @@ private: // methods
     void saveAppSettings(void);
     void updateRecentVideoFileActions(void);
     void updateRecentProjectFileActions(void);
+    void setCurrentVideoFile(const QString&);
+    void setCurrentProjectFile(const QString&);
 
-    static QString ms2hmsz(int ms);
+    static QString ms2hmsz(int ms, bool showMs = true);
     static QString strippedName(const QString& fullFileName);
 };
 

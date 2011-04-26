@@ -19,13 +19,13 @@ const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
     mVideoWidget = new VideoWidget;
     ui->verticalLayout->insertWidget(0, mVideoWidget);
-    connect(mVideoWidget, SIGNAL(fileDropped(QString)), this, SLOT(setCurrentVideoFile(QString)));
+    connect(mVideoWidget, SIGNAL(fileDropped(QString)), this, SLOT(fileDropped(QString)));
 
     ui->AButton->setStyleSheet("background: green");
     ui->BButton->setStyleSheet("background: red");
@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(openProject()));
     connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(saveProject()));
 
-    mEffectiveFrameNumber = -1;
+    mEffectiveFrameNumber = Project::INVALID_FRAME;
     mEffectiveFrameTime = -1;
     mPreRenderFrameNumber = 0;
     connect(ui->AButton, SIGNAL(clicked()), this, SLOT(setMarkA()));
@@ -83,6 +83,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     restoreAppSettings();
     ui->statusBar->showMessage(tr("Ready."), 3000);
+
+    if (argc > 1)
+        fileDropped(argv[1]);
 }
 
 
@@ -123,7 +126,8 @@ void MainWindow::restoreAppSettings(void)
     for (int i = 0; i < MaxRecentFiles; ++i)
         ui->menuOpen_recent_video->addAction(recentVideoFileActs[i]);
     for (int i = 0; i < MaxRecentFiles; ++i)
-        ui->menuOpen_recent_project->addAction(recentProjectFileActs[i]);}
+        ui->menuOpen_recent_project->addAction(recentProjectFileActs[i]);
+}
 
 
 void MainWindow::setCurrentVideoFile(const QString& fileName)
@@ -141,6 +145,32 @@ void MainWindow::setCurrentVideoFile(const QString& fileName)
     updateRecentVideoFileActions();
     if (sender() == mVideoWidget)
         loadVideoFile();
+}
+
+
+void MainWindow::setCurrentProjectFile(const QString& fileName)
+{
+    mProject.setFileName(fileName);
+    setWindowFilePath(mProject.fileName());
+    QSettings settings(MainWindow::Company, MainWindow::AppName);
+    QStringList files = settings.value("recentProjectFileList").toStringList();
+    files.removeAll(mProject.fileName());
+    files.prepend(mProject.fileName());
+    while (files.size() > MaxRecentFiles)
+        files.removeLast();
+    settings.setValue("recentProjectFileList", files);
+    updateRecentProjectFileActions();
+}
+
+
+void MainWindow::fileDropped(const QString& fileName)
+{
+    Q_ASSERT(!fileName.isNull());
+
+    if (fileName.endsWith(".xml") || fileName.endsWith(".vstripe"))
+        openProject(fileName);
+    else
+        setCurrentVideoFile(fileName);
 }
 
 
@@ -178,14 +208,14 @@ void MainWindow::openRecentVideoFile(void)
 }
 
 
-QString MainWindow::ms2hmsz(int ms)
+QString MainWindow::ms2hmsz(int ms, bool showMs)
 {
     int h, m, s, z;
     h = ms / 1000 / 60 / 60;
     m = (ms - h * 1000 * 60 * 60) / 1000 / 60;
     s = (ms - h * 1000 * 60 * 60 - m * 1000 * 60) / 1000;
     z = (ms - h * 1000 * 60 * 60 - m * 1000 * 60 - s * 1000);
-    return QTime(h, m, s, z).toString("HH:mm:ss.z");
+    return showMs? QTime(h, m, s, z).toString("HH:mm:ss.z") : QTime(h, m, s).toString("HH:mm:ss");
 }
 
 
@@ -280,21 +310,21 @@ void MainWindow::fastBackward(void)
 
 void MainWindow::setMarkA(void)
 {
-    mProject.setMarkA(ui->AButton->isChecked()? mEffectiveFrameNumber : -1);
+    mProject.setMarkA(ui->AButton->isChecked()? mEffectiveFrameNumber : Project::INVALID_FRAME);
     mFrameSlider->update();
 }
 
 
 void MainWindow::setMarkB(void)
 {
-    mProject.setMarkB(ui->BButton->isChecked()? mEffectiveFrameNumber : -1);
+    mProject.setMarkB(ui->BButton->isChecked()? mEffectiveFrameNumber : Project::INVALID_FRAME);
     mFrameSlider->update();
 }
 
 
 void MainWindow::setMark(void)
 {
-    mProject.appendMark(qMakePair(mEffectiveFrameNumber, QString()));
+    mProject.appendMark(Project::mark_type(mEffectiveFrameNumber, QString()));
     mFrameSlider->update();
 }
 
@@ -306,21 +336,21 @@ void MainWindow::clearMarks(void)
 }
 
 
-void MainWindow::jumpToNextMark(void)
+void MainWindow::jumpToPrevMark(void)
 {
-    for (int i = 0; i < mProject.marks().count(); ++i)
-        if (mProject.marks()[i].first > mEffectiveFrameNumber) {
-            mFrameSlider->setValue(mProject.marks()[i].first);
+    for (int i = mProject.marks().count()-1; i >= 0; --i)
+        if (mProject.marks()[i].frame < mEffectiveFrameNumber) {
+            mFrameSlider->setValue(mProject.marks()[i].frame);
             break;
         }
 }
 
 
-void MainWindow::jumpToPrevMark(void)
+void MainWindow::jumpToNextMark(void)
 {
-    for (int i = mProject.marks().count()-1; i >= 0; --i)
-        if (mProject.marks()[i].first < mEffectiveFrameNumber) {
-            mFrameSlider->setValue(mProject.marks()[i].first);
+    for (int i = 0; i < mProject.marks().count(); ++i)
+        if (mProject.marks()[i].frame > mEffectiveFrameNumber) {
+            mFrameSlider->setValue(mProject.marks()[i].frame);
             break;
         }
 }
@@ -356,7 +386,6 @@ void MainWindow::hidePictureWidget(void)
 
 void MainWindow::frameReady(QImage src, int frameNumber)
 {
-    // qDebug() << QString("frameReady(..., %1)").arg(frameNumber, 3, 10, QChar('0'));
     int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : frameNumber * mProject.stripeWidth();
     int dstpos = frameNumber * mProject.stripeWidth();
     if (mVideoWidget->stripeIsVertical()) {
@@ -452,14 +481,7 @@ void MainWindow::openRecentProjectFile(void)
 
 void MainWindow::openProject(const QString& fileName)
 {
-    QSettings settings(MainWindow::Company, MainWindow::AppName);
-    QStringList files = settings.value("recentProjectFileList").toStringList();
-    files.removeAll(fileName);
-    files.prepend(fileName);
-    while (files.size() > MaxRecentFiles)
-        files.removeLast();
-    settings.setValue("recentProjectFileList", files);
-    updateRecentProjectFileActions();
+    setCurrentProjectFile(fileName);
     mProject.load(fileName);
     if (!mProject.videoFileName().isNull())
         loadVideoFile();
@@ -477,7 +499,7 @@ void MainWindow::openProject(void)
 
 void MainWindow::saveProject(void)
 {
-    if (mProject.videoFileName().isEmpty()) {
+    if (mProject.fileName().isEmpty()) {
         saveProjectAs();
         return;
     }
@@ -540,8 +562,8 @@ void MainWindow::loadVideoFile(void)
     ui->statusBar->showMessage(tr("Seeking last frame ..."));
     mVideoReaderThread->decoder()->seekMs(mVideoReaderThread->decoder()->getVideoLengthMs());
     mVideoReaderThread->decoder()->getFrame(img, &lastFrameNumber);
-    ui->infoPlainTextEdit->appendPlainText(tr("Last frame is # %1").arg(lastFrameNumber));
-    ui->infoPlainTextEdit->appendPlainText(tr("Video length is %1 ms").arg(mVideoReaderThread->decoder()->getVideoLengthMs()));
+    ui->infoPlainTextEdit->appendPlainText(tr("Last frame # %1").arg(lastFrameNumber));
+    ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mVideoReaderThread->decoder()->getVideoLengthMs(), false)));
     mFrameSlider->setMaximum(lastFrameNumber);
     mFrameSlider->setValue(0);
     ui->statusBar->showMessage(tr("Ready."), 2000);

@@ -3,34 +3,48 @@
  * $Id$
  */
 
-#include <QDebug>
+#include <QXmlStreamWriter>
 #include "project.h"
 
-Project::Project(QObject *parent) :
-    QObject(parent), mA(-1), mB(-1), mStripeWidth(1), mFixedStripe(false), mVerticalStripe(true), mDirty(false)
+
+bool markLess(const Project::mark_type& m1, const Project::mark_type& m2)
+{
+    return m1.frame < m2.frame;
+}
+
+
+Project::Project(QObject* parent) :
+    QObject(parent), mStripeWidth(1), mFixedStripe(false), mVerticalStripe(true), mDirty(false)
 {
 }
 
 
-int Project::readMarkTag(void)
+Project::mark_type Project::readMarkTag(void)
 {
     Q_ASSERT(mXml.isStartElement() && mXml.name() == "mark");
 
-    qDebug() << "readMarkTag()";
+    int frame = Project::INVALID_FRAME;
+    QString name;
+    int id;
     while (!(mXml.tokenType() == QXmlStreamReader::EndElement && mXml.name() == "mark")) {
-        qDebug() << mXml.name();
         if (mXml.tokenType() == QXmlStreamReader::StartElement) {
-            if (mXml.name() == "frame")
-                return mXml.readElementText().toInt();
-            else if (mXml.name() == "name") {
-                qDebug() << mXml.name();
-                continue;
+            if (mXml.name() == "mark") {
+                QString _id = mXml.attributes().value("id").toString();
+                if (_id == "a")
+                    id = Project::ID_A;
+                else if (_id == "b")
+                    id = Project::ID_B;
+                else
+                    id = Project::ID_NONE;
             }
-            else continue;
+            else if (mXml.name() == "frame")
+                frame = mXml.readElementText().toInt();
+            else if (mXml.name() == "name")
+                name = mXml.readElementText();
         }
         mXml.readNext();
     }
-    return -1;
+    return Project::mark_type(id, frame, name);
 }
 
 
@@ -38,35 +52,18 @@ void Project::readMarksTag(void)
 {
     Q_ASSERT(mXml.isStartElement() && mXml.name() == "marks");
 
-    qDebug() << "readMarksTag()";
     while (!(mXml.tokenType() == QXmlStreamReader::EndElement && mXml.name() == "marks")) {
         if (mXml.tokenType() == QXmlStreamReader::StartElement) {
             if (mXml.name() == "mark") {
-                qDebug() << "mark found.";
-                if (mXml.attributes().value("id") == "a") {
-                    const int mark = readMarkTag();
-                    if (mark >= 0)
-                        mA = mark;
-                    qDebug() << "mA = " << mA;
-                }
-                else if (mXml.attributes().value("id") == "b") {
-                    const int mark = readMarkTag();
-                    if (mark >= 0)
-                        mB = mark;
-                    qDebug() << "mB = " << mB;
-                }
-                else {
-                    // TODO
-                    const int mark = readMarkTag();
-                    if (mark >= 0)
-                        mMarks.append(qMakePair(mark, QString()));
-                }
+                mark_type mark = readMarkTag();
+                if (mark.frame >= 0)
+                    mMarks.append(mark);
             }
         }
         mXml.readNext();
     }
     if (mMarks.size() > 0)
-        qSort(mMarks);
+        qSort(mMarks.begin(), mMarks.end(), markLess);
 }
 
 
@@ -74,7 +71,6 @@ void Project::readInputTag(void)
 {
     Q_ASSERT(mXml.isStartElement() && mXml.name() == "input");
 
-    qDebug() << "readInputTag()";
     while (mXml.readNextStartElement()) {
         if (mXml.name() == "file")
             mVideoFileName = mXml.readElementText();
@@ -85,7 +81,8 @@ void Project::readInputTag(void)
 
 void Project::read(void)
 {
-    mDirty = false;
+    Q_ASSERT(mXml.isStartElement() && mXml.name() == "vstripe");
+
     while (!mXml.atEnd() && !mXml.hasError() && mXml.readNextStartElement()) {
         if (mXml.name() == "input")
             readInputTag();
@@ -109,8 +106,9 @@ void Project::load(void)
         if (mXml.name() == "vstripe")
             read();
         else
-            mXml.raiseError(QObject::tr("The file is not an VStripe project file."));
+            mXml.raiseError(QObject::tr("The file is not a VStripe project file."));
     }
+    mDirty = false;
 }
 
 
@@ -128,39 +126,32 @@ void Project::save(void)
     bool rc = mFile.open(QIODevice::WriteOnly);
     if (!rc)
         return;
-    mXmlOut.setAutoFormatting(true);
-    mXmlOut.setAutoFormattingIndent(-1);
-    mXmlOut.setDevice(&mFile);
-    mXmlOut.writeStartDocument();
-    mXmlOut.writeStartElement("vstripe");
-    mXmlOut.writeStartElement("input");
-    mXmlOut.writeTextElement("file", mVideoFileName);
-    mXmlOut.writeEndElement();
+    QXmlStreamWriter xml(&mFile);
+    xml.setAutoFormatting(true);
+    xml.setAutoFormattingIndent(-1);
+    xml.writeStartDocument();
+    xml.writeStartElement("vstripe");
+    xml.writeStartElement("input");
+    xml.writeTextElement("file", mVideoFileName);
+    xml.writeEndElement();
 
-    if (mA > 0 || mB > 0 || mMarks.size() > 0) {
-        mXmlOut.writeStartElement("marks");
-        if (mA > 0) {
-            mXmlOut.writeStartElement("mark");
-            mXmlOut.writeAttribute("id", "a");
-            mXmlOut.writeTextElement("frame", QString("%1").arg(mA));
-            mXmlOut.writeEndElement();
-        }
-        if (mB > 0) {
-            mXmlOut.writeStartElement("mark");
-            mXmlOut.writeAttribute("id", "b");
-            mXmlOut.writeTextElement("frame", QString("%1").arg(mB));
-            mXmlOut.writeEndElement();
-        }
+    if (mMarks.size() > 0) {
+        xml.writeStartElement("marks");
         foreach (mark_type m, mMarks) {
-            mXmlOut.writeStartElement("mark");
-            mXmlOut.writeTextElement("frame", QString("%1").arg(m.first));
-            mXmlOut.writeTextElement("name", m.second);
-            mXmlOut.writeEndElement();
-
+            if (m.frame == Project::INVALID_FRAME)
+                continue;
+            xml.writeStartElement("mark");
+            if (m.id == Project::ID_A)
+                xml.writeAttribute("id", "a");
+            else if (m.id == Project::ID_B)
+                xml.writeAttribute("id", "b");
+            xml.writeTextElement("frame", QString("%1").arg(m.frame));
+            xml.writeTextElement("name", m.name);
+            xml.writeEndElement();
         }
-        mXmlOut.writeEndElement();
+        xml.writeEndElement();
     }
-    mXmlOut.writeEndDocument();
+    xml.writeEndDocument();
     mFile.close();
 }
 
@@ -176,42 +167,112 @@ void Project::close(void)
 {
     if (mFile.isOpen())
         mFile.close();
+    mDirty = false;
 }
 
 
 void Project::setVideoFileName(const QString& fileName)
 {
     mVideoFileName = fileName;
+    mDirty = true;
+}
+
+
+void Project::setFileName(const QString& fileName)
+{
+    mFileName = fileName;
+    mDirty = true;
 }
 
 
 void Project::setFixed(bool fixed)
 {
     mFixedStripe = fixed;
+    mDirty = true;
 }
 
 
-void Project::setMarkA(int a)
+Project::mark_type* Project::findMark(int id) const
 {
-    mA = a;
+    for (QVector<mark_type>::const_iterator m = mMarks.constBegin(); m != mMarks.constEnd(); ++m)
+        if (m->id == id)
+            return const_cast<Project::mark_type*>(m);
+    return NULL;
 }
 
 
-void Project::setMarkB(int b)
+const Project::mark_type* Project::findMarkConst(int id) const
 {
-    mB = b;
+    return (const Project::mark_type*)findMark(id);
 }
 
 
-void Project::appendMark(const mark_type& mark)
+int Project::markA(void) const
+{
+    const mark_type* a = findMarkConst(Project::ID_A);
+    return (a != NULL)? a->frame : Project::INVALID_FRAME;
+}
+
+
+int Project::markB(void) const
+{
+    const mark_type* b = findMarkConst(Project::ID_B);
+    return (b != NULL)? b->frame : Project::INVALID_FRAME;
+}
+
+
+bool Project::markAIsSet(void) const
+{
+    return findMarkConst(Project::ID_A) != NULL;
+}
+
+
+bool Project::markBIsSet(void) const
+{
+    return findMarkConst(Project::ID_B) != NULL;
+}
+
+
+void Project::setMarkA(int frame)
+{
+    mark_type* a = findMark(Project::ID_A);
+    if (a == NULL)
+        mMarks.append(Project::mark_type(Project::ID_A, frame));
+    else {
+        if (a->frame == Project::INVALID_FRAME)
+            mMarks.erase(a);
+        else
+            a->frame = frame;
+    }
+    mDirty = true;
+}
+
+
+void Project::setMarkB(int frame)
+{
+    mark_type* b = findMark(Project::ID_B);
+    if (b == NULL)
+        mMarks.append(Project::mark_type(Project::ID_B, frame));
+    else {
+        if (b->frame == Project::INVALID_FRAME)
+            mMarks.erase(b);
+        else
+            b->frame = frame;
+    }
+    mDirty = true;
+}
+
+
+void Project::appendMark(const Project::mark_type& mark)
 {
     mMarks.append(mark);
-    qSort(mMarks);
+    qSort(mMarks.begin(), mMarks.end(), markLess);
+    mDirty = true;
 }
 
 
 void Project::clearMarks(void)
 {
     mMarks.clear();
+    mDirty = true;
 }
-

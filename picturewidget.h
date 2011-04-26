@@ -14,9 +14,9 @@ class PictureWidget : public QWidget
     Q_OBJECT
 public:
     explicit PictureWidget(QWidget* parent = NULL);
-    QSize minimumSizeHint(void) const { return QSize(720, 576); }
+    virtual QSize minimumSizeHint(void) const { return QSize(720, 576); }
     void setVisible(bool visible);
-    void setPicture(const QImage& img);
+    void setPicture(const QImage&);
     inline const QImage& picture(void) const { return mImage; }
 
 signals:
@@ -32,7 +32,7 @@ public slots:
 private:
     QImage mImage;
 
-    static const QString winTitle;
+    static const QString WinTitle;
 };
 
 #endif // PICTUREWIDGET_H

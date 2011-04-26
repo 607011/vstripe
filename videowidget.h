@@ -11,7 +11,6 @@
 #include <QRect>
 #include <QPaintEvent>
 #include <QResizeEvent>
-// #include <QDrag>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeSource>
@@ -24,8 +23,8 @@ class VideoWidget : public QWidget
     Q_OBJECT
 public:
     explicit VideoWidget(QWidget* parent = NULL);
-    QSize minimumSizeHint(void) const { return QSize(384, 216); }
-    QSize sizeHint(void) const { return QSize(720, 576); }
+    virtual QSize minimumSizeHint(void) const { return QSize(384, 216); }
+    virtual QSize sizeHint(void) const { return QSize(1920, 1080); }
     inline bool stripeIsVertical(void) const { return mVerticalStripe; }
     int stripePos(void) const;
     bool stripeIsFixed(void) const;
