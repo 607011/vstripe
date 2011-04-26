@@ -11,6 +11,7 @@
 #include <QTime>
 #include <QSettings>
 #include <QTextStream>
+#include <QFileInfo>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -70,6 +71,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(help()));
     connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(openProject()));
     connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(saveProject()));
+    connect(ui->actionSave_project_as, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
 
     mEffectiveFrameNumber = Project::INVALID_FRAME;
     mEffectiveFrameTime = -1;
@@ -167,10 +169,14 @@ void MainWindow::fileDropped(const QString& fileName)
 {
     Q_ASSERT(!fileName.isNull());
 
-    if (fileName.endsWith(".xml") || fileName.endsWith(".vstripe"))
-        openProject(fileName);
-    else
-        setCurrentVideoFile(fileName);
+    QFileInfo fi(fileName);
+    if (fi.exists() && fi.isReadable()) {
+        if (fileName.endsWith(".xml") || fileName.endsWith(".vstripe"))
+            openProject(fileName);
+        else
+            setCurrentVideoFile(fileName);
+    }
+    else QMessageBox::critical(this, tr("File does not exist"), tr("File '%1' does not exist").arg(fileName));
 }
 
 
@@ -433,6 +439,7 @@ void MainWindow::enableGuiButtons(void)
     ui->actionClear_marks->setEnabled(true);
 }
 
+
 void MainWindow::disableGuiButtons(void)
 {
     ui->frameNumberLineEdit->setEnabled(false);
@@ -501,10 +508,11 @@ void MainWindow::saveProject(void)
 {
     if (mProject.fileName().isEmpty()) {
         saveProjectAs();
-        return;
     }
-    mProject.save();
-    ui->statusBar->showMessage(tr("Project saved."), 5000);
+    else {
+        mProject.save();
+        ui->statusBar->showMessage(tr("Project saved."), 5000);
+    }
 }
 
 
@@ -514,6 +522,7 @@ void MainWindow::saveProjectAs(void)
     if (fileName.isNull())
         return;
     mProject.save(fileName);
+    setCurrentProjectFile(fileName);
     ui->statusBar->showMessage(tr("Project saved."), 5000);
 }
 

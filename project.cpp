@@ -146,7 +146,8 @@ void Project::save(void)
             else if (m.id == Project::ID_B)
                 xml.writeAttribute("id", "b");
             xml.writeTextElement("frame", QString("%1").arg(m.frame));
-            xml.writeTextElement("name", m.name);
+            if (!m.name.isNull())
+                xml.writeTextElement("name", m.name);
             xml.writeEndElement();
         }
         xml.writeEndElement();
