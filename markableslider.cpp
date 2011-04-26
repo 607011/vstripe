@@ -24,11 +24,12 @@ void MarkableSlider::paintEvent(QPaintEvent* event)
     painter.setRenderHint(QPainter::Antialiasing);
     qreal scale = (qreal)width() / (qreal)maximum();
     foreach (Project::mark_type i, mProject->marks()) {
+        if (i.frame == Project::INVALID_FRAME) {
+            qDebug() << "INVALID_FRAME detected: " << i.id << ", " << i.name;
+            continue;
+        }
         QPainterPath path;
         qreal x = i.frame * scale;
-
-        Q_ASSERT(i.frame != Project::INVALID_FRAME);
-
         if (i.id == Project::ID_A) {
             path.moveTo(x, 0);
             path.lineTo(x+height()/2, 0);

@@ -208,14 +208,14 @@ void MainWindow::openRecentVideoFile(void)
 }
 
 
-QString MainWindow::ms2hmsz(int ms, bool showMs)
+QString MainWindow::ms2hmsz(int ms, bool withMs)
 {
     int h, m, s, z;
     h = ms / 1000 / 60 / 60;
     m = (ms - h * 1000 * 60 * 60) / 1000 / 60;
     s = (ms - h * 1000 * 60 * 60 - m * 1000 * 60) / 1000;
     z = (ms - h * 1000 * 60 * 60 - m * 1000 * 60 - s * 1000);
-    return showMs? QTime(h, m, s, z).toString("HH:mm:ss.z") : QTime(h, m, s).toString("HH:mm:ss");
+    return withMs? QTime(h, m, s, z).toString("HH:mm:ss.z") : QTime(h, m, s).toString("HH:mm:ss");
 }
 
 
@@ -252,13 +252,13 @@ void MainWindow::startRendering(void)
     mCurrentFrame.fill(qRgb(33, 251, 95));
     int firstFrame;
     qreal nStripes = mVideoWidget->stripeIsVertical()? (qreal)mCurrentFrame.width() : (qreal)mCurrentFrame.height();
-    if (mProject.markA() >= 0 && mProject.markB() >= 0 && mProject.markB() > mProject.markA()) {
+    if (mProject.markA() != Project::INVALID_FRAME && mProject.markB() != Project::INVALID_FRAME && mProject.markB() > mProject.markA()) {
         mFrameSkip = (qreal)(mProject.markB() - mProject.markA()) / nStripes;
         mFrameSlider->setValue(mProject.markA());
         firstFrame = mProject.markA();
     }
     else {
-        mFrameSkip = 1;
+        mFrameSkip = 1.0;
         firstFrame = mEffectiveFrameNumber;
     }
     mFrameCount = nStripes / mProject.stripeWidth();
@@ -549,13 +549,13 @@ void MainWindow::openVideoFile(void)
 void MainWindow::loadVideoFile(void)
 {
     mVideoReaderThread->setFile(mProject.videoFileName());
+    mProject.clearMarks();
     mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
     ui->action_CloseVideoFile->setEnabled(true);
     mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
     mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize());
     mPictureWidget->setPicture(QImage());
     showPictureWidget();
-    mFrameSlider->setValue(0);
     QImage img;
     int lastFrameNumber;
     ui->infoPlainTextEdit->appendPlainText(QString("%1 (%2)").arg(mVideoReaderThread->decoder()->formatCtx()->iformat->long_name).arg(mVideoReaderThread->decoder()->codec()->long_name));
@@ -566,6 +566,7 @@ void MainWindow::loadVideoFile(void)
     ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mVideoReaderThread->decoder()->getVideoLengthMs(), false)));
     mFrameSlider->setMaximum(lastFrameNumber);
     mFrameSlider->setValue(0);
+    seekToFrame(0);
     ui->statusBar->showMessage(tr("Ready."), 2000);
     ui->actionSave_project->setEnabled(true);
     ui->actionSave_project_as->setEnabled(true);

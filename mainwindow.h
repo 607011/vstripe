@@ -108,7 +108,7 @@ private: // methods
     void setCurrentVideoFile(const QString&);
     void setCurrentProjectFile(const QString&);
 
-    static QString ms2hmsz(int ms, bool showMs = true);
+    static QString ms2hmsz(int ms, bool withMs = true);
     static QString strippedName(const QString& fullFileName);
 };
 

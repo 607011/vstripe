@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QMutexLocker>
 #include "videoreaderthread.h"
+#include "project.h"
 
 VideoReaderThread::VideoReaderThread(QObject* parent)
     : QThread(parent)
@@ -29,7 +30,7 @@ void VideoReaderThread::setFile(QString videoFileName)
 
 void VideoReaderThread::startReading(int firstFrameNumber, int nFrames, qreal skip)
 {
-    Q_ASSERT(firstFrameNumber >= 0);
+    Q_ASSERT(firstFrameNumber != Project::INVALID_FRAME);
     Q_ASSERT(nFrames > 0);
     Q_ASSERT(skip > 0);
 
@@ -47,13 +48,12 @@ void VideoReaderThread::stopReading(void)
 {
     mAbort = true;
     wait();
-    mDecoder.closeFile();
 }
 
 
 void VideoReaderThread::run(void)
 {
-    Q_ASSERT(mFrameNumber >= 0);
+    Q_ASSERT(mFrameNumber != Project::INVALID_FRAME);
 
     int percent = 0, prevPercent = 0;
     qreal prevFrameNumber = mFrameNumber;
