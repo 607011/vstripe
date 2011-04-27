@@ -26,9 +26,11 @@ public:
     explicit VideoWidget(QWidget* parent = NULL);
     virtual QSize minimumSizeHint(void) const { return QSize(384, 216); }
     virtual QSize sizeHint(void) const { return QSize(1920, 1080); }
-    inline bool stripeIsVertical(void) const { return mVerticalStripe; }
     int stripePos(void) const;
-    bool stripeIsFixed(void) const;
+    inline bool stripeIsVertical(void) const { return mVerticalStripe; }
+    inline bool stripeIsFixed(void) const { return mStripePos >= 0; }
+    void setStripePos(int);
+    void setStripeOrientation(bool vertical);
 
 public slots:
     void setFrameSize(const QSize&);
@@ -53,14 +55,17 @@ private:
     int mStripeWidth;
     bool mDragging;
     bool mVerticalStripe;
-    int mStripeX;
-    int mStripeY;
+    int mStripePos;
+    QPoint mMousePos;
 
     void calcDestRect(void);
+    void calcStripePos(void);
 
 
 signals:
     void fileDropped(QString fileName);
+    void stripeOrientationChanged(bool vertical);
+    void stripePosChanged(int pos);
 };
 
 #endif // VIDEOWIDGET_H

@@ -31,7 +31,6 @@ Project::mark_type Project::readMarkTag(void)
         if (mXml.tokenType() == QXmlStreamReader::StartElement) {
             if (mXml.name() == "mark") {
                 QString _id = mXml.attributes().value("id").toString();
-                qDebug() << "<" << mXml.name() << " id=" << _id << ">";
                 if (_id == "a")
                     id = Project::ID_A;
                 else if (_id == "b")
@@ -42,7 +41,7 @@ Project::mark_type Project::readMarkTag(void)
                     id = Project::ID_NONE;
             }
             else if (mXml.name() == "frame")
-                frame = mXml.readElementText().toInt(), qDebug() << "frame = " << frame;
+                frame = mXml.readElementText().toInt();
             else if (mXml.name() == "name")
                 name = mXml.readElementText();
         }
@@ -96,6 +95,12 @@ void Project::read(void)
             readInputTag();
         else if (mXml.name() == "marks")
             readMarksTag();
+        else if (mXml.name() == "recent")
+            mCurrentFrame = mXml.readElementText().toInt();
+        else if (mXml.name() == "stripe") {
+            mVerticalStripe = mXml.attributes().value("orientation") == "vertical";
+            mStripePos = mXml.readElementText().toInt();
+        }
         else mXml.skipCurrentElement();
     }
     mXml.clear();
@@ -159,14 +164,16 @@ void Project::save(void)
                 xml.writeTextElement("name", m.name);
             xml.writeEndElement();
         }
-        xml.writeStartElement("mark");
-        xml.writeAttribute("id", "recent");
-        xml.writeTextElement("frame", QString("%1").arg(mCurrentFrame));
-        xml.writeEndElement();
         xml.writeEndElement();
     }
+    xml.writeTextElement("recent", QString("%1").arg(mCurrentFrame));
+    xml.writeStartElement("stripe");
+    xml.writeAttribute("orientation", mVerticalStripe? "vertical" : "horizontal");
+    xml.writeCharacters(QString("%1").arg(mStripePos));
+    xml.writeEndElement();
     xml.writeEndDocument();
     mFile.close();
+    mDirty = false;
 }
 
 
@@ -209,6 +216,21 @@ void Project::setFixed(bool fixed)
 void Project::setCurrentFrame(int frame)
 {
     mCurrentFrame = frame;
+    mDirty = true;
+}
+
+
+void Project::setStripePos(int pos)
+{
+    mStripePos = pos;
+    mDirty = true;
+}
+
+
+void Project::setStripeOrientation(bool vertical)
+{
+    mVerticalStripe = vertical;
+    mDirty = true;
 }
 
 
@@ -259,7 +281,7 @@ void Project::setMarkA(int frame)
     if (a == NULL)
         mMarks.append(Project::mark_type(Project::ID_A, frame));
     else {
-        if (a->frame == Project::INVALID_FRAME)
+        if (frame == Project::INVALID_FRAME)
             mMarks.erase(a);
         else
             a->frame = frame;
@@ -274,7 +296,7 @@ void Project::setMarkB(int frame)
     if (b == NULL)
         mMarks.append(Project::mark_type(Project::ID_B, frame));
     else {
-        if (b->frame == Project::INVALID_FRAME)
+        if (frame == Project::INVALID_FRAME)
             mMarks.erase(b);
         else
             b->frame = frame;

@@ -27,6 +27,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     mVideoWidget = new VideoWidget;
     ui->verticalLayout->insertWidget(0, mVideoWidget);
     connect(mVideoWidget, SIGNAL(fileDropped(QString)), this, SLOT(fileDropped(QString)));
+    connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), &mProject, SLOT(setStripeOrientation(bool)));
+    connect(mVideoWidget, SIGNAL(stripePosChanged(int)), &mProject, SLOT(setStripePos(int)));
 
     ui->AButton->setStyleSheet("background: green");
     ui->BButton->setStyleSheet("background: red");
@@ -38,6 +40,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     mFrameSlider->setEnabled(false);
     ui->sliderLayout->insertWidget(0, mFrameSlider);
     connect(mFrameSlider, SIGNAL(valueChanged(int)), this, SLOT(seekToFrame(int)));
+    connect(mFrameSlider, SIGNAL(valueChanged(int)), &mProject, SLOT(setCurrentFrame(int)));
 
     mVideoReaderThread = new VideoReaderThread;
     connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
@@ -340,6 +343,7 @@ void MainWindow::setMark(void)
 void MainWindow::clearMarks(void)
 {
     mProject.clearMarks();
+    updateButtons();
     mFrameSlider->update();
 }
 
@@ -464,6 +468,13 @@ void MainWindow::disableGuiButtons(void)
 }
 
 
+void MainWindow::updateButtons(void)
+{
+    ui->AButton->setChecked(mProject.markA() != Project::INVALID_FRAME);
+    ui->BButton->setChecked(mProject.markB() != Project::INVALID_FRAME);
+}
+
+
 void MainWindow::about(void)
 {
     QMessageBox::about(this, tr("About %1").arg(MainWindow::AppName),
@@ -497,6 +508,9 @@ void MainWindow::openProject(const QString& fileName)
         loadVideoFile();
     if (mProject.currentFrame() != Project::INVALID_FRAME)
         mFrameSlider->setValue(mProject.currentFrame());
+    mVideoWidget->setStripePos(mProject.stripePos());
+    mVideoWidget->setStripeOrientation(mProject.stripeIsVertical());
+    updateButtons();
 }
 
 

@@ -36,41 +36,38 @@ public:
     void readMarksTag(void);
     void readInputTag(void);
     void read(void);
-
     void load(const QString&);
     void load(void);
-
     void write(void);
-
     void save(const QString&);
     void save(void);
-
     void close(void);
-
-    inline bool isDirty(void) const { return mDirty; }
+    void clearMarks(void);
     int markA(void) const;
     int markB(void) const;
-    int currentFrame(void) const { return mCurrentFrame; }
     bool markAIsSet(void) const;
     bool markBIsSet(void) const;
+    inline int currentFrame(void) const { return mCurrentFrame; }
     inline const QVector<mark_type>& marks(void) const { return mMarks; }
     inline int stripeWidth(void) const { return mStripeWidth; }
+    inline int stripePos(void) const { return mStripePos; }
     inline bool stripeIsFixed(void) const { return mFixedStripe; }
     inline bool stripeIsVertical(void) const { return mVerticalStripe; }
+    inline const QString& videoFileName(void) const { return mVideoFileName; }
+    inline const QString& fileName(void) const { return mFileName; }
+    inline bool isDirty(void) const { return mDirty; }
 
+public slots:
+    void setFileName(const QString&);
+    void setVideoFileName(const QString&);
+    void appendMark(const mark_type&);
+    void setCurrentFrame(int);
+    void setStripePos(int);
+    void setStripeOrientation(bool vertical);
     void setFixed(bool);
     void setMarkA(int);
     void setMarkB(int);
-    void setCurrentFrame(int);
 
-    void appendMark(const mark_type&);
-    void clearMarks(void);
-
-    const QString& videoFileName(void) const { return mVideoFileName; }
-    void setVideoFileName(const QString&);
-
-    const QString& fileName(void) const { return mFileName; }
-    void setFileName(const QString&);
 
 private: // members
     QString mFileName;
@@ -82,16 +79,12 @@ private: // members
     int mStripeWidth; // Streifen dieser Breite (Pixel) werden von jedem eingelesenen Frame behalten
     bool mFixedStripe; // true: der Streifen bleibt fest an der gewählten Position; false: der Streifen bewegt sich mit jedem Frame um mStripeWidth Pixel weiter
     bool mVerticalStripe;
-    bool mDirty;
+    int mStripePos;
     int mCurrentFrame;
+    bool mDirty;
 
     mark_type* findMark(int id) const;
     const mark_type* findMarkConst(int id) const;
-
-
-public slots:
-
-signals:
 
 };
 

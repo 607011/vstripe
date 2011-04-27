@@ -23,16 +23,12 @@ VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
 }
 
 
-bool VideoWidget::stripeIsFixed(void) const
-{
-    return mVerticalStripe? (mStripeX >= 0) : (mStripeY >= 0);
-}
-
-
 int VideoWidget::stripePos(void) const
 {
-    return mVerticalStripe? mStripeX * mImage.width()  / mDestRect.width()
-        : mStripeY * mImage.height() / mDestRect.height();
+    if (mVerticalStripe)
+        return (mDestRect.width() != 0)?  mStripePos * mImage.width()  / mDestRect.width()  : -1;
+    else
+        return (mDestRect.height() != 0)? mStripePos * mImage.height() / mDestRect.height() : -1;
 }
 
 
@@ -62,6 +58,20 @@ void VideoWidget::setStripeWidth(int stripeWidth)
 }
 
 
+void VideoWidget::setStripePos(int pos)
+{
+    mStripePos = pos;
+    update();
+}
+
+
+void VideoWidget::setStripeOrientation(bool vertical)
+{
+    mVerticalStripe = vertical;
+    update();
+}
+
+
 void VideoWidget::setFrame(QImage img)
 {
     mImage = img;
@@ -80,7 +90,7 @@ void VideoWidget::resizeEvent(QResizeEvent* e)
 void VideoWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
+    // painter.setRenderHint(QPainter::Antialiasing);
 
     // draw background
     painter.setPen(Qt::NoPen);
@@ -92,9 +102,9 @@ void VideoWidget::paintEvent(QPaintEvent*)
 
     // draw stripe
     if (mVerticalStripe) {
-        if (mStripeX >= 0) {
+        if (mStripePos >= 0) {
             painter.setBrush(QColor(0xff, 0x00, 0x00, 0xcc));
-            painter.drawRect(mStripeX + mDestRect.x(), mDestRect.y(), mStripeWidth, mDestRect.height());
+            painter.drawRect(mStripePos + mDestRect.x(), mDestRect.y(), mStripeWidth, mDestRect.height());
         }
         else {
             painter.setPen(QColor(0x00, 0x00, 0xff, 0x99));
@@ -108,9 +118,9 @@ void VideoWidget::paintEvent(QPaintEvent*)
         }
     }
     else {
-        if (mStripeY >= 0) {
+        if (mStripePos >= 0) {
             painter.setBrush(QColor(0xff, 0x00, 0x00, 0xcc));
-            painter.drawRect(mDestRect.x(), mStripeY + mDestRect.y(), mDestRect.width(), mStripeWidth);
+            painter.drawRect(mDestRect.x(), mStripePos + mDestRect.y(), mDestRect.width(), mStripeWidth);
         }
         else {
             painter.setPen(QColor(0x00, 0x00, 0xff, 0x99));
@@ -126,38 +136,55 @@ void VideoWidget::paintEvent(QPaintEvent*)
 }
 
 
+void VideoWidget::calcStripePos(void)
+{
+    if (mVerticalStripe) {
+        int sPos = mMousePos.x() - mDestRect.x();
+        if (sPos != mStripePos) {
+            mStripePos = sPos;
+            if (mStripePos >= mDestRect.width())
+                mStripePos = -1;
+            emit stripePosChanged(stripePos());
+        }
+    }
+    else {
+        int sPos = mMousePos.y() - mDestRect.y();
+        if (sPos != mStripePos) {
+            mStripePos = sPos;
+            if (mStripePos >= mDestRect.height())
+                mStripePos = -1;
+            emit stripePosChanged(stripePos());
+        }
+    }
+}
+
+
 void VideoWidget::keyPressEvent(QKeyEvent* event)
 {
     if (mDragging) {
         mVerticalStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
+        calcStripePos();
+        emit stripeOrientationChanged(mVerticalStripe);
         update();
     }
 }
 
 
-void VideoWidget::keyReleaseEvent(QKeyEvent* event)
+void VideoWidget::keyReleaseEvent(QKeyEvent*)
 {
-    if (mDragging) {
-        mVerticalStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
-        update();
-    }
 }
 
 
 void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 {
+    mMousePos = event->pos();
     if (mDragging) {
-        mVerticalStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
-        if (mVerticalStripe) {
-            mStripeX = event->x() - mDestRect.x();
-            if (mStripeX >= mDestRect.width())
-                mStripeX = -1;
+        bool vStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
+        if (vStripe != mVerticalStripe) {
+            mVerticalStripe = vStripe;
+            emit stripeOrientationChanged(mVerticalStripe);
         }
-        else {
-            mStripeY = event->y() - mDestRect.y();
-            if (mStripeY >= mDestRect.height())
-                mStripeY = -1;
-        }
+        calcStripePos();
         update();
     }
 }

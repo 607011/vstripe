@@ -101,6 +101,7 @@ private: // methods
     void stopRendering(void);
     void enableGuiButtons(void);
     void disableGuiButtons(void);
+    void updateButtons(void);
     void restoreAppSettings(void);
     void saveAppSettings(void);
     void updateRecentVideoFileActions(void);
