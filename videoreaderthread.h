@@ -30,7 +30,7 @@ public:
 
 signals:
     void percentReady(int);
-    void frameReady(QImage, int);
+    void frameReady(QImage, int, int, int);
 
 public slots:
 
@@ -41,7 +41,6 @@ private:
     VideoDecoder mDecoder;
     volatile bool mAbort;
     int mMaxFrameCount;
-    int mFrameCount;
     qreal mFrameNumber;
     qreal mFrameSkip;
 };

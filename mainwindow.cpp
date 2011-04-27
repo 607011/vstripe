@@ -46,8 +46,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     mVideoReaderThread = new VideoReaderThread;
     connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
     connect(mVideoReaderThread, SIGNAL(percentReady(int)), this, SLOT(showPercentReady(int)));
-    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,int)), this, SLOT(frameReady(QImage,int)));
-    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,int)), mVideoWidget, SLOT(setFrame(QImage)));
+    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,int,int,int)), this, SLOT(frameReady(QImage,int,int,int)));
+    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,int,int,int)), mVideoWidget, SLOT(setFrame(QImage)));
 
     mPictureWidget = new PictureWidget;
     connect(ui->actionPreview_picture, SIGNAL(toggled(bool)), this, SLOT(togglePictureWidget(bool)));
@@ -251,7 +251,7 @@ void MainWindow::seekToFrame(int n)
     mVideoReaderThread->decoder()->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime, &mDesiredFrameNumber, &mDesiredFrameTime);
     qDebug() << QString("effective: %1 (%2 ms), desired: %3 (%4 ms)").arg(mEffectiveFrameNumber).arg(mEffectiveFrameTime).arg(mDesiredFrameNumber).arg(mDesiredFrameTime);
     mVideoWidget->setFrame(img);
-    ui->frameNumberLineEdit->setText(tr("%1").arg(mEffectiveFrameNumber));
+    ui->frameNumberLineEdit->setText(QString("%1").arg(mEffectiveFrameNumber));
     ui->frameTimeLineEdit->setText(ms2hmsz(mEffectiveFrameTime));
 }
 
@@ -421,7 +421,7 @@ void MainWindow::hidePictureWidget(void)
 }
 
 
-void MainWindow::frameReady(QImage src, int frameNumber)
+void MainWindow::frameReady(QImage src, int frameNumber, int effectiveFrameNumber, int effectiveFrameTime)
 {
     int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : (frameNumber * mProject.stripeWidth() % (mVideoWidget->stripeIsVertical()? src.width() : src.height()));
     int dstpos = frameNumber * mProject.stripeWidth();
@@ -439,6 +439,8 @@ void MainWindow::frameReady(QImage src, int frameNumber)
     mFrameSlider->blockSignals(true);
     mFrameSlider->setValue(mPreRenderFrameNumber + (int)(frameNumber * mFrameSkip));
     mFrameSlider->blockSignals(false);
+    ui->frameNumberLineEdit->setText(QString("%1").arg(effectiveFrameNumber));
+    ui->frameTimeLineEdit->setText(ms2hmsz(effectiveFrameTime));
 }
 
 

@@ -38,7 +38,6 @@ void VideoReaderThread::startReading(int firstFrameNumber, int nFrames, qreal sk
     mFrameNumber = (qreal)firstFrameNumber;
     mMaxFrameCount = nFrames;
     mFrameSkip = skip;
-    mFrameCount = 0;
     mAbort = false;
     start();
 }
@@ -55,20 +54,23 @@ void VideoReaderThread::run(void)
 {
     Q_ASSERT(mFrameNumber != Project::INVALID_FRAME);
 
-    int percent = 0, prevPercent = 0;
     qreal prevFrameNumber = mFrameNumber;
-    mDecoder.seekFrame((qint64)mFrameNumber);
-    while (!mAbort && mFrameCount < mMaxFrameCount) {
-        if ((mFrameNumber - prevFrameNumber) >= 1) {
-            mDecoder.seekNextFrame((int)(mFrameNumber - prevFrameNumber));
+    int frameCount = 0;
+    int percent = 0, prevPercent = 0;
+    mDecoder.seekFrame(mFrameNumber);
+    while (!mAbort && frameCount < mMaxFrameCount) {
+        int skip = (int)mFrameNumber - (int)prevFrameNumber;
+        if (skip > 0) {
+            mDecoder.seekNextFrame(skip);
             prevFrameNumber = mFrameNumber;
         }
         QImage img;
-        mDecoder.getFrame(img);
-        emit frameReady(img, mFrameCount);
-        ++mFrameCount;
+        int effFrameNum, effFrameTime;
+        mDecoder.getFrame(img, &effFrameNum, &effFrameTime);
+        emit frameReady(img, frameCount, effFrameNum, effFrameTime);
+        ++frameCount;
         mFrameNumber += mFrameSkip;
-        percent = 100 * mFrameCount / mMaxFrameCount;
+        percent = 100 * frameCount / mMaxFrameCount;
         if (percent != prevPercent)
             emit percentReady(percent);
         prevPercent = percent;
