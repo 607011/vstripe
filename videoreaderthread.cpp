@@ -57,16 +57,17 @@ void VideoReaderThread::run(void)
     qreal prevFrameNumber = mFrameNumber;
     int frameCount = 0;
     int percent = 0, prevPercent = 0;
+    QImage img;
     mDecoder.seekFrame(mFrameNumber);
+    mDecoder.getFrame(img, &effFrameNum, &effFrameTime);
     while (!mAbort && frameCount < mMaxFrameCount) {
+        int effFrameNum, effFrameTime;
         int skip = (int)mFrameNumber - (int)prevFrameNumber;
         if (skip > 0) {
             mDecoder.seekNextFrame(skip);
             prevFrameNumber = mFrameNumber;
+            mDecoder.getFrame(img, &effFrameNum, &effFrameTime);
         }
-        QImage img;
-        int effFrameNum, effFrameTime;
-        mDecoder.getFrame(img, &effFrameNum, &effFrameTime);
         emit frameReady(img, frameCount, effFrameNum, effFrameTime);
         ++frameCount;
         mFrameNumber += mFrameSkip;
