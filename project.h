@@ -16,7 +16,7 @@ class Project : public QObject
 {
     Q_OBJECT
 public:
-    enum { ID_NONE = 0, ID_A, ID_B, ID_RECENT };
+    enum { ID_NONE = 0, ID_A, ID_B };
     enum { INVALID_FRAME = -1 };
 
     struct mark_type {
@@ -55,7 +55,7 @@ public:
     inline bool stripeIsVertical(void) const { return mVerticalStripe; }
     inline const QString& videoFileName(void) const { return mVideoFileName; }
     inline const QString& fileName(void) const { return mFileName; }
-    inline bool isDirty(void) const { return mDirty; }
+    inline bool modified(void) const { return mModified; }
 
 public slots:
     void setFileName(const QString&);
@@ -81,7 +81,7 @@ private: // members
     bool mVerticalStripe;
     int mStripePos;
     int mCurrentFrame;
-    bool mDirty;
+    bool mModified;
 
     mark_type* findMark(int id) const;
     const mark_type* findMarkConst(int id) const;

@@ -72,6 +72,7 @@ public slots:
 
 protected:
     void closeEvent(QCloseEvent*);
+    void changeEvent(QEvent*);
 
 private: // variables
     Ui::MainWindow* ui;
@@ -87,6 +88,7 @@ private: // variables
     int mDesiredFrameNumber;
     int mDesiredFrameTime;
     int mPreRenderFrameNumber;
+    QString mFileNameFromCmdLine;
 
     Project mProject;
 

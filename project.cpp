@@ -15,7 +15,7 @@ bool markLess(const Project::mark_type& m1, const Project::mark_type& m2)
 
 
 Project::Project(QObject* parent) :
-    QObject(parent), mStripeWidth(1), mFixedStripe(false), mVerticalStripe(true), mDirty(false)
+    QObject(parent), mStripeWidth(1), mFixedStripe(false), mVerticalStripe(true), mModified(false)
 {
 }
 
@@ -35,8 +35,6 @@ Project::mark_type Project::readMarkTag(void)
                     id = Project::ID_A;
                 else if (_id == "b")
                     id = Project::ID_B;
-                else if (_id == "recent")
-                    id = Project::ID_RECENT;
                 else
                     id = Project::ID_NONE;
             }
@@ -59,12 +57,8 @@ void Project::readMarksTag(void)
         if (mXml.tokenType() == QXmlStreamReader::StartElement) {
             if (mXml.name() == "mark") {
                 mark_type mark = readMarkTag();
-                if (mark.frame != Project::INVALID_FRAME) {
-                    if (mark.id == Project::ID_RECENT)
-                        mCurrentFrame = mark.frame;
-                    else
-                        mMarks.append(mark);
-                }
+                if (mark.frame != Project::INVALID_FRAME)
+                    mMarks.append(mark);
             }
         }
         mXml.readNext();
@@ -109,7 +103,8 @@ void Project::read(void)
 
 void Project::load(void)
 {
-    mFile.close();
+    if (mFile.isOpen())
+        mFile.close();
     mFile.setFileName(mFileName);
     bool rc = mFile.open(QIODevice::ReadOnly);
     if (!rc)
@@ -122,7 +117,7 @@ void Project::load(void)
         else
             mXml.raiseError(QObject::tr("The file is not a VStripe project file."));
     }
-    mDirty = false;
+    mModified = false;
 }
 
 
@@ -135,7 +130,8 @@ void Project::load(const QString& fileName)
 
 void Project::save(void)
 {
-    mFile.close();
+    if (mFile.isOpen())
+        mFile.close();
     mFile.setFileName(mFileName);
     bool rc = mFile.open(QIODevice::WriteOnly);
     if (!rc)
@@ -173,7 +169,7 @@ void Project::save(void)
     xml.writeEndElement();
     xml.writeEndDocument();
     mFile.close();
-    mDirty = false;
+    mModified = false;
 }
 
 
@@ -188,49 +184,49 @@ void Project::close(void)
 {
     if (mFile.isOpen())
         mFile.close();
-    mDirty = false;
+    mModified = false;
 }
 
 
 void Project::setVideoFileName(const QString& fileName)
 {
     mVideoFileName = fileName;
-    mDirty = true;
+    mModified = true;
 }
 
 
 void Project::setFileName(const QString& fileName)
 {
     mFileName = fileName;
-    mDirty = true;
+    mModified = true;
 }
 
 
 void Project::setFixed(bool fixed)
 {
     mFixedStripe = fixed;
-    mDirty = true;
+    mModified = true;
 }
 
 
 void Project::setCurrentFrame(int frame)
 {
     mCurrentFrame = frame;
-    mDirty = true;
+    mModified = true;
 }
 
 
 void Project::setStripePos(int pos)
 {
     mStripePos = pos;
-    mDirty = true;
+    mModified = true;
 }
 
 
 void Project::setStripeOrientation(bool vertical)
 {
     mVerticalStripe = vertical;
-    mDirty = true;
+    mModified = true;
 }
 
 
@@ -286,7 +282,7 @@ void Project::setMarkA(int frame)
         else
             a->frame = frame;
     }
-    mDirty = true;
+    mModified = true;
 }
 
 
@@ -301,7 +297,7 @@ void Project::setMarkB(int frame)
         else
             b->frame = frame;
     }
-    mDirty = true;
+    mModified = true;
 }
 
 
@@ -309,12 +305,12 @@ void Project::appendMark(const Project::mark_type& mark)
 {
     mMarks.append(mark);
     qSort(mMarks.begin(), mMarks.end(), markLess);
-    mDirty = true;
+    mModified = true;
 }
 
 
 void Project::clearMarks(void)
 {
     mMarks.clear();
-    mDirty = true;
+    mModified = true;
 }

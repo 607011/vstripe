@@ -2,6 +2,8 @@ TODO
 ====
 
 [ ] fileDropped(argv[1]) darf in MainWindow erst aufgerufen werden, wenn das Fenster aufgebaut ist.
+    
+    NOTIZEN: Versuche mit dem Abfangen von showEvent() und changeEvent() führten ins Leere.
 
 [ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
 

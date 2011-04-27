@@ -91,7 +91,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     ui->statusBar->showMessage(tr("Ready."), 3000);
 
     if (argc > 1)
-        fileDropped(argv[1]);
+        mFileNameFromCmdLine = argv[1];
 }
 
 
@@ -109,6 +109,18 @@ void MainWindow::closeEvent(QCloseEvent* event)
     saveAppSettings();
     QMainWindow::closeEvent(event);
     mPictureWidget->close();
+}
+
+
+void MainWindow::changeEvent(QEvent* event)
+{
+//    if (event->spontaneous() && isVisible() && event->type() == QEvent::ActivationChange) {
+//        if (!mFileNameFromCmdLine.isEmpty()) {
+//            fileDropped(mFileNameFromCmdLine); // TODO
+//            mFileNameFromCmdLine.clear();
+//        }
+//    }
+    QWidget::changeEvent(event);
 }
 
 
