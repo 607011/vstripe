@@ -126,6 +126,24 @@ void VideoWidget::paintEvent(QPaintEvent*)
 }
 
 
+void VideoWidget::keyPressEvent(QKeyEvent* event)
+{
+    if (mDragging) {
+        mVerticalStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
+        update();
+    }
+}
+
+
+void VideoWidget::keyReleaseEvent(QKeyEvent* event)
+{
+    if (mDragging) {
+        mVerticalStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
+        update();
+    }
+}
+
+
 void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 {
     if (mDragging) {
@@ -148,6 +166,8 @@ void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 void VideoWidget::mousePressEvent(QMouseEvent* event)
 {
     mDragging = (event->button() == Qt::LeftButton);
+    if (mDragging)
+        setFocus(Qt::MouseFocusReason);
 }
 
 

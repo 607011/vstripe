@@ -16,7 +16,7 @@ class Project : public QObject
 {
     Q_OBJECT
 public:
-    enum { ID_NONE = 0, ID_A = 1, ID_B = 2 };
+    enum { ID_NONE = 0, ID_A, ID_B, ID_RECENT };
     enum { INVALID_FRAME = -1 };
 
     struct mark_type {
@@ -50,6 +50,7 @@ public:
     inline bool isDirty(void) const { return mDirty; }
     int markA(void) const;
     int markB(void) const;
+    int currentFrame(void) const { return mCurrentFrame; }
     bool markAIsSet(void) const;
     bool markBIsSet(void) const;
     inline const QVector<mark_type>& marks(void) const { return mMarks; }
@@ -60,6 +61,7 @@ public:
     void setFixed(bool);
     void setMarkA(int);
     void setMarkB(int);
+    void setCurrentFrame(int);
 
     void appendMark(const mark_type&);
     void clearMarks(void);
@@ -81,6 +83,7 @@ private: // members
     bool mFixedStripe; // true: der Streifen bleibt fest an der gewählten Position; false: der Streifen bewegt sich mit jedem Frame um mStripeWidth Pixel weiter
     bool mVerticalStripe;
     bool mDirty;
+    int mCurrentFrame;
 
     mark_type* findMark(int id) const;
     const mark_type* findMarkConst(int id) const;

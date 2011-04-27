@@ -14,6 +14,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeSource>
+#include <QKeyEvent>
 #include <QUrl>
 
 #include "ffmpeg.h"
@@ -35,13 +36,14 @@ public slots:
     void setFrame(QImage);
 
 protected:
-    void paintEvent(QPaintEvent*);
-    void resizeEvent(QResizeEvent*);
-    void mouseMoveEvent(QMouseEvent*);
-    void mousePressEvent(QMouseEvent*);
-    void dragEnterEvent(QDragEnterEvent*);
-    void dropEvent(QDropEvent*);
-
+    virtual void paintEvent(QPaintEvent*);
+    virtual void resizeEvent(QResizeEvent*);
+    virtual void mouseMoveEvent(QMouseEvent*);
+    virtual void mousePressEvent(QMouseEvent*);
+    virtual void dragEnterEvent(QDragEnterEvent*);
+    virtual void dropEvent(QDropEvent*);
+    virtual void keyPressEvent(QKeyEvent*);
+    virtual void keyReleaseEvent(QKeyEvent*);
 
 private:
     QImage mImage;

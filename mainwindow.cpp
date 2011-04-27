@@ -76,6 +76,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     mEffectiveFrameNumber = Project::INVALID_FRAME;
     mEffectiveFrameTime = -1;
     mPreRenderFrameNumber = 0;
+    mProject.setCurrentFrame(0);
     connect(ui->AButton, SIGNAL(clicked()), this, SLOT(setMarkA()));
     connect(ui->BButton, SIGNAL(clicked()), this, SLOT(setMarkB()));
     connect(ui->markButton, SIGNAL(clicked()), this, SLOT(setMark()));
@@ -270,6 +271,7 @@ void MainWindow::startRendering(void)
     mFrameCount = nStripes / mProject.stripeWidth();
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
     mPreRenderFrameNumber = mFrameSlider->value();
+    mProject.setCurrentFrame(mPreRenderFrameNumber);
     mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameSkip);
 }
 
@@ -416,6 +418,7 @@ void MainWindow::decodingFinished()
     ui->action_Save_picture->setEnabled(true);
     ui->renderButton->setText(tr("Start rendering"));
     mPreRenderFrameNumber = mFrameSlider->value();
+    mProject.setCurrentFrame(mPreRenderFrameNumber);
 }
 
 
@@ -492,6 +495,8 @@ void MainWindow::openProject(const QString& fileName)
     mProject.load(fileName);
     if (!mProject.videoFileName().isNull())
         loadVideoFile();
+    if (mProject.currentFrame() != Project::INVALID_FRAME)
+        mFrameSlider->setValue(mProject.currentFrame());
 }
 
 
@@ -558,7 +563,6 @@ void MainWindow::openVideoFile(void)
 void MainWindow::loadVideoFile(void)
 {
     mVideoReaderThread->setFile(mProject.videoFileName());
-    mProject.clearMarks();
     mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
     ui->action_CloseVideoFile->setEnabled(true);
     mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
@@ -592,6 +596,7 @@ void MainWindow::closeVideoFile(void)
     mVideoWidget->setFrame(QImage());
     mPictureWidget->setPicture(QImage());
     hidePictureWidget();
+    mProject.clearMarks();
     ui->statusBar->showMessage(tr("File closed."), 5000);
 }
 

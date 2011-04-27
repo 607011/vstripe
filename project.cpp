@@ -3,6 +3,7 @@
  * $Id$
  */
 
+#include <QDebug>
 #include <QXmlStreamWriter>
 #include "project.h"
 
@@ -30,15 +31,18 @@ Project::mark_type Project::readMarkTag(void)
         if (mXml.tokenType() == QXmlStreamReader::StartElement) {
             if (mXml.name() == "mark") {
                 QString _id = mXml.attributes().value("id").toString();
+                qDebug() << "<" << mXml.name() << " id=" << _id << ">";
                 if (_id == "a")
                     id = Project::ID_A;
                 else if (_id == "b")
                     id = Project::ID_B;
+                else if (_id == "recent")
+                    id = Project::ID_RECENT;
                 else
                     id = Project::ID_NONE;
             }
             else if (mXml.name() == "frame")
-                frame = mXml.readElementText().toInt();
+                frame = mXml.readElementText().toInt(), qDebug() << "frame = " << frame;
             else if (mXml.name() == "name")
                 name = mXml.readElementText();
         }
@@ -56,8 +60,12 @@ void Project::readMarksTag(void)
         if (mXml.tokenType() == QXmlStreamReader::StartElement) {
             if (mXml.name() == "mark") {
                 mark_type mark = readMarkTag();
-                if (mark.frame >= 0)
-                    mMarks.append(mark);
+                if (mark.frame != Project::INVALID_FRAME) {
+                    if (mark.id == Project::ID_RECENT)
+                        mCurrentFrame = mark.frame;
+                    else
+                        mMarks.append(mark);
+                }
             }
         }
         mXml.readNext();
@@ -102,6 +110,7 @@ void Project::load(void)
     if (!rc)
         return;
     mXml.setDevice(&mFile);
+    clearMarks();
     if (!mXml.atEnd() && !mXml.hasError() && mXml.readNextStartElement()) {
         if (mXml.name() == "vstripe")
             read();
@@ -150,6 +159,10 @@ void Project::save(void)
                 xml.writeTextElement("name", m.name);
             xml.writeEndElement();
         }
+        xml.writeStartElement("mark");
+        xml.writeAttribute("id", "recent");
+        xml.writeTextElement("frame", QString("%1").arg(mCurrentFrame));
+        xml.writeEndElement();
         xml.writeEndElement();
     }
     xml.writeEndDocument();
@@ -190,6 +203,12 @@ void Project::setFixed(bool fixed)
 {
     mFixedStripe = fixed;
     mDirty = true;
+}
+
+
+void Project::setCurrentFrame(int frame)
+{
+    mCurrentFrame = frame;
 }
 
 
