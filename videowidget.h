@@ -45,7 +45,6 @@ protected:
     virtual void dragEnterEvent(QDragEnterEvent*);
     virtual void dropEvent(QDropEvent*);
     virtual void keyPressEvent(QKeyEvent*);
-    virtual void keyReleaseEvent(QKeyEvent*);
 
 private:
     QImage mImage;

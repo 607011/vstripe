@@ -36,6 +36,13 @@ void PictureWidget::setVisible(bool visible)
 }
 
 
+void PictureWidget::setSizeConstraint(const QSize& minimum, const QSize& maximum)
+{
+    setMinimumSize(minimum);
+    setMaximumSize(maximum);
+}
+
+
 void PictureWidget::closeEvent(QCloseEvent*)
 {
     emit visibilityChanged(false);
@@ -44,5 +51,6 @@ void PictureWidget::closeEvent(QCloseEvent*)
 
 void PictureWidget::resizeEvent(QResizeEvent*)
 {
+    emit sizeChanged(size());
     setWindowTitle(QString("%1 - %2x%3").arg(WinTitle).arg(width()).arg(height()));
 }

@@ -63,12 +63,13 @@ public slots:
     void setParamsButtonClicked(void);
     void about(void);
     void help(void);
-    void pictureWidthSet(int);
     void saveProject(void);
     void saveProjectAs(void);
     void openProject(void);
     void openProject(const QString&);
     void fileDropped(const QString&);
+    void setPictureSize(const QSize&);
+    void setStripeOrientation(bool vertical);
 
 protected:
     void closeEvent(QCloseEvent*);

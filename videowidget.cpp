@@ -170,11 +170,6 @@ void VideoWidget::keyPressEvent(QKeyEvent* event)
 }
 
 
-void VideoWidget::keyReleaseEvent(QKeyEvent*)
-{
-}
-
-
 void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 {
     mMousePos = event->pos();

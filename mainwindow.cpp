@@ -27,6 +27,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     mVideoWidget = new VideoWidget;
     ui->verticalLayout->insertWidget(0, mVideoWidget);
     connect(mVideoWidget, SIGNAL(fileDropped(QString)), this, SLOT(fileDropped(QString)));
+    connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), this, SLOT(setStripeOrientation(bool)));
     connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), &mProject, SLOT(setStripeOrientation(bool)));
     connect(mVideoWidget, SIGNAL(stripePosChanged(int)), &mProject, SLOT(setStripePos(int)));
 
@@ -53,6 +54,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     if (ui->actionPreview_picture->isChecked())
         mPictureWidget->show();
     connect(mPictureWidget, SIGNAL(visibilityChanged(bool)), ui->actionPreview_picture, SLOT(setChecked(bool)));
+    connect(mPictureWidget, SIGNAL(sizeChanged(const QSize&)), this, SLOT(setPictureSize(const QSize&)));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
         recentVideoFileActs[i] = new QAction(this);
@@ -260,10 +262,21 @@ void MainWindow::showPercentReady(int percent)
 }
 
 
-void MainWindow::pictureWidthSet(int)
+void MainWindow::setStripeOrientation(bool vertical)
 {
-    // TODO
-    qDebug() << "MainWindow::pictureWidthSet() is not implemented yet.";
+    if (vertical)
+        mPictureWidget->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
+    else
+        mPictureWidget->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
+    mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize());
+}
+
+
+void MainWindow::setPictureSize(const QSize& size)
+{
+    if (mVideoReaderThread->isRunning())
+        stopRendering();
+    mCurrentFrame = QImage(size, QImage::Format_RGB888);
 }
 
 
@@ -410,7 +423,7 @@ void MainWindow::hidePictureWidget(void)
 
 void MainWindow::frameReady(QImage src, int frameNumber)
 {
-    int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : frameNumber * mProject.stripeWidth();
+    int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : (frameNumber * mProject.stripeWidth() % (mVideoWidget->stripeIsVertical()? src.width() : src.height()));
     int dstpos = frameNumber * mProject.stripeWidth();
     if (mVideoWidget->stripeIsVertical()) {
         for (int x = 0; x < mProject.stripeWidth(); ++x)
@@ -593,6 +606,10 @@ void MainWindow::loadVideoFile(void)
     ui->action_CloseVideoFile->setEnabled(true);
     mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
     mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize());
+    if (mProject.stripeIsVertical())
+        mPictureWidget->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
+    else
+        mPictureWidget->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
     mPictureWidget->setPicture(QImage());
     showPictureWidget();
     QImage img;
