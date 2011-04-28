@@ -24,8 +24,8 @@ class VideoWidget : public QWidget
     Q_OBJECT
 public:
     explicit VideoWidget(QWidget* parent = NULL);
-    virtual QSize minimumSizeHint(void) const { return QSize(384, 216); }
-    virtual QSize sizeHint(void) const { return QSize(1920, 1080); }
+    QSize minimumSizeHint(void) const { return QSize(384, 216); }
+    QSize sizeHint(void) const { return QSize(1920, 1080); }
     int stripePos(void) const;
     inline bool stripeIsVertical(void) const { return mVerticalStripe; }
     inline bool stripeIsFixed(void) const { return mStripePos >= 0; }
@@ -38,13 +38,13 @@ public slots:
     void setFrame(QImage);
 
 protected:
-    virtual void paintEvent(QPaintEvent*);
-    virtual void resizeEvent(QResizeEvent*);
-    virtual void mouseMoveEvent(QMouseEvent*);
-    virtual void mousePressEvent(QMouseEvent*);
-    virtual void dragEnterEvent(QDragEnterEvent*);
-    virtual void dropEvent(QDropEvent*);
-    virtual void keyPressEvent(QKeyEvent*);
+    void paintEvent(QPaintEvent*);
+    void resizeEvent(QResizeEvent*);
+    void mouseMoveEvent(QMouseEvent*);
+    void mousePressEvent(QMouseEvent*);
+    void dragEnterEvent(QDragEnterEvent*);
+    void dropEvent(QDropEvent*);
+    void keyPressEvent(QKeyEvent*);
 
 private:
     QImage mImage;

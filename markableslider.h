@@ -15,8 +15,8 @@ class MarkableSlider : public QSlider
     Q_OBJECT
 public:
     explicit MarkableSlider(const Project* project, QSlider* parent = NULL);
-    virtual QSize minimumSizeHint(void) const { return QSize(200, 16); }
-    virtual QSize sizeHint(void) const { return QSize(384, 16); }
+    QSize minimumSizeHint(void) const { return QSize(200, 16); }
+    QSize sizeHint(void) const { return QSize(384, 16); }
 
 protected:
     void paintEvent(QPaintEvent*);

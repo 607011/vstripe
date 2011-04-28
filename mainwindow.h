@@ -29,8 +29,8 @@ public:
     explicit MainWindow(int argc, char* argv[], QWidget* parent = NULL);
     ~MainWindow();
 
-    virtual QSize minimumSizeHint(void) const { return QSize(720, 576); }
-    virtual QSize sizeHint(void) const { return QSize(1280, 720); }
+    QSize minimumSizeHint(void) const { return QSize(720, 576); }
+    QSize sizeHint(void) const { return QSize(1280, 720); }
 
     static const QString Company;
     static const QString AppName;

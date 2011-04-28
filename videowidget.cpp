@@ -17,6 +17,7 @@ VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
     setBaseSize(480, 270);
     setMinimumSize(384, 216);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    mStripePos = -1;
     mStripeWidth = 1;
     mDragging = false;
     mVerticalStripe = true;
@@ -47,35 +48,40 @@ void VideoWidget::calcDestRect(void) {
 void VideoWidget::setFrameSize(const QSize& sz) {
     mFrameAspectRatio = (qreal)sz.width() / (qreal)sz.height();
     calcDestRect();
-    update();
+    if (!mImage.isNull())
+        update();
 }
 
 
 void VideoWidget::setStripeWidth(int stripeWidth)
 {
     mStripeWidth = stripeWidth;
-    update();
+    if (!mImage.isNull())
+        update();
 }
 
 
 void VideoWidget::setStripePos(int pos)
 {
     mStripePos = pos;
-    update();
+    if (!mImage.isNull())
+        update();
 }
 
 
 void VideoWidget::setStripeOrientation(bool vertical)
 {
     mVerticalStripe = vertical;
-    update();
+    if (!mImage.isNull())
+        update();
 }
 
 
 void VideoWidget::setFrame(QImage img)
 {
     mImage = img;
-    update();
+    if (!mImage.isNull())
+        update();
 }
 
 
@@ -90,17 +96,16 @@ void VideoWidget::resizeEvent(QResizeEvent* e)
 void VideoWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
-    // painter.setRenderHint(QPainter::Antialiasing);
-
+    painter.setRenderHint(QPainter::Antialiasing);
     // draw background
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(30, 30, 30));
     painter.drawRect(0, 0, width(), height());
-
-    // draw image
+    if (mImage.isNull())
+        return;
     painter.drawImage(mDestRect, mImage);
-
-    // draw stripe
+    painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+    // draw stripe or direction marker
     if (mVerticalStripe) {
         if (mStripePos >= 0) {
             painter.setBrush(QColor(0xff, 0x00, 0x00, 0xcc));
@@ -211,10 +216,9 @@ void VideoWidget::dragEnterEvent(QDragEnterEvent* event)
 
 void VideoWidget::dropEvent(QDropEvent* event)
 {
-    if (!event->mimeData()->hasUrls())
-        return;
-    QList<QUrl> urls = event->mimeData()->urls();
-    if (urls.isEmpty())
-        return;
-    emit fileDropped(urls.first().toLocalFile());
+    if (event->mimeData()->hasUrls()) {
+        const QList<QUrl>& urls = event->mimeData()->urls();
+        if (!urls.isEmpty())
+            emit fileDropped(urls.first().toLocalFile());
+    }
 }

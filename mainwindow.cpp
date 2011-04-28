@@ -163,8 +163,6 @@ void MainWindow::setCurrentVideoFile(const QString& fileName)
         files.removeLast();
     settings.setValue("recentVideoFileList", files);
     updateRecentVideoFileActions();
-    if (sender() == mVideoWidget)
-        loadVideoFile();
 }
 
 
@@ -188,11 +186,13 @@ void MainWindow::fileDropped(const QString& fileName)
     Q_ASSERT(!fileName.isNull());
 
     QFileInfo fi(fileName);
-    if (fi.exists() && fi.isReadable()) {
+    if (fi.isFile() && fi.isReadable()) {
         if (fileName.endsWith(".xml") || fileName.endsWith(".vstripe"))
             openProject(fileName);
-        else
+        else {
             setCurrentVideoFile(fileName);
+            loadVideoFile();
+        }
     }
     else QMessageBox::critical(this, tr("File does not exist"), tr("File '%1' does not exist").arg(fileName));
 }
@@ -226,9 +226,14 @@ void MainWindow::openRecentVideoFile(void)
 {
     QAction* action = qobject_cast<QAction *>(sender());
     if (action) {
-        mProject.setVideoFileName(action->data().toString());
-        loadVideoFile();
-    }
+        QString fileName(action->data().toString());
+        QFileInfo fi(fileName);
+        if (fi.isFile() && fi.isReadable()) {
+            setCurrentVideoFile(fileName);
+            loadVideoFile();
+        }
+        else
+            QMessageBox::critical(this, tr("File does not exist"), tr("File '%1' does not exist").arg(fileName));    }
 }
 
 
@@ -264,6 +269,8 @@ void MainWindow::showPercentReady(int percent)
 
 void MainWindow::setStripeOrientation(bool vertical)
 {
+    if (mCurrentFrame.isNull())
+        return;
     if (vertical)
         mPictureWidget->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
     else
@@ -284,7 +291,6 @@ void MainWindow::startRendering(void)
 {
     ui->renderButton->setText(tr("Stop rendering"));
     mProject.setFixed(mVideoWidget->stripeIsFixed());
-    mCurrentFrame.fill(qRgb(33, 251, 95));
     int firstFrame;
     qreal nStripes = mVideoWidget->stripeIsVertical()? (qreal)mCurrentFrame.width() : (qreal)mCurrentFrame.height();
     if (mProject.markA() != Project::INVALID_FRAME && mProject.markB() != Project::INVALID_FRAME && mProject.markB() > mProject.markA()) {
@@ -607,6 +613,7 @@ void MainWindow::loadVideoFile(void)
     mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
     ui->action_CloseVideoFile->setEnabled(true);
     mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
+    mCurrentFrame.fill(qRgb(116, 214, 252));
     mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize());
     if (mProject.stripeIsVertical())
         mPictureWidget->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
@@ -616,19 +623,20 @@ void MainWindow::loadVideoFile(void)
     showPictureWidget();
     QImage img;
     int lastFrameNumber;
-    ui->infoPlainTextEdit->appendPlainText(QString("%1 (%2)").arg(mVideoReaderThread->decoder()->formatCtx()->iformat->long_name).arg(mVideoReaderThread->decoder()->codec()->long_name));
     ui->statusBar->showMessage(tr("Seeking last frame ..."));
     mVideoReaderThread->decoder()->seekMs(mVideoReaderThread->decoder()->getVideoLengthMs());
     mVideoReaderThread->decoder()->getFrame(img, &lastFrameNumber);
-    ui->infoPlainTextEdit->appendPlainText(tr("Last frame # %1").arg(lastFrameNumber));
-    ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mVideoReaderThread->decoder()->getVideoLengthMs(), false)));
     mFrameSlider->setMaximum(lastFrameNumber);
     mFrameSlider->setValue(0);
-    seekToFrame(0);
-    ui->statusBar->showMessage(tr("Ready."), 2000);
+    ui->infoPlainTextEdit->clear();
+    ui->infoPlainTextEdit->appendPlainText(QString("%1 (%2)").arg(mVideoReaderThread->decoder()->formatCtx()->iformat->long_name).arg(mVideoReaderThread->decoder()->codec()->long_name));
+    ui->infoPlainTextEdit->appendPlainText(tr("Last frame # %1").arg(lastFrameNumber));
+    ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mVideoReaderThread->decoder()->getVideoLengthMs(), false)));
     ui->actionSave_project->setEnabled(true);
     ui->actionSave_project_as->setEnabled(true);
+    seekToFrame(0);
     enableGuiButtons();
+    ui->statusBar->showMessage(tr("Ready."), 2000);
 }
 
 

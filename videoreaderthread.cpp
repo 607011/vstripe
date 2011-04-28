@@ -58,10 +58,10 @@ void VideoReaderThread::run(void)
     int frameCount = 0;
     int percent = 0, prevPercent = 0;
     QImage img;
+    int effFrameNum, effFrameTime;
     mDecoder.seekFrame(mFrameNumber);
     mDecoder.getFrame(img, &effFrameNum, &effFrameTime);
     while (!mAbort && frameCount < mMaxFrameCount) {
-        int effFrameNum, effFrameTime;
         int skip = (int)mFrameNumber - (int)prevFrameNumber;
         if (skip > 0) {
             mDecoder.seekNextFrame(skip);

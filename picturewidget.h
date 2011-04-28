@@ -15,7 +15,7 @@ class PictureWidget : public QWidget
     Q_OBJECT
 public:
     explicit PictureWidget(QWidget* parent = NULL);
-    virtual QSize minimumSizeHint(void) const { return QSize(720, 576); }
+    QSize minimumSizeHint(void) const { return QSize(720, 576); }
     void setVisible(bool visible);
     void setPicture(const QImage&);
     void setSizeConstraint(const QSize&, const QSize&);
