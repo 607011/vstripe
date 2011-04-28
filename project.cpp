@@ -15,7 +15,7 @@ bool markLess(const Project::mark_type& m1, const Project::mark_type& m2)
 
 
 Project::Project(QObject* parent) :
-    QObject(parent), mStripeWidth(1), mFixedStripe(false), mVerticalStripe(true), mModified(false)
+    QObject(parent), mFixedStripe(false), mVerticalStripe(true), mModified(false)
 {
 }
 
@@ -63,8 +63,7 @@ void Project::readMarksTag(void)
         }
         mXml.readNext();
     }
-    if (mMarks.size() > 0)
-        qSort(mMarks.begin(), mMarks.end(), markLess);
+    qSort(mMarks.begin(), mMarks.end(), markLess);
 }
 
 

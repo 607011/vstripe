@@ -202,7 +202,7 @@ void MainWindow::updateRecentVideoFileActions(void)
 {
     QSettings settings(MainWindow::Company, MainWindow::AppName);
     QStringList files = settings.value("recentVideoFileList").toStringList();
-    int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
+    int numRecentFiles = qMin(files.size(), int(MaxRecentFiles));
     for (int i = 0; i < numRecentFiles; ++i) {
         QString text = tr("&%1 %2").arg(i+1).arg(strippedName(files[i]));
         recentVideoFileActs[i]->setText(text);
@@ -291,22 +291,22 @@ void MainWindow::startRendering(void)
 {
     ui->renderButton->setText(tr("Stop rendering"));
     mProject.setFixed(mVideoWidget->stripeIsFixed());
-    int firstFrame;
-    qreal nStripes = mVideoWidget->stripeIsVertical()? (qreal)mCurrentFrame.width() : (qreal)mCurrentFrame.height();
+    int firstFrame, lastFrame;
+    mFrameCount = mVideoWidget->stripeIsVertical()? qreal(mCurrentFrame.width()) : qreal(mCurrentFrame.height());
     if (mProject.markA() != Project::INVALID_FRAME && mProject.markB() != Project::INVALID_FRAME && mProject.markB() > mProject.markA()) {
-        mFrameSkip = (qreal)(mProject.markB() - mProject.markA()) / nStripes;
         mFrameSlider->setValue(mProject.markA());
         firstFrame = mProject.markA();
+        lastFrame = mProject.markB();
     }
     else {
-        mFrameSkip = 1.0;
         firstFrame = mEffectiveFrameNumber;
+        lastFrame = mLastFrameNumber;
     }
-    mFrameCount = nStripes / mProject.stripeWidth();
+    mFrameDelta = qreal(lastFrame - firstFrame) / mFrameCount;
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);
-    mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameSkip);
+    mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameDelta);
 }
 
 
@@ -381,21 +381,25 @@ void MainWindow::clearMarks(void)
 
 void MainWindow::jumpToPrevMark(void)
 {
-    for (int i = mProject.marks().count()-1; i >= 0; --i)
-        if (mProject.marks()[i].frame < mEffectiveFrameNumber) {
-            mFrameSlider->setValue(mProject.marks()[i].frame);
+    for (int i = mProject.marks().count()-1; i >= 0; --i) {
+        const int frame = mProject.marks()[i].frame;
+        if (frame < mEffectiveFrameNumber) {
+            mFrameSlider->setValue(frame);
             break;
         }
+    }
 }
 
 
 void MainWindow::jumpToNextMark(void)
 {
-    for (int i = 0; i < mProject.marks().count(); ++i)
-        if (mProject.marks()[i].frame > mEffectiveFrameNumber) {
-            mFrameSlider->setValue(mProject.marks()[i].frame);
+    for (int i = 0; i < mProject.marks().count(); ++i) {
+        const int frame = mProject.marks()[i].frame;
+        if (frame > mEffectiveFrameNumber) {
+            mFrameSlider->setValue(frame);
             break;
         }
+    }
 }
 
 
@@ -429,21 +433,19 @@ void MainWindow::hidePictureWidget(void)
 
 void MainWindow::frameReady(QImage src, int frameNumber, int effectiveFrameNumber, int effectiveFrameTime)
 {
-    int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : (frameNumber * mProject.stripeWidth() % (mVideoWidget->stripeIsVertical()? src.width() : src.height()));
-    int dstpos = frameNumber * mProject.stripeWidth();
+    const int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : (frameNumber % (mVideoWidget->stripeIsVertical()? src.width() : src.height()));
+    const int dstpos = frameNumber;
     if (mVideoWidget->stripeIsVertical()) {
-        for (int x = 0; x < mProject.stripeWidth(); ++x)
-            for (int y = 0; y < src.height(); ++y)
-                mCurrentFrame.setPixel(dstpos + x, y, src.pixel(srcpos + x, y));
+        for (int y = 0; y < src.height(); ++y)
+            mCurrentFrame.setPixel(dstpos, y, src.pixel(srcpos, y));
     }
     else {
-        for (int y = 0; y < mProject.stripeWidth(); ++y)
-            for (int x = 0; x < src.width(); ++x)
-                mCurrentFrame.setPixel(x, dstpos + y, src.pixel(x, srcpos + y));
+        for (int x = 0; x < src.width(); ++x)
+            mCurrentFrame.setPixel(x, dstpos, src.pixel(x, srcpos));
     }
     mPictureWidget->setPicture(mCurrentFrame);
     mFrameSlider->blockSignals(true);
-    mFrameSlider->setValue(mPreRenderFrameNumber + (int)(frameNumber * mFrameSkip));
+    mFrameSlider->setValue(mPreRenderFrameNumber + int(frameNumber * mFrameDelta));
     mFrameSlider->blockSignals(false);
     ui->frameNumberLineEdit->setText(QString("%1").arg(effectiveFrameNumber));
     ui->frameTimeLineEdit->setText(ms2hmsz(effectiveFrameTime));
@@ -477,6 +479,7 @@ void MainWindow::enableGuiButtons(void)
     ui->action_CloseVideoFile->setEnabled(true);
     ui->action_Save_picture->setEnabled(true);
     ui->actionClear_marks->setEnabled(true);
+    // ui->actionFit_preview_to_frame_range->setEnabled(true);
 }
 
 
@@ -498,6 +501,7 @@ void MainWindow::disableGuiButtons(void)
     ui->action_CloseVideoFile->setEnabled(false);
     ui->action_Save_picture->setEnabled(false);
     ui->actionClear_marks->setEnabled(false);
+    // ui->actionFit_preview_to_frame_range->setEnabled(false);
 }
 
 
@@ -622,15 +626,14 @@ void MainWindow::loadVideoFile(void)
     mPictureWidget->setPicture(QImage());
     showPictureWidget();
     QImage img;
-    int lastFrameNumber;
     ui->statusBar->showMessage(tr("Seeking last frame ..."));
     mVideoReaderThread->decoder()->seekMs(mVideoReaderThread->decoder()->getVideoLengthMs());
-    mVideoReaderThread->decoder()->getFrame(img, &lastFrameNumber);
-    mFrameSlider->setMaximum(lastFrameNumber);
+    mVideoReaderThread->decoder()->getFrame(img, &mLastFrameNumber);
+    mFrameSlider->setMaximum(mLastFrameNumber);
     mFrameSlider->setValue(0);
     ui->infoPlainTextEdit->clear();
     ui->infoPlainTextEdit->appendPlainText(QString("%1 (%2)").arg(mVideoReaderThread->decoder()->formatCtx()->iformat->long_name).arg(mVideoReaderThread->decoder()->codec()->long_name));
-    ui->infoPlainTextEdit->appendPlainText(tr("Last frame # %1").arg(lastFrameNumber));
+    ui->infoPlainTextEdit->appendPlainText(tr("Last frame # %1").arg(mLastFrameNumber));
     ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mVideoReaderThread->decoder()->getVideoLengthMs(), false)));
     ui->actionSave_project->setEnabled(true);
     ui->actionSave_project_as->setEnabled(true);

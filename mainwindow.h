@@ -81,9 +81,10 @@ private: // variables
     VideoWidget* mVideoWidget;
     PictureWidget* mPictureWidget;
     VideoReaderThread* mVideoReaderThread;
-    qreal mFrameSkip; // so viel Frames werden pro Frame beim Einlesen übersprungen
+    qreal mFrameDelta;
     int mFrameCount;
     QImage mCurrentFrame;
+    int mLastFrameNumber;
     int mEffectiveFrameNumber;
     int mEffectiveFrameTime;
     int mDesiredFrameNumber;

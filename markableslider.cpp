@@ -22,7 +22,7 @@ void MarkableSlider::paintEvent(QPaintEvent* event)
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
     painter.setRenderHint(QPainter::Antialiasing);
-    qreal scale = (qreal)width() / (qreal)maximum();
+    qreal scale = qreal(width()) / qreal(maximum());
     foreach (Project::mark_type m, mProject->marks()) {
         if (m.frame == Project::INVALID_FRAME) {
             qWarning() << "MarkableSlider::paintEvent() reports: INVALID_FRAME detected, id =" << m.id << ", name=" << m.name;

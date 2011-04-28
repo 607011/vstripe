@@ -1,8 +1,6 @@
 TODO
 ====
 
-[ ] Streifenbreite vergrößern, wenn Anzahl der Frames kleiner ist als Zielbildhöhe bzw. -breite.
-
 [ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
 
 [ ] Mehr Informationen über das Video in infoPlainTextEdit ausgeben, z.B. Framerate, Codec-Kurzname, Format-Kurzname, ...

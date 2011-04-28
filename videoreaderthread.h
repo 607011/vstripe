@@ -23,7 +23,7 @@ public:
     ~VideoReaderThread();
 
     void setFile(QString videoFileName);
-    void startReading(int firstFrameNumber, int numFrames, qreal skip = 1);
+    void startReading(int firstFrameNumber, int numFrames, qreal frameDelta = 1);
     void stopReading(void);
 
     VideoDecoder* decoder(void) { return &mDecoder; }
@@ -42,7 +42,7 @@ private:
     volatile bool mAbort;
     int mMaxFrameCount;
     qreal mFrameNumber;
-    qreal mFrameSkip;
+    qreal mFrameDelta;
 };
 
 #endif // VIDEOREADERTHREAD_H

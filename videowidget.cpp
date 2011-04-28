@@ -35,18 +35,18 @@ int VideoWidget::stripePos(void) const
 
 void VideoWidget::calcDestRect(void) {
     if (mWindowAspectRatio < mFrameAspectRatio) {
-        const int h = (int)(width() / mFrameAspectRatio);
+        const int h = int(width() / mFrameAspectRatio);
         mDestRect = QRect(0, (height()-h)/2, width(), h);
     }
     else {
-        const int w = (int)(height() * mFrameAspectRatio);
+        const int w = int(height() * mFrameAspectRatio);
         mDestRect = QRect((width()-w)/2, 0, w, height());
     }
 }
 
 
 void VideoWidget::setFrameSize(const QSize& sz) {
-    mFrameAspectRatio = (qreal)sz.width() / (qreal)sz.height();
+    mFrameAspectRatio = qreal(sz.width()) / qreal(sz.height());
     calcDestRect();
     if (!mImage.isNull())
         update();
@@ -87,7 +87,7 @@ void VideoWidget::setFrame(QImage img)
 
 void VideoWidget::resizeEvent(QResizeEvent* e)
 {
-    mWindowAspectRatio = (qreal)e->size().width() / (qreal)e->size().height();
+    mWindowAspectRatio = qreal(e->size().width()) / qreal(e->size().height());
     calcDestRect();
     update();
 }

@@ -28,16 +28,16 @@ void VideoReaderThread::setFile(QString videoFileName)
 }
 
 
-void VideoReaderThread::startReading(int firstFrameNumber, int nFrames, qreal skip)
+void VideoReaderThread::startReading(int firstFrameNumber, int nFrames, qreal frameDelta)
 {
     Q_ASSERT(firstFrameNumber != Project::INVALID_FRAME);
     Q_ASSERT(nFrames > 0);
-    Q_ASSERT(skip > 0);
+    Q_ASSERT(frameDelta > 0);
 
     stopReading();
-    mFrameNumber = (qreal)firstFrameNumber;
+    mFrameNumber = qreal(firstFrameNumber);
     mMaxFrameCount = nFrames;
-    mFrameSkip = skip;
+    mFrameDelta = frameDelta;
     mAbort = false;
     start();
 }
@@ -45,8 +45,10 @@ void VideoReaderThread::startReading(int firstFrameNumber, int nFrames, qreal sk
 
 void VideoReaderThread::stopReading(void)
 {
-    mAbort = true;
-    wait();
+    if (isRunning()) {
+        mAbort = true;
+        wait();
+    }
 }
 
 
@@ -62,7 +64,7 @@ void VideoReaderThread::run(void)
     mDecoder.seekFrame(mFrameNumber);
     mDecoder.getFrame(img, &effFrameNum, &effFrameTime);
     while (!mAbort && frameCount < mMaxFrameCount) {
-        int skip = (int)mFrameNumber - (int)prevFrameNumber;
+        int skip = int(mFrameNumber) - int(prevFrameNumber);
         if (skip > 0) {
             mDecoder.seekNextFrame(skip);
             prevFrameNumber = mFrameNumber;
@@ -70,7 +72,7 @@ void VideoReaderThread::run(void)
         }
         emit frameReady(img, frameCount, effFrameNum, effFrameTime);
         ++frameCount;
-        mFrameNumber += mFrameSkip;
+        mFrameNumber += mFrameDelta;
         percent = 100 * frameCount / mMaxFrameCount;
         if (percent != prevPercent)
             emit percentReady(percent);

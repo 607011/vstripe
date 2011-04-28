@@ -16,7 +16,7 @@ class Project : public QObject
 {
     Q_OBJECT
 public:
-    enum { ID_NONE = 0, ID_A, ID_B };
+    enum { ID_NONE = 0, ID_A = 1, ID_B = 2 };
     enum { INVALID_FRAME = -1 };
 
     struct mark_type {
@@ -49,7 +49,6 @@ public:
     bool markBIsSet(void) const;
     inline int currentFrame(void) const { return mCurrentFrame; }
     inline const QVector<mark_type>& marks(void) const { return mMarks; }
-    inline int stripeWidth(void) const { return mStripeWidth; }
     inline int stripePos(void) const { return mStripePos; }
     inline bool stripeIsFixed(void) const { return mFixedStripe; }
     inline bool stripeIsVertical(void) const { return mVerticalStripe; }
@@ -76,7 +75,6 @@ private: // members
     QXmlStreamReader mXml;
 
     QVector<mark_type> mMarks;
-    int mStripeWidth; // Streifen dieser Breite (Pixel) werden von jedem eingelesenen Frame behalten
     bool mFixedStripe; // true: der Streifen bleibt fest an der gewählten Position; false: der Streifen bewegt sich mit jedem Frame um mStripeWidth Pixel weiter
     bool mVerticalStripe;
     int mStripePos;
