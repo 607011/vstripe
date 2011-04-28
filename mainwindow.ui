@@ -503,13 +503,14 @@
     <addaction name="separator"/>
     <addaction name="actionHelp"/>
     <addaction name="actionAbout"/>
+    <addaction name="actionGnat_z"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
     </property>
     <addaction name="actionClear_marks"/>
-    <addaction name="actionFit_preview_to_frame_range"/>
+    <addaction name="actionAutofit_preview"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuEdit"/>
@@ -623,12 +624,14 @@
     <string>Save project</string>
    </property>
   </action>
-  <action name="actionFit_preview_to_frame_range">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
+  <action name="actionAutofit_preview">
    <property name="text">
-    <string>Fit preview to frame range</string>
+    <string>A&amp;utofit preview</string>
+   </property>
+  </action>
+  <action name="actionGnat_z">
+   <property name="text">
+    <string>Gnat&amp;z</string>
    </property>
   </action>
  </widget>

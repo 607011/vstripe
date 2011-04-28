@@ -354,6 +354,8 @@ void MainWindow::setMarkA(void)
 {
     mProject.setMarkA(ui->AButton->isChecked()? mEffectiveFrameNumber : Project::INVALID_FRAME);
     mFrameSlider->update();
+    if (mProject.markBIsSet())
+        ui->infoPlainTextEdit->appendPlainText(tr("%1 frames selected").arg(mProject.markB() - mProject.markA()));
 }
 
 
@@ -361,6 +363,8 @@ void MainWindow::setMarkB(void)
 {
     mProject.setMarkB(ui->BButton->isChecked()? mEffectiveFrameNumber : Project::INVALID_FRAME);
     mFrameSlider->update();
+    if (mProject.markAIsSet())
+        ui->infoPlainTextEdit->appendPlainText(tr("%1 frames selected").arg(mProject.markB() - mProject.markA()));
 }
 
 
@@ -547,6 +551,8 @@ void MainWindow::openProject(const QString& fileName)
         mFrameSlider->setValue(mProject.currentFrame());
     mVideoWidget->setStripePos(mProject.stripePos());
     mVideoWidget->setStripeOrientation(mProject.stripeIsVertical());
+    if (mProject.markAIsSet() && mProject.markBIsSet())
+        ui->infoPlainTextEdit->appendPlainText(tr("%1 frames selected").arg(mProject.markB() - mProject.markA()));
     updateButtons();
 }
 
