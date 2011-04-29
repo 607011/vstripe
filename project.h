@@ -16,15 +16,15 @@ class Project : public QObject
 {
     Q_OBJECT
 public:
-    enum { ID_NONE = 0, ID_A = 1, ID_B = 2 };
-    enum { INVALID_FRAME = -1 };
+    enum MarkId { ID_NONE = 0, ID_A = 1, ID_B = 2 };
+    enum FrameType { INVALID_FRAME = -1 };
 
     struct mark_type {
-        mark_type(int frame = Project::INVALID_FRAME) : id(Project::ID_NONE), frame(frame) {}
-        mark_type(int id, int frame) : id(id), frame(frame) {}
-        mark_type(int id, int frame, const QString& name) : id(id), frame(frame), name(name) {}
-        mark_type(int frame, const QString& name) : id(Project::ID_NONE), frame(frame), name(name) {}
-        int id;
+        mark_type(int frame = INVALID_FRAME) : id(ID_NONE), frame(frame) {}
+        mark_type(MarkId id, int frame) : id(id), frame(frame) {}
+        mark_type(MarkId id, int frame, const QString& name) : id(id), frame(frame), name(name) {}
+        mark_type(int frame, const QString& name) : id(ID_NONE), frame(frame), name(name) {}
+        MarkId id;
         int frame;
         QString name;
         bool isNull(void) const { return frame < 0; }

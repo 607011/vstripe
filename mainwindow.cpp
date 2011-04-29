@@ -36,6 +36,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
 
     connect(ui->action_OpenVideoFile, SIGNAL(triggered()), this, SLOT(openVideoFile()));
     connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
+    connect(ui->actionAutofitPreview, SIGNAL(triggered()), this, SLOT(autoFitPreview()));
 
     mFrameSlider = new MarkableSlider(&mProject);
     mFrameSlider->setEnabled(false);
@@ -233,7 +234,8 @@ void MainWindow::openRecentVideoFile(void)
             loadVideoFile();
         }
         else
-            QMessageBox::critical(this, tr("File does not exist"), tr("File '%1' does not exist").arg(fileName));    }
+            QMessageBox::critical(this, tr("File does not exist"), tr("File '%1' does not exist").arg(fileName));
+    }
 }
 
 
@@ -468,6 +470,7 @@ void MainWindow::decodingFinished()
 void MainWindow::enableGuiButtons(void)
 {
     ui->frameNumberLineEdit->setEnabled(true);
+    ui->frameTimeLineEdit->setEnabled(true);
     ui->setParamsButton->setEnabled(true);
     ui->renderButton->setEnabled(true);
     mFrameSlider->setEnabled(true);
@@ -483,13 +486,14 @@ void MainWindow::enableGuiButtons(void)
     ui->action_CloseVideoFile->setEnabled(true);
     ui->action_Save_picture->setEnabled(true);
     ui->actionClear_marks->setEnabled(true);
-    // ui->actionFit_preview_to_frame_range->setEnabled(true);
+    ui->actionAutofitPreview->setEnabled(true);
 }
 
 
 void MainWindow::disableGuiButtons(void)
 {
     ui->frameNumberLineEdit->setEnabled(false);
+    ui->frameTimeLineEdit->setEnabled(false);
     ui->setParamsButton->setEnabled(false);
     ui->renderButton->setEnabled(false);
     mFrameSlider->setEnabled(false);
@@ -505,7 +509,7 @@ void MainWindow::disableGuiButtons(void)
     ui->action_CloseVideoFile->setEnabled(false);
     ui->action_Save_picture->setEnabled(false);
     ui->actionClear_marks->setEnabled(false);
-    // ui->actionFit_preview_to_frame_range->setEnabled(false);
+    ui->actionAutofitPreview->setEnabled(false);
 }
 
 
@@ -667,4 +671,10 @@ void MainWindow::savePicture(void)
 {
     QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save picture as ..."), QString(), "*.png, *.jpg");
     mPictureWidget->picture().save(saveFileName);
+}
+
+
+void MainWindow::autoFitPreview(void)
+{
+    mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize()); // XXX
 }

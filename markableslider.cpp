@@ -22,6 +22,7 @@ void MarkableSlider::paintEvent(QPaintEvent* event)
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
     painter.setRenderHint(QPainter::Antialiasing);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
     qreal scale = qreal(width()) / qreal(maximum());
     foreach (Project::mark_type m, mProject->marks()) {
         if (m.frame == Project::INVALID_FRAME) {

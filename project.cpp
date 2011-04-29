@@ -26,7 +26,7 @@ Project::mark_type Project::readMarkTag(void)
 
     int frame = Project::INVALID_FRAME;
     QString name;
-    int id;
+    MarkId id = Project::ID_NONE;
     while (!(mXml.tokenType() == QXmlStreamReader::EndElement && mXml.name() == "mark")) {
         if (mXml.tokenType() == QXmlStreamReader::StartElement) {
             if (mXml.name() == "mark") {

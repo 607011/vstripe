@@ -70,6 +70,7 @@ public slots:
     void fileDropped(const QString&);
     void setPictureSize(const QSize&);
     void setStripeOrientation(bool vertical);
+    void autoFitPreview(void);
 
 protected:
     void closeEvent(QCloseEvent*);
