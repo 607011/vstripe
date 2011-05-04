@@ -3,18 +3,20 @@ QT       += core gui xml
 TARGET = VStripe
 TEMPLATE = app
 
-INCLUDEPATH += ../ffmpeg-32-bit-static/include \
-    ../ffmpeg-32-bit-static/include/libavcodec \
-    ../ffmpeg-32-bit-static/include/libavformat \
-    ../ffmpeg-32-bit-static/include/libavutil \
-    ../ffmpeg-32-bit-static/include/libavdevice \
-    ../ffmpeg-32-bit-static/include/libavfilter \
-    ../ffmpeg-32-bit-static/include/libswscale
+FFMPEGDIR = ../ffmpeg-static
+
+INCLUDEPATH += $${FFMPEGDIR}/include \
+    $${FFMPEGDIR}/include/libavcodec \
+    $${FFMPEGDIR}/include/libavformat \
+    $${FFMPEGDIR}/include/libavutil \
+    $${FFMPEGDIR}/include/libavdevice \
+    $${FFMPEGDIR}/include/libavfilter \
+    $${FFMPEGDIR}/include/libswscale
 
 DEFINES += __STDC_CONSTANT_MACROS
 
-win32:LIBS += -L../ffmpeg-32-bit-static/lib -lavcodec.dll -lavformat.dll -lavutil.dll -lswscale.dll
-unix:LIBS += -L../ffmpeg-32-bit-static/lib -lavcodec -lavformat -lavutil -lswscale
+win32:LIBS += -L$${FFMPEGDIR}/lib -lavcodec.dll -lavformat.dll -lavutil.dll -lswscale.dll
+unix:LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
 
 SOURCES += main.cpp\
     mainwindow.cpp \
@@ -36,5 +38,4 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-RESOURCES += \
-    vstripe.qrc
+# RESOURCES += vstripe.qrc
