@@ -649,6 +649,7 @@ void MainWindow::loadVideoFile(void)
     ui->actionSave_project_as->setEnabled(true);
     seekToFrame(0);
     enableGuiButtons();
+    mProject.clearMarks();
     ui->statusBar->showMessage(tr("Ready."), 2000);
 }
 
