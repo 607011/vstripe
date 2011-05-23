@@ -13,6 +13,8 @@ INCLUDEPATH += $${FFMPEGDIR}/include \
     $${FFMPEGDIR}/include/libavfilter \
     $${FFMPEGDIR}/include/libswscale
 
+QMAKE_INFO_PLIST = VStripe.plist
+
 DEFINES += __STDC_CONSTANT_MACROS
 
 win32:LIBS += -L$${FFMPEGDIR}/lib -lavcodec.dll -lavformat.dll -lavutil.dll -lswscale.dll
