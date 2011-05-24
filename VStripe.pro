@@ -1,9 +1,29 @@
+# $Id$
+# Copyright (c) 2011 Oliver Lau <oliver@von-und-fuer-lau.de>, Heise Zeitschriften Verlag. All rights reserved.
+
 QT       += core gui xml
 
 TARGET = VStripe
 TEMPLATE = app
 
+win32 {
 FFMPEGDIR = ../ffmpeg-static
+RC_FILE = VStripe.rc
+LIBS += -L$${FFMPEGDIR}/lib -lavcodec.dll -lavformat.dll -lavutil.dll -lswscale.dll
+}
+
+unix:!macx {
+FFMPEGDIR = ../ffmpeg-static
+LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
+}
+
+macx {
+FFMPEGDIR = /opt
+ICON = VStripe.icns
+QMAKE_INFO_PLIST = VStripe.plist
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.3
+LIBS += -L$${FFMPEGDIR}/local/lib -lavcodec -lavformat -lavutil -lswscale
+}
 
 INCLUDEPATH += $${FFMPEGDIR}/include \
     $${FFMPEGDIR}/include/libavcodec \
@@ -13,12 +33,8 @@ INCLUDEPATH += $${FFMPEGDIR}/include \
     $${FFMPEGDIR}/include/libavfilter \
     $${FFMPEGDIR}/include/libswscale
 
-QMAKE_INFO_PLIST = VStripe.plist
 
 DEFINES += __STDC_CONSTANT_MACROS
-
-win32:LIBS += -L$${FFMPEGDIR}/lib -lavcodec.dll -lavformat.dll -lavutil.dll -lswscale.dll
-unix:LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
 
 SOURCES += main.cpp\
     mainwindow.cpp \
@@ -41,8 +57,3 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 
 RESOURCES += vstripe.qrc
-
-win32:RC_FILE = VStripe.rc
-macx:RC_FILE = VStripe.icns
-
-
