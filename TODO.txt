@@ -13,3 +13,6 @@ TODO
     
     NOTIZEN: Versuche mit dem Abfangen von showEvent() und changeEvent() führten ins Leere.
 
+[ ] Icons für Windows: http://msdn.microsoft.com/de-de/library/ms997636.aspx
+
+[ ] Icons für Mac OS X: http://www.macinstruct.com/node/59 http://doc.qt.nokia.com/4.7/appicon.html
