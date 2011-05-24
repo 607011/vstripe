@@ -1,6 +1,8 @@
 TODO
 ====
 
+[ ] Beim Laden eines Projekts werden die Markierungen kurz angezeigt, verschwinden dann aber wieder.
+
 [ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
 
 [ ] Mehr Informationen über das Video in infoPlainTextEdit ausgeben, z.B. Framerate, Codec-Kurzname, Format-Kurzname, ...

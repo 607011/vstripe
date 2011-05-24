@@ -193,6 +193,7 @@ void MainWindow::fileDropped(const QString& fileName)
         else {
             setCurrentVideoFile(fileName);
             loadVideoFile();
+            mProject.clearMarks();
         }
     }
     else QMessageBox::critical(this, tr("File does not exist"), tr("File '%1' does not exist").arg(fileName));
@@ -232,6 +233,7 @@ void MainWindow::openRecentVideoFile(void)
         if (fi.isFile() && fi.isReadable()) {
             setCurrentVideoFile(fileName);
             loadVideoFile();
+            mProject.clearMarks();
         }
         else
             QMessageBox::critical(this, tr("File does not exist"), tr("File '%1' does not exist").arg(fileName));
@@ -618,6 +620,7 @@ void MainWindow::openVideoFile(void)
         return;
     setCurrentVideoFile(fileName);
     loadVideoFile();
+    mProject.clearMarks();
 }
 
 
@@ -649,7 +652,6 @@ void MainWindow::loadVideoFile(void)
     ui->actionSave_project_as->setEnabled(true);
     seekToFrame(0);
     enableGuiButtons();
-    mProject.clearMarks();
     ui->statusBar->showMessage(tr("Ready."), 2000);
 }
 
