@@ -41,3 +41,8 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 
 RESOURCES += vstripe.qrc
+
+win32:RC_FILE = VStripe.rc
+macx:RC_FILE = VStripe.icns
+
+
