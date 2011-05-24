@@ -40,4 +40,4 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-# RESOURCES += vstripe.qrc
+RESOURCES += vstripe.qrc
