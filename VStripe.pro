@@ -1,7 +1,7 @@
 # $Id$
 # Copyright (c) 2011 Oliver Lau <oliver@von-und-fuer-lau.de>, Heise Zeitschriften Verlag. All rights reserved.
 
-QT       += core gui xml
+QT += core gui xml
 
 TARGET = VStripe
 TEMPLATE = app
@@ -19,7 +19,6 @@ LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
 
 macx {
 FFMPEGDIR = /opt/local
-ICON = VStripe.icns
 QMAKE_INFO_PLIST = VStripe.plist
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.3
 LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
