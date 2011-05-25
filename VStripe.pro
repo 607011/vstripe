@@ -18,11 +18,11 @@ LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
 }
 
 macx {
-FFMPEGDIR = /opt
+FFMPEGDIR = /opt/local
 ICON = VStripe.icns
 QMAKE_INFO_PLIST = VStripe.plist
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.3
-LIBS += -L$${FFMPEGDIR}/local/lib -lavcodec -lavformat -lavutil -lswscale
+LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
 }
 
 INCLUDEPATH += $${FFMPEGDIR}/include \
