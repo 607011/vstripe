@@ -1,4 +1,4 @@
-/* Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+/* Copyright (c) 2011 Oliver Lau <oliver@von-und-fuer-lau.de>
  * All rights reserved.
  * $Id$
  */
@@ -47,8 +47,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     mVideoReaderThread = new VideoReaderThread;
     connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
     connect(mVideoReaderThread, SIGNAL(percentReady(int)), this, SLOT(showPercentReady(int)));
-    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,int,int,int)), this, SLOT(frameReady(QImage,int,int,int)));
-    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,int,int,int)), mVideoWidget, SLOT(setFrame(QImage)));
+    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,int,int,int)), this, SLOT(frameReady(QImage,int,int,int)), Qt::QueuedConnection);
+    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,int,int,int)), mVideoWidget, SLOT(setFrame(QImage)), Qt::QueuedConnection);
 
     mPictureWidget = new PictureWidget;
     connect(ui->actionPreview_picture, SIGNAL(toggled(bool)), this, SLOT(togglePictureWidget(bool)));
@@ -144,10 +144,10 @@ void MainWindow::restoreAppSettings(void)
     mPictureWidget->restoreGeometry(settings.value("PictureWidget/geometry").toByteArray());
     updateRecentVideoFileActions();
     updateRecentProjectFileActions();
-    for (int i = 0; i < MaxRecentFiles; ++i)
+    for (int i = 0; i < MaxRecentFiles; ++i) {
         ui->menuOpen_recent_video->addAction(recentVideoFileActs[i]);
-    for (int i = 0; i < MaxRecentFiles; ++i)
         ui->menuOpen_recent_project->addAction(recentProjectFileActs[i]);
+    }
 }
 
 
