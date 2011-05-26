@@ -19,6 +19,15 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <layout class="QHBoxLayout" name="sliderLayout">
+        <property name="spacing">
+         <number>8</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
         <item>
          <widget class="QPushButton" name="prevMarkButton">
           <property name="enabled">
@@ -360,6 +369,12 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>23</height>
+             </size>
+            </property>
             <property name="text">
              <string>Start rendering</string>
             </property>
@@ -394,11 +409,20 @@
           <property name="title">
            <string>Current frame</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_3">
+          <layout class="QGridLayout" name="gridLayout_3" rowminimumheight="0,0">
            <item row="1" column="0">
             <layout class="QFormLayout" name="formLayout">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetMinimumSize</enum>
+             </property>
              <property name="fieldGrowthPolicy">
-              <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+              <enum>QFormLayout::ExpandingFieldsGrow</enum>
+             </property>
+             <property name="horizontalSpacing">
+              <number>12</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>12</number>
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="frameNumberLabel">
@@ -414,6 +438,12 @@
               <widget class="QLineEdit" name="frameNumberLineEdit">
                <property name="enabled">
                 <bool>false</bool>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>22</height>
+                </size>
                </property>
                <property name="inputMask">
                 <string/>
@@ -432,22 +462,34 @@
                <property name="enabled">
                 <bool>false</bool>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>22</height>
+                </size>
+               </property>
                <property name="placeholderText">
                 <string>hh:mm:ss.zzz</string>
                </property>
               </widget>
              </item>
+             <item row="2" column="1">
+              <widget class="QPushButton" name="setParamsButton">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>22</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Go to</string>
+               </property>
+              </widget>
+             </item>
             </layout>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="setParamsButton">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Go to</string>
-             </property>
-            </widget>
            </item>
           </layout>
          </widget>
