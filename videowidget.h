@@ -1,4 +1,4 @@
-/* Copyright (c) 2011 Oliver Lau <oliver@ersatzworld.net>
+/* Copyright (c) 2011 Oliver Lau <oliver@von-und-fuer-lau.de>
  * All rights reserved.
  * $Id$
  */

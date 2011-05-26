@@ -1,7 +1,7 @@
 /*
         QTFFmpegWrapper - QT FFmpeg Wrapper Class
         Copyright (C) 2009,2010: Daniel Roggen, droggen@gmail.com
-        Changes by Oliver Lau <oliver@ersatzworld.net>
+        Changes by Oliver Lau <oliver@von-und-fuer-lau.de>
 
         All rights reserved.
 

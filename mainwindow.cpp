@@ -526,7 +526,7 @@ void MainWindow::about(void)
 {
     QMessageBox::about(this, tr("About %1").arg(MainWindow::AppName),
         tr("<p><strong>%1</strong> &ndash; Generate synchroballistic photography alike images from footage.</p>"
-           "<p>Copyright (c) 2011 Oliver Lau &lt;oliver@ersatzworld.net&gt;</p>"
+           "<p>Copyright (c) 2011 Oliver Lau &lt;oliver@von-und-fuer-lau.de&gt;</p>"
            "<p>VideoDecoder Copyright (c) 2009-2010 by Daniel Roggen &lt;droggen@gmail.com&gt;</p>"
            "<p>All rights reserved.</p>").arg(MainWindow::AppName));
 }
