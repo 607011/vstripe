@@ -14,7 +14,7 @@ LIBS += -L$${FFMPEGDIR}/lib -lavcodec.dll -lavformat.dll -lavutil.dll -lswscale.
 
 unix:!macx {
 FFMPEGDIR = ../ffmpeg-static
-LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
+LIBS += -L$${FFMPEGDIR}/lib -lavformat -lavcodec -lavutil -lswscale
 }
 
 macx {
