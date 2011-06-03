@@ -1,0 +1,20 @@
+TODO
+====
+
+[ ] Beim Laden eines Projekts werden die Markierungen kurz angezeigt, verschwinden dann aber wieder.
+
+[ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
+
+[ ] Mehr Informationen über das Video in infoPlainTextEdit ausgeben, z.B. Framerate, Codec-Kurzname, Format-Kurzname, ...
+
+[ ] Unter Linux und Mac OS X testen
+
+[ ] Hilfe implementieren (actionHelp)
+
+[ ] fileDropped(argv[1]) darf in MainWindow erst aufgerufen werden, wenn das Fenster aufgebaut ist.
+    
+    NOTIZEN: Versuche mit dem Abfangen von showEvent() und changeEvent() führten ins Leere.
+
+[ ] Icons für Windows: http://msdn.microsoft.com/de-de/library/ms997636.aspx
+
+[ ] Icons für Mac OS X: http://www.macinstruct.com/node/59 http://doc.qt.nokia.com/4.7/appicon.html
