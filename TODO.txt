@@ -1,7 +1,7 @@
 TODO
 ====
 
-[ ] Beim Laden eines Projekts werden die Markierungen kurz angezeigt, verschwinden dann aber wieder.
+[ ] Deflicker-Funktion à la LRTimeLapse implementieren
 
 [ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
 
