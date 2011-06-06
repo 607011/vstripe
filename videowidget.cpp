@@ -80,8 +80,7 @@ void VideoWidget::setStripeOrientation(bool vertical)
 void VideoWidget::setFrame(QImage img)
 {
     mImage = img;
-    if (!mImage.isNull())
-        update();
+    update();
 }
 
 
@@ -101,9 +100,8 @@ void VideoWidget::paintEvent(QPaintEvent*)
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(30, 30, 30));
     painter.drawRect(0, 0, width(), height());
-    if (mImage.isNull())
-        return;
-    painter.drawImage(mDestRect, mImage);
+    if (!mImage.isNull())
+        painter.drawImage(mDestRect, mImage);
     painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
     // draw stripe or direction marker
     if (mVerticalStripe) {

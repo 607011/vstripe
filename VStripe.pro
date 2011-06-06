@@ -3,6 +3,8 @@
 
 QT += core gui xml
 
+CONFIG += warn_on thread qt
+
 TARGET = VStripe
 TEMPLATE = app
 
@@ -19,9 +21,16 @@ LIBS += -L$${FFMPEGDIR}/lib -lavformat -lavcodec -lavutil -lswscale
 
 macx {
 FFMPEGDIR = /opt/local
+OPENCVDIR = /opt/local
 ICON = VStripe.icns
 QMAKE_INFO_PLIST = VStripe.plist
-LIBS += -L$${FFMPEGDIR}/lib -lavformat -lavcodec -lavutil -lswscale
+QMAKE_CXXFLAGS += -msse -msse2 -msse3
+# QMAKE_CXXFLAGS += -static -fvisibility=hidden
+LIBS += -L$${FFMPEGDIR}/lib \
+    -lavformat \
+    -lavcodec \
+    -lavutil \
+    -lswscale
 }
 
 INCLUDEPATH += $${FFMPEGDIR}/include \

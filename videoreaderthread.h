@@ -22,11 +22,13 @@ public:
     explicit VideoReaderThread(QObject* parent = NULL);
     ~VideoReaderThread();
 
-    void setFile(QString videoFileName);
+    bool setFile(QString videoFileName);
     void startReading(int firstFrameNumber, int numFrames, qreal frameDelta = 1);
     void stopReading(void);
 
     VideoDecoder* decoder(void) { return &mDecoder; }
+
+    enum VideoSource { NOTAVAILABLE = 0, WEBCAM, FILE };
 
 signals:
     void percentReady(int);
@@ -43,6 +45,7 @@ private:
     int mMaxFrameCount;
     qreal mFrameNumber;
     qreal mFrameDelta;
+    VideoSource videoSource;
 };
 
 #endif // VIDEOREADERTHREAD_H

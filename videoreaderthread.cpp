@@ -9,7 +9,7 @@
 #include "project.h"
 
 VideoReaderThread::VideoReaderThread(QObject* parent)
-    : QThread(parent)
+    : QThread(parent), videoSource(NOTAVAILABLE)
 {
 }
 
@@ -20,11 +20,12 @@ VideoReaderThread::~VideoReaderThread()
 }
 
 
-void VideoReaderThread::setFile(QString videoFileName)
+bool VideoReaderThread::setFile(QString videoFileName)
 {
     Q_ASSERT(!videoFileName.isNull());
 
-    mDecoder.openFile(videoFileName.toLatin1().constData());
+    bool ok = mDecoder.openFile(videoFileName.toLatin1().constData());
+    return ok;
 }
 
 
