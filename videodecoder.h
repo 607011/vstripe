@@ -28,11 +28,12 @@ public:
     bool seekFrame(qint64);
     int getVideoLengthMs(void);
     int getDefaultSkip(void) const { return mDefaultSkip; }
-    inline bool isOk(void) const {return mOk; }
+    inline bool isOk(void) const { return mOk; }
     QSize frameSize(void) const;
     ffmpeg::AVFormatContext* formatCtx(void) const { return mFormatCtx; }
     ffmpeg::AVCodecContext* codecCtx(void) const { return mCodecCtx; }
     ffmpeg::AVCodec* codec(void) const { return mCodec; }
+    bool decodeOk(void) const { return mFormatCtx != NULL && mCodecCtx != NULL && mCodec != NULL; }
 
 private: // variables
     // Basic FFmpeg stuff

@@ -109,6 +109,8 @@ bool VideoDecoder::openFile(const char* filename)
     if (mVideoStream == -1)
         return false; // Didn't find a video stream
     mCodecCtx = mFormatCtx->streams[mVideoStream]->codec;
+    if (mCodecCtx == NULL)
+        return false;
     mCodec = ffmpeg::avcodec_find_decoder(mCodecCtx->codec_id);
     if (mCodec == NULL)
         return false; // Codec not found

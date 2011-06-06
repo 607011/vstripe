@@ -1,6 +1,10 @@
 TODO
 ====
 
+[ ] Anzahl der mit [A und B] markierten Frames anzeigen
+
+[ ] Einlesen in Echtzeit von Webcam oder anderer angeschlossener Videokamera
+
 [ ] Deflicker-Funktion à la LRTimeLapse implementieren
 
 [ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert

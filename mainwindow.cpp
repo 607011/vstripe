@@ -626,7 +626,9 @@ void MainWindow::openVideoFile(void)
 
 void MainWindow::loadVideoFile(void)
 {
-    mVideoReaderThread->setFile(mProject.videoFileName());
+    bool ok = mVideoReaderThread->setFile(mProject.videoFileName());
+    if (!ok)
+        return; // TODO: display alert dialog
     mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
     ui->action_CloseVideoFile->setEnabled(true);
     mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
