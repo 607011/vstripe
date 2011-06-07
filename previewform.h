@@ -10,6 +10,7 @@
 #include <QSlider>
 #include "picturewidget.h"
 
+
 namespace Ui {
     class PreviewForm;
 }
@@ -21,14 +22,25 @@ class PreviewForm : public QWidget
 public:
     explicit PreviewForm(QWidget* parent = 0);
     ~PreviewForm();
+    void setVisible(bool visible);
+    void setSizeConstraint(const QSize&, const QSize&);
 
     PictureWidget* pictureWidget(void) { return mPictureWidget; }
     QSlider* levelSlider(void);
 
+signals:
+    void visibilityChanged(bool);
+    void sizeChanged(const QSize&);
+
+protected:
+    void resizeEvent(QResizeEvent*);
+    void closeEvent(QCloseEvent*);
+
 private:
     Ui::PreviewForm *ui;
-
     PictureWidget* mPictureWidget;
+    static const QString WinTitle;
+
 };
 
 #endif // PREVIEWFORM_H

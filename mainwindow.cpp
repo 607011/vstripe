@@ -61,7 +61,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
         mPreviewForm->show();
     connect(mPreviewForm, SIGNAL(visibilityChanged(bool)), ui->actionPreview_picture, SLOT(setChecked(bool)));
     connect(mPreviewForm, SIGNAL(sizeChanged(const QSize&)), this, SLOT(setPictureSize(const QSize&)));
-
     connect(mPreviewForm->levelSlider(), SIGNAL(valueChanged(int)), this, SLOT(deflicker(int)));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
@@ -284,10 +283,10 @@ void MainWindow::setStripeOrientation(bool vertical)
 {
     if (mCurrentFrame.isNull())
         return;
-//    if (vertical)
-//        mPreviewForm->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
-//    else
-//        mPreviewForm->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
+    if (vertical)
+        mPreviewForm->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
+    else
+        mPreviewForm->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
     mPreviewForm->resize(mVideoReaderThread->decoder()->frameSize());
 }
 
@@ -690,9 +689,9 @@ void MainWindow::loadVideoFile(void)
     mCurrentFrame.fill(qRgb(116, 214, 252));
     mPreviewForm->pictureWidget()->resize(mVideoReaderThread->decoder()->frameSize());
     if (mProject.stripeIsVertical())
-        mPreviewForm->pictureWidget()->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
+        mPreviewForm->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
     else
-        mPreviewForm->pictureWidget()->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
+        mPreviewForm->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
     mPreviewForm->pictureWidget()->setPicture(QImage());
     showPictureWidget();
     QImage img;
@@ -737,5 +736,5 @@ void MainWindow::savePicture(void)
 
 void MainWindow::autoFitPreview(void)
 {
-    mPreviewForm->pictureWidget()->resize(mVideoReaderThread->decoder()->frameSize()); // XXX
+    mPreviewForm->resize(mVideoReaderThread->decoder()->frameSize()); // XXX
 }

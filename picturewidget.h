@@ -10,30 +10,25 @@
 #include <QImage>
 #include <QResizeEvent>
 
+#include "histogram.h"
+
 class PictureWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit PictureWidget(QWidget* parent = NULL);
     QSize minimumSizeHint(void) const { return QSize(720, 576); }
-    void setVisible(bool visible);
     void setPicture(const QImage&);
-    void setSizeConstraint(const QSize&, const QSize&);
+    void setBrightnessData(BrightnessData*);
     inline const QImage& picture(void) const { return mImage; }
-
-signals:
-    void visibilityChanged(bool);
-    void sizeChanged(const QSize&);
 
 protected:
     void paintEvent(QPaintEvent*);
-    void resizeEvent(QResizeEvent*);
-    void closeEvent(QCloseEvent*);
 
 private:
     QImage mImage;
+    BrightnessData* brightnessData;
 
-    static const QString WinTitle;
 };
 
 #endif // PICTUREWIDGET_H

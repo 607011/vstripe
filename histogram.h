@@ -11,6 +11,8 @@
 #include <QDebug>
 
 typedef QVector<unsigned int> HistogramData;
+typedef QVector<qreal> BrightnessData;
+
 
 class Histogram {
 public:
