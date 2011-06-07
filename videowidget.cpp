@@ -131,7 +131,6 @@ void VideoWidget::resizeEvent(QResizeEvent* e)
 void VideoWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
     // draw background
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(30, 30, 30));
@@ -140,17 +139,19 @@ void VideoWidget::paintEvent(QPaintEvent*)
         painter.drawImage(mDestRect, mImage);
     painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
     if (mDrawHistogram) {
-        const int hh = 192, x0 = 10, y0 = 10;
+        const int hh = 128, x0 = 8, y0 = 8;
         const qreal hs = (int) (hh / mHistogramMax);
-        painter.setPen(QColor(0xff, 0xff, 0xff, 0x99));
+        painter.setPen(QColor(0xff, 0xff, 0xff, 0x66));
         painter.setBrush(QColor(0xff, 0xff, 0xff, 0x66));
-        painter.drawRect(x0, y0, 256, 192);
+        painter.drawRect(x0, y0, HistogramBinCount, hh);
         painter.setPen(QColor(0x33, 0x33, 0x33, 0x80));
         painter.setBrush(Qt::NoBrush);
         for (int i = 0; i < HistogramBinCount; ++i)
             painter.drawLine(x0+i, y0+hh, x0+i, y0+hh-(int)(mHistogram[i]*hs));
     }
     // draw stripe or direction marker
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(Qt::NoPen);
     if (mVerticalStripe) {
         if (mStripePos >= 0) {
             painter.setBrush(QColor(0xff, 0x00, 0x00, 0xcc));
