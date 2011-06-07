@@ -14,6 +14,7 @@
 
 #include "videowidget.h"
 #include "videodecoder.h"
+#include "histogram.h"
 
 class VideoReaderThread : public QThread
 {
@@ -27,14 +28,18 @@ public:
     void stopReading(void);
 
     VideoDecoder* decoder(void) { return &mDecoder; }
+    const Histogram& histogram(void) const { return mHistogram; }
 
     enum VideoSource { NOTAVAILABLE = 0, WEBCAM, FILE };
 
-signals:
-    void percentReady(int);
-    void frameReady(QImage, int, int, int);
+    void calcHistogram(const QImage& img);
 
 public slots:
+    void setHistogramEnabled(bool enabled = true);
+
+signals:
+    void percentReady(int);
+    void frameReady(QImage, Histogram, int, int, int);
 
 protected:
     void run(void);
@@ -45,7 +50,9 @@ private:
     int mMaxFrameCount;
     qreal mFrameNumber;
     qreal mFrameDelta;
+    Histogram mHistogram;
     VideoSource videoSource;
+    bool mHistogramEnabled;
 };
 
 #endif // VIDEOREADERTHREAD_H

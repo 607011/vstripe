@@ -18,6 +18,8 @@
 #include <QUrl>
 
 #include "ffmpeg.h"
+#include "videoreaderthread.h"
+#include "histogram.h"
 
 class VideoWidget : public QWidget
 {
@@ -35,7 +37,8 @@ public:
 public slots:
     void setFrameSize(const QSize&);
     void setStripeWidth(int);
-    void setFrame(QImage);
+    void setFrame(QImage, Histogram);
+    void setHistogramEnabled(bool enabled = true);
 
 protected:
     void paintEvent(QPaintEvent*);
@@ -48,10 +51,8 @@ protected:
 
 private:
     QImage mImage;
-    static const int HistogramBinCount = 256;
-    qreal mHistogram[HistogramBinCount];
-    qreal mHistogramMax;
-    bool mDrawHistogram;
+    bool mHistogramEnabled;
+    Histogram mHistogram;
     qreal mWindowAspectRatio;
     qreal mFrameAspectRatio;
     QRect mDestRect;
@@ -59,12 +60,10 @@ private:
     bool mDragging;
     bool mVerticalStripe;
     int mStripePos;
-    bool mCalculating;
     QPoint mMousePos;
 
     void calcDestRect(void);
     void calcStripePos(void);
-    qreal calcHistogram(void);
 
 
 signals:

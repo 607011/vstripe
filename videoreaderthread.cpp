@@ -9,8 +9,9 @@
 #include "project.h"
 
 VideoReaderThread::VideoReaderThread(QObject* parent)
-    : QThread(parent), videoSource(NOTAVAILABLE)
+    : QThread(parent), videoSource(NOTAVAILABLE), mHistogramEnabled(true)
 {
+    /* ... */
 }
 
 
@@ -53,6 +54,25 @@ void VideoReaderThread::stopReading(void)
 }
 
 
+void VideoReaderThread::setHistogramEnabled(bool enabled)
+{
+    mHistogramEnabled = enabled;
+}
+
+
+
+void VideoReaderThread::calcHistogram(const QImage& img)
+{
+    mHistogram.init(img.width() * img.height());
+    for (int y = 0; y < img.height(); ++y) {
+        const QRgb* d = reinterpret_cast<const QRgb*>(img.scanLine(y));
+        for (int x = 0; x < img.width(); ++x, ++d)
+            mHistogram.add((qRed(*d) + qGreen(*d) + qBlue(*d)) / 3);
+    }
+    mHistogram.postprocess();
+}
+
+
 void VideoReaderThread::run(void)
 {
     Q_ASSERT(mFrameNumber != Project::INVALID_FRAME);
@@ -60,18 +80,19 @@ void VideoReaderThread::run(void)
     qreal prevFrameNumber = mFrameNumber;
     int frameCount = 0;
     int percent = 0, prevPercent = 0;
-    QImage img;
     int effFrameNum, effFrameTime;
     mDecoder.seekFrame(mFrameNumber);
-    mDecoder.getFrame(img, &effFrameNum, &effFrameTime);
+    QImage img;
     while (!mAbort && frameCount < mMaxFrameCount) {
         int skip = int(mFrameNumber) - int(prevFrameNumber);
         if (skip > 0) {
             mDecoder.seekNextFrame(skip);
             prevFrameNumber = mFrameNumber;
-            mDecoder.getFrame(img, &effFrameNum, &effFrameTime);
         }
-        emit frameReady(img, frameCount, effFrameNum, effFrameTime);
+        mDecoder.getFrame(img, &effFrameNum, &effFrameTime);
+        if (skip > 0 && mHistogramEnabled)
+            calcHistogram(img);
+        emit frameReady(img, mHistogram, frameCount, effFrameNum, effFrameTime);
         ++frameCount;
         mFrameNumber += mFrameDelta;
         percent = 100 * frameCount / mMaxFrameCount;

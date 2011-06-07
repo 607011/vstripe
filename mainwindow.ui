@@ -500,7 +500,7 @@
      <x>0</x>
      <y>0</y>
      <width>995</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -564,6 +564,8 @@
      <addaction name="separator"/>
     </widget>
     <addaction name="menuUse_video_camera"/>
+    <addaction name="actionHistogram"/>
+    <addaction name="actionDeflicker"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuEdit"/>
@@ -684,6 +686,25 @@
    </property>
    <property name="text">
     <string>Autofit preview</string>
+   </property>
+  </action>
+  <action name="actionHistogram">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Histogram</string>
+   </property>
+  </action>
+  <action name="actionDeflicker">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Deflicker</string>
    </property>
   </action>
  </widget>

@@ -51,7 +51,8 @@ SOURCES += main.cpp\
     picturewidget.cpp \
     videodecoder.cpp \
     markableslider.cpp \
-    project.cpp
+    project.cpp \
+    histogram.cpp
 
 HEADERS  += mainwindow.h \
     videowidget.h \
@@ -60,7 +61,8 @@ HEADERS  += mainwindow.h \
     videodecoder.h \
     ffmpeg.h \
     markableslider.h \
-    project.h
+    project.h \
+    histogram.h
 
 FORMS    += mainwindow.ui
 

@@ -15,6 +15,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "histogram.h"
 
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
@@ -23,6 +24,8 @@ const QString MainWindow::AppName = "VStripe";
 MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    qRegisterMetaType<Histogram>();
 
     mVideoWidget = new VideoWidget;
     ui->verticalLayout->insertWidget(0, mVideoWidget);
@@ -37,6 +40,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     connect(ui->action_OpenVideoFile, SIGNAL(triggered()), this, SLOT(openVideoFile()));
     connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
     connect(ui->actionAutofitPreview, SIGNAL(triggered()), this, SLOT(autoFitPreview()));
+    connect(ui->actionHistogram, SIGNAL(toggled(bool)), mVideoWidget, SLOT(setHistogramEnabled(bool)));
 
     mFrameSlider = new MarkableSlider(&mProject);
     mFrameSlider->setEnabled(false);
@@ -47,8 +51,9 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     mVideoReaderThread = new VideoReaderThread;
     connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
     connect(mVideoReaderThread, SIGNAL(percentReady(int)), this, SLOT(showPercentReady(int)));
-    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,int,int,int)), this, SLOT(frameReady(QImage,int,int,int)), Qt::QueuedConnection);
-    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,int,int,int)), mVideoWidget, SLOT(setFrame(QImage)), Qt::QueuedConnection);
+    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), this, SLOT(frameReady(QImage,Histogram,int,int,int)), Qt::QueuedConnection);
+    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), mVideoWidget, SLOT(setFrame(QImage,Histogram)), Qt::QueuedConnection);
+    connect(ui->actionHistogram, SIGNAL(toggled(bool)), mVideoReaderThread, SLOT(setHistogramEnabled(bool)));
 
     mPictureWidget = new PictureWidget;
     connect(ui->actionPreview_picture, SIGNAL(toggled(bool)), this, SLOT(togglePictureWidget(bool)));
@@ -259,7 +264,9 @@ void MainWindow::seekToFrame(int n)
     mVideoReaderThread->decoder()->seekFrame(n);
     mVideoReaderThread->decoder()->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime, &mDesiredFrameNumber, &mDesiredFrameTime);
     qDebug() << QString("effective: %1 (%2 ms), desired: %3 (%4 ms)").arg(mEffectiveFrameNumber).arg(mEffectiveFrameTime).arg(mDesiredFrameNumber).arg(mDesiredFrameTime);
-    mVideoWidget->setFrame(img);
+    if (ui->actionHistogram->isChecked())
+        mVideoReaderThread->calcHistogram(img);
+    mVideoWidget->setFrame(img, mVideoReaderThread->histogram());
     ui->frameNumberLineEdit->setText(QString("%1").arg(mEffectiveFrameNumber));
     ui->frameTimeLineEdit->setText(ms2hmsz(mEffectiveFrameTime));
 }
@@ -294,6 +301,7 @@ void MainWindow::setPictureSize(const QSize& size)
 void MainWindow::startRendering(void)
 {
     ui->renderButton->setText(tr("Stop rendering"));
+    mFrameBrightness.clear();
     mProject.setFixed(mVideoWidget->stripeIsFixed());
     int firstFrame, lastFrame;
     mFrameCount = mVideoWidget->stripeIsVertical()? qreal(mCurrentFrame.width()) : qreal(mCurrentFrame.height());
@@ -439,9 +447,11 @@ void MainWindow::hidePictureWidget(void)
 }
 
 
-void MainWindow::frameReady(QImage src, int frameNumber, int effectiveFrameNumber, int effectiveFrameTime)
+void MainWindow::frameReady(QImage src, Histogram histogram, int frameNumber, int effectiveFrameNumber, int effectiveFrameTime)
 {
     Q_ASSERT(!mCurrentFrame.isNull());
+    Q_ASSERT(!src.isNull());
+    mFrameBrightness.append(histogram.totalBrightness());
     const int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : (frameNumber % (mVideoWidget->stripeIsVertical()? src.width() : src.height()));
     const int dstpos = frameNumber;
     if (mVideoWidget->stripeIsVertical()) {
@@ -645,6 +655,7 @@ void MainWindow::loadVideoFile(void)
     ui->statusBar->showMessage(tr("Seeking last frame ..."));
     mVideoReaderThread->decoder()->seekMs(mVideoReaderThread->decoder()->getVideoLengthMs());
     mVideoReaderThread->decoder()->getFrame(img, &mLastFrameNumber);
+    Q_ASSERT(mLastFrameNumber > 0);
     mFrameSlider->setMaximum(mLastFrameNumber);
     mFrameSlider->setValue(0);
     ui->infoPlainTextEdit->clear();
@@ -665,7 +676,7 @@ void MainWindow::closeVideoFile(void)
     ui->frameNumberLineEdit->setText(QString());
     ui->frameTimeLineEdit->setText(QString());
     mFrameSlider->setValue(0);
-    mVideoWidget->setFrame(QImage());
+    mVideoWidget->setFrame(QImage(), Histogram());
     mPictureWidget->setPicture(QImage());
     hidePictureWidget();
     clearMarks();
