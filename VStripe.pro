@@ -52,7 +52,8 @@ SOURCES += main.cpp\
     videodecoder.cpp \
     markableslider.cpp \
     project.cpp \
-    histogram.cpp
+    histogram.cpp \
+    previewform.cpp
 
 HEADERS  += mainwindow.h \
     videowidget.h \
@@ -62,8 +63,10 @@ HEADERS  += mainwindow.h \
     ffmpeg.h \
     markableslider.h \
     project.h \
-    histogram.h
+    histogram.h \
+    previewform.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    previewform.ui
 
 RESOURCES += vstripe.qrc

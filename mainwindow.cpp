@@ -41,17 +41,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
     connect(ui->actionAutofitPreview, SIGNAL(triggered()), this, SLOT(autoFitPreview()));
     connect(ui->actionHistogram, SIGNAL(toggled(bool)), mVideoWidget, SLOT(setHistogramEnabled(bool)));
-    connect(ui->action0_0, SIGNAL(triggered()), this, SLOT(deflicker()));
-    connect(ui->action0_1, SIGNAL(triggered()), this, SLOT(deflicker()));
-    connect(ui->action0_2, SIGNAL(triggered()), this, SLOT(deflicker()));
-    connect(ui->action0_3, SIGNAL(triggered()), this, SLOT(deflicker()));
-    connect(ui->action0_4, SIGNAL(triggered()), this, SLOT(deflicker()));
-    connect(ui->action0_5, SIGNAL(triggered()), this, SLOT(deflicker()));
-    connect(ui->action0_6, SIGNAL(triggered()), this, SLOT(deflicker()));
-    connect(ui->action0_7, SIGNAL(triggered()), this, SLOT(deflicker()));
-    connect(ui->action0_8, SIGNAL(triggered()), this, SLOT(deflicker()));
-    connect(ui->action0_9, SIGNAL(triggered()), this, SLOT(deflicker()));
-    connect(ui->action1_0, SIGNAL(triggered()), this, SLOT(deflicker()));
 
     mFrameSlider = new MarkableSlider(&mProject);
     mFrameSlider->setEnabled(false);
@@ -66,12 +55,14 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), mVideoWidget, SLOT(setFrame(QImage,Histogram)), Qt::QueuedConnection);
     connect(ui->actionHistogram, SIGNAL(toggled(bool)), mVideoReaderThread, SLOT(setHistogramEnabled(bool)));
 
-    mPictureWidget = new PictureWidget;
+    mPreviewForm = new PreviewForm;
     connect(ui->actionPreview_picture, SIGNAL(toggled(bool)), this, SLOT(togglePictureWidget(bool)));
     if (ui->actionPreview_picture->isChecked())
-        mPictureWidget->show();
-    connect(mPictureWidget, SIGNAL(visibilityChanged(bool)), ui->actionPreview_picture, SLOT(setChecked(bool)));
-    connect(mPictureWidget, SIGNAL(sizeChanged(const QSize&)), this, SLOT(setPictureSize(const QSize&)));
+        mPreviewForm->show();
+    connect(mPreviewForm, SIGNAL(visibilityChanged(bool)), ui->actionPreview_picture, SLOT(setChecked(bool)));
+    connect(mPreviewForm, SIGNAL(sizeChanged(const QSize&)), this, SLOT(setPictureSize(const QSize&)));
+
+    connect(mPreviewForm->levelSlider(), SIGNAL(valueChanged(int)), this, SLOT(deflicker(int)));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
         recentVideoFileActs[i] = new QAction(this);
@@ -118,7 +109,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete mVideoWidget;
-    delete mPictureWidget;
+    delete mPreviewForm;
     delete mFrameSlider;
 }
 
@@ -127,7 +118,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 {
     saveAppSettings();
     QMainWindow::closeEvent(event);
-    mPictureWidget->close();
+    mPreviewForm->close();
 }
 
 
@@ -148,7 +139,7 @@ void MainWindow::saveAppSettings(void)
     QSettings settings(MainWindow::Company, MainWindow::AppName);
     settings.setValue("MainWindow/geometry", saveGeometry());
     settings.setValue("MainWindow/windowState", saveState());
-    settings.setValue("PictureWidget/geometry", mPictureWidget->saveGeometry());
+    settings.setValue("PreviewForm/geometry", mPreviewForm->saveGeometry());
 }
 
 
@@ -157,7 +148,7 @@ void MainWindow::restoreAppSettings(void)
     QSettings settings(MainWindow::Company, MainWindow::AppName);
     restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
     restoreState(settings.value("MainWindow/windowState").toByteArray());
-    mPictureWidget->restoreGeometry(settings.value("PictureWidget/geometry").toByteArray());
+    mPreviewForm->restoreGeometry(settings.value("PreviewForm/geometry").toByteArray());
     updateRecentVideoFileActions();
     updateRecentProjectFileActions();
     for (int i = 0; i < MaxRecentFiles; ++i) {
@@ -293,11 +284,11 @@ void MainWindow::setStripeOrientation(bool vertical)
 {
     if (mCurrentFrame.isNull())
         return;
-    if (vertical)
-        mPictureWidget->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
-    else
-        mPictureWidget->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
-    mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize());
+//    if (vertical)
+//        mPreviewForm->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
+//    else
+//        mPreviewForm->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
+    mPreviewForm->resize(mVideoReaderThread->decoder()->frameSize());
 }
 
 
@@ -438,9 +429,9 @@ void MainWindow::setParamsButtonClicked(void)
 
 void MainWindow::togglePictureWidget(bool visible)
 {
-    mPictureWidget->setVisible(visible);
+    mPreviewForm->setVisible(visible);
     if (visible)
-        mPictureWidget->showNormal();
+        mPreviewForm->showNormal();
     setWindowState(Qt::WindowActive);
 }
 
@@ -473,7 +464,7 @@ void MainWindow::frameReady(QImage src, Histogram histogram, int frameNumber, in
         for (int x = 0; x < src.width(); ++x)
             mCurrentFrame.setPixel(x, dstpos, src.pixel(x, srcpos));
     }
-    mPictureWidget->setPicture(mCurrentFrame);
+    mPreviewForm->pictureWidget()->setPicture(mCurrentFrame);
     mFrameSlider->blockSignals(true);
     mFrameSlider->setValue(mPreRenderFrameNumber + int(frameNumber * mFrameDelta));
     mFrameSlider->blockSignals(false);
@@ -494,33 +485,42 @@ void MainWindow::decodingFinished()
             sum += *i;
         mAvgBrightness = sum / mFrameBrightness.count();
         ui->infoPlainTextEdit->appendPlainText(tr("avg. brightness = %1").arg(mAvgBrightness));
+        deflicker(mPreviewForm->levelSlider()->value());
     }
 }
 
 
-void MainWindow::deflicker(void)
+void MainWindow::deflicker(int lvl)
 {
-    qreal level = 0;
-    if (sender()) {
-        QAction* action = qobject_cast<QAction *>(sender());
-        level = action->text().toDouble()*2;
-    }
+    qreal level = (qreal)lvl / 100;
     if (level > 0) {
         QImage img(mCurrentFrame.size(), mCurrentFrame.format());
-        Q_ASSERT(img.width() == mFrameBrightness.count());
         if (mVideoWidget->stripeIsVertical()) {
+            if (img.width() != mFrameBrightness.count())
+                return;
             for (int x = 0; x < mFrameBrightness.count(); ++x) {
                 int diff = (int) ((mFrameBrightness[x] - mAvgBrightness) * level);
                 for (int y = 0; y < img.height(); ++y) {
                     QColor c = mCurrentFrame.pixel(x, y);
-                    img.setPixel(x, y, c.lighter(100+diff).rgb());
+                    img.setPixel(x, y, c.lighter(100-diff).rgb());
                 }
             }
         }
-        mPictureWidget->setPicture(img);
+        else {
+            if (img.height() != mFrameBrightness.count())
+                return;
+            for (int y = 0; y < mFrameBrightness.count(); ++y) {
+                int diff = (int) ((mFrameBrightness[y] - mAvgBrightness) * level);
+                for (int x = 0; x < img.width(); ++x) {
+                    QColor c = mCurrentFrame.pixel(x, y);
+                    img.setPixel(x, y, c.lighter(100-diff).rgb());
+                }
+            }
+        }
+        mPreviewForm->pictureWidget()->setPicture(img);
     }
     else
-        mPictureWidget->setPicture(mCurrentFrame);
+        mPreviewForm->pictureWidget()->setPicture(mCurrentFrame);
 }
 
 
@@ -688,12 +688,12 @@ void MainWindow::loadVideoFile(void)
     ui->action_CloseVideoFile->setEnabled(true);
     mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
     mCurrentFrame.fill(qRgb(116, 214, 252));
-    mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize());
+    mPreviewForm->pictureWidget()->resize(mVideoReaderThread->decoder()->frameSize());
     if (mProject.stripeIsVertical())
-        mPictureWidget->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
+        mPreviewForm->pictureWidget()->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
     else
-        mPictureWidget->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
-    mPictureWidget->setPicture(QImage());
+        mPreviewForm->pictureWidget()->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
+    mPreviewForm->pictureWidget()->setPicture(QImage());
     showPictureWidget();
     QImage img;
     ui->statusBar->showMessage(tr("Seeking last frame ..."));
@@ -721,7 +721,7 @@ void MainWindow::closeVideoFile(void)
     ui->frameTimeLineEdit->setText(QString());
     mFrameSlider->setValue(0);
     mVideoWidget->setFrame(QImage(), Histogram());
-    mPictureWidget->setPicture(QImage());
+    mPreviewForm->pictureWidget()->setPicture(QImage());
     hidePictureWidget();
     clearMarks();
     ui->statusBar->showMessage(tr("File closed."), 5000);
@@ -731,11 +731,11 @@ void MainWindow::closeVideoFile(void)
 void MainWindow::savePicture(void)
 {
     QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save picture as ..."), QString(), "*.png, *.jpg");
-    mPictureWidget->picture().save(saveFileName);
+    mPreviewForm->pictureWidget()->picture().save(saveFileName);
 }
 
 
 void MainWindow::autoFitPreview(void)
 {
-    mPictureWidget->resize(mVideoReaderThread->decoder()->frameSize()); // XXX
+    mPreviewForm->pictureWidget()->resize(mVideoReaderThread->decoder()->frameSize()); // XXX
 }
