@@ -500,7 +500,7 @@
      <x>0</x>
      <y>0</y>
      <width>995</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -696,6 +696,9 @@
    </property>
    <property name="text">
     <string>Histogram</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable/disable histogram</string>
    </property>
   </action>
   <action name="action0_0">

@@ -22,6 +22,7 @@ VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
     mDragging = false;
     mVerticalStripe = true;
     mHistogramEnabled = true;
+    mMarkMode = false;
 }
 
 
@@ -124,6 +125,9 @@ void VideoWidget::paintEvent(QPaintEvent*)
         painter.setPen(QColor(0x00, 0x00, 0x00, 0x80));
         painter.drawText(x0+6, y0+14, QString("%1").arg(mHistogram.totalBrightness()));
     }
+    painter.setPen(QColor(0x33, 0xff, 0x00, 0xcc));
+    painter.setBrush(QColor(0x33, 0xcc, 0x00, 0xcc));
+    painter.drawRect(mMouseStartPos.x(), mMouseStartPos.y(), mMouseEndPos.x()-mMouseStartPos.x(), mMouseEndPos.y()-mMouseStartPos.y());
     // draw stripe or direction marker
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
@@ -187,7 +191,9 @@ void VideoWidget::calcStripePos(void)
 
 void VideoWidget::keyPressEvent(QKeyEvent* event)
 {
-    if (mDragging) {
+    if (event->key() == Qt::Key_M)
+        mMarkMode = !mMarkMode;
+    if (mDragging && !mMarkMode) {
         mVerticalStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
         calcStripePos();
         emit stripeOrientationChanged(mVerticalStripe);
@@ -199,14 +205,20 @@ void VideoWidget::keyPressEvent(QKeyEvent* event)
 void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 {
     mMousePos = event->pos();
-    if (mDragging) {
-        bool vStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
-        if (vStripe != mVerticalStripe) {
-            mVerticalStripe = vStripe;
-            emit stripeOrientationChanged(mVerticalStripe);
-        }
-        calcStripePos();
+    if (mMarkMode) {
+        mMouseEndPos = event->pos();
         update();
+    }
+    else {
+        if (mDragging) {
+            bool vStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
+            if (vStripe != mVerticalStripe) {
+                mVerticalStripe = vStripe;
+                emit stripeOrientationChanged(mVerticalStripe);
+            }
+            calcStripePos();
+            update();
+        }
     }
 }
 
@@ -216,8 +228,20 @@ void VideoWidget::mousePressEvent(QMouseEvent* event)
     mDragging = (event->button() == Qt::LeftButton);
     if (mDragging)
         setFocus(Qt::MouseFocusReason);
+    if (mMarkMode && mDragging)  {
+        mMouseStartPos = event->pos();
+        mMouseEndPos = event->pos();
+    }
 }
 
+
+void VideoWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton && mMarkMode) {
+        mMouseEndPos = event->pos();
+        update();
+    }
+}
 
 void VideoWidget::dragEnterEvent(QDragEnterEvent* event)
 {

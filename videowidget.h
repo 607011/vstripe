@@ -45,6 +45,7 @@ protected:
     void resizeEvent(QResizeEvent*);
     void mouseMoveEvent(QMouseEvent*);
     void mousePressEvent(QMouseEvent*);
+    void mouseReleaseEvent(QMouseEvent*);
     void dragEnterEvent(QDragEnterEvent*);
     void dropEvent(QDropEvent*);
     void keyPressEvent(QKeyEvent*);
@@ -61,6 +62,9 @@ private:
     bool mVerticalStripe;
     int mStripePos;
     QPoint mMousePos;
+    QPoint mMouseStartPos;
+    QPoint mMouseEndPos;
+    bool mMarkMode;
 
     void calcDestRect(void);
     void calcStripePos(void);
