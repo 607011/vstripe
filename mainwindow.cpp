@@ -439,28 +439,9 @@ void MainWindow::hidePictureWidget(void)
 }
 
 
-/**
-  @returns overall brightness
-  */
-qreal MainWindow::calculateHistogram(void)
-{
-    qreal L = 0;
-    memset(mHistogram, 0, HistogramBinCount*sizeof(int));
-    const int N = mCurrentFrame.width() * mCurrentFrame.height();
-    for (int x = 0; x < mCurrentFrame.width(); ++x) {
-        for (int y = 0; y < mCurrentFrame.height(); ++y) {
-            const QRgb px = mCurrentFrame.pixel(x, y);
-            const int v = (qRed(px) + qGreen(px) + qBlue(px)) / 3;
-            L += v;
-            mHistogram[v] += v / N;
-        }
-    }
-    return L;
-}
-
-
 void MainWindow::frameReady(QImage src, int frameNumber, int effectiveFrameNumber, int effectiveFrameTime)
 {
+    Q_ASSERT(!mCurrentFrame.isNull());
     const int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : (frameNumber % (mVideoWidget->stripeIsVertical()? src.width() : src.height()));
     const int dstpos = frameNumber;
     if (mVideoWidget->stripeIsVertical()) {
@@ -477,7 +458,6 @@ void MainWindow::frameReady(QImage src, int frameNumber, int effectiveFrameNumbe
     mFrameSlider->blockSignals(false);
     ui->frameNumberLineEdit->setText(QString("%1").arg(effectiveFrameNumber));
     ui->frameTimeLineEdit->setText(ms2hmsz(effectiveFrameTime));
-    calculateHistogram();
 }
 
 

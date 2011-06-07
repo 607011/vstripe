@@ -21,6 +21,10 @@ VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
     mStripeWidth = 1;
     mDragging = false;
     mVerticalStripe = true;
+    mDrawHistogram = true;
+    mCalculating = false;
+    for (int i = 0; i < HistogramBinCount; ++i)
+        mHistogram[i] = 0;
 }
 
 
@@ -77,10 +81,42 @@ void VideoWidget::setStripeOrientation(bool vertical)
 }
 
 
+/**
+  @returns overall brightness
+  */
+qreal VideoWidget::calcHistogram(void)
+{
+    const QImage& img = mImage;
+    const qreal N = 1.0 / (img.width() * img.height());
+    qreal L = 0;
+    for (int i = 0; i < HistogramBinCount; ++i)
+        mHistogram[i] = 0;
+    for (int y = 0; y < img.height(); ++y) {
+        const QRgb* d = reinterpret_cast<const QRgb*>(img.scanLine(y));
+        for (int x = 0; x < img.width(); ++x, ++d) {
+            const int v0 = (qRed(*d) + qGreen(*d) + qBlue(*d)) / 3;
+            const qreal v = v0 * N;
+            mHistogram[v0] += v;
+            L += v;
+        }
+    }
+    mHistogramMax = 0;
+    for (int i = 0; i < HistogramBinCount; ++i)
+        if (mHistogram[i] > mHistogramMax)
+            mHistogramMax = mHistogram[i];
+    return L;
+}
+
+
+
 void VideoWidget::setFrame(QImage img)
 {
+    Q_ASSERT(mCalculating == false);
+    mCalculating = true;
     mImage = img;
+    calcHistogram();
     update();
+    mCalculating = false;
 }
 
 
@@ -103,6 +139,17 @@ void VideoWidget::paintEvent(QPaintEvent*)
     if (!mImage.isNull())
         painter.drawImage(mDestRect, mImage);
     painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+    if (mDrawHistogram) {
+        const int hh = 192, x0 = 10, y0 = 10;
+        const qreal hs = (int) (hh / mHistogramMax);
+        painter.setPen(QColor(0xff, 0xff, 0xff, 0x99));
+        painter.setBrush(QColor(0xff, 0xff, 0xff, 0x66));
+        painter.drawRect(x0, y0, 256, 192);
+        painter.setPen(QColor(0x33, 0x33, 0x33, 0x80));
+        painter.setBrush(Qt::NoBrush);
+        for (int i = 0; i < HistogramBinCount; ++i)
+            painter.drawLine(x0+i, y0+hh, x0+i, y0+hh-(int)(mHistogram[i]*hs));
+    }
     // draw stripe or direction marker
     if (mVerticalStripe) {
         if (mStripePos >= 0) {
