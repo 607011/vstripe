@@ -41,6 +41,17 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
     connect(ui->actionAutofitPreview, SIGNAL(triggered()), this, SLOT(autoFitPreview()));
     connect(ui->actionHistogram, SIGNAL(toggled(bool)), mVideoWidget, SLOT(setHistogramEnabled(bool)));
+    connect(ui->action0_0, SIGNAL(triggered()), this, SLOT(deflicker()));
+    connect(ui->action0_1, SIGNAL(triggered()), this, SLOT(deflicker()));
+    connect(ui->action0_2, SIGNAL(triggered()), this, SLOT(deflicker()));
+    connect(ui->action0_3, SIGNAL(triggered()), this, SLOT(deflicker()));
+    connect(ui->action0_4, SIGNAL(triggered()), this, SLOT(deflicker()));
+    connect(ui->action0_5, SIGNAL(triggered()), this, SLOT(deflicker()));
+    connect(ui->action0_6, SIGNAL(triggered()), this, SLOT(deflicker()));
+    connect(ui->action0_7, SIGNAL(triggered()), this, SLOT(deflicker()));
+    connect(ui->action0_8, SIGNAL(triggered()), this, SLOT(deflicker()));
+    connect(ui->action0_9, SIGNAL(triggered()), this, SLOT(deflicker()));
+    connect(ui->action1_0, SIGNAL(triggered()), this, SLOT(deflicker()));
 
     mFrameSlider = new MarkableSlider(&mProject);
     mFrameSlider->setEnabled(false);
@@ -477,6 +488,39 @@ void MainWindow::decodingFinished()
     ui->renderButton->setText(tr("Start rendering"));
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);
+    if (ui->actionHistogram->isChecked()) {
+        qreal sum = 0.0;
+        for (BrightnessData::const_iterator i = mFrameBrightness.begin(); i != mFrameBrightness.end(); ++i)
+            sum += *i;
+        mAvgBrightness = sum / mFrameBrightness.count();
+        ui->infoPlainTextEdit->appendPlainText(tr("avg. brightness = %1").arg(mAvgBrightness));
+    }
+}
+
+
+void MainWindow::deflicker(void)
+{
+    qreal level = 0;
+    if (sender()) {
+        QAction* action = qobject_cast<QAction *>(sender());
+        level = action->text().toDouble()*2;
+    }
+    if (level > 0) {
+        QImage img(mCurrentFrame.size(), mCurrentFrame.format());
+        Q_ASSERT(img.width() == mFrameBrightness.count());
+        if (mVideoWidget->stripeIsVertical()) {
+            for (int x = 0; x < mFrameBrightness.count(); ++x) {
+                int diff = (int) ((mFrameBrightness[x] - mAvgBrightness) * level);
+                for (int y = 0; y < img.height(); ++y) {
+                    QColor c = mCurrentFrame.pixel(x, y);
+                    img.setPixel(x, y, c.lighter(100+diff).rgb());
+                }
+            }
+        }
+        mPictureWidget->setPicture(img);
+    }
+    else
+        mPictureWidget->setPicture(mCurrentFrame);
 }
 
 

@@ -14,7 +14,8 @@ typedef QVector<unsigned int> HistogramData;
 
 class Histogram {
 public:
-    Histogram() : mData(256, 0), mMaxBrightness(0.0), mTotalBrightness(0.0), mN(1)
+    static const unsigned int WIDTH = 256;
+    Histogram() : mData(WIDTH, 0), mMaxBrightness(0), mTotalBrightness(0), mN(1)
     {
         /* ... */
     }
@@ -23,10 +24,11 @@ public:
         /* ... */
     }
     void init(unsigned int);
-    inline void add(unsigned int v0)
+    inline void add(unsigned int val)
     {
-        ++mData[v0];
-        mTotalBrightness += v0;
+        Q_ASSERT(val < WIDTH);
+        ++mData[val];
+        mTotalBrightness += val;
     }
     void postprocess(void);
     Histogram& operator= (const Histogram&);

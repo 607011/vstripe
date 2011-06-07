@@ -61,13 +61,20 @@ void VideoReaderThread::setHistogramEnabled(bool enabled)
 
 
 
-void VideoReaderThread::calcHistogram(const QImage& img)
+inline int lightness(const QRgb& rgb) {
+    return QColor(rgb).lightness();
+    // return (qRed(rgb) + qGreen(rgb) + qBlue(rgb)) / 3;
+}
+
+
+void VideoReaderThread::calcHistogram(const QImage& src)
 {
+    QImage img(src.scaled(src.size() / 16)); // downscale image for faster histogram generation
     mHistogram.init(img.width() * img.height());
     for (int y = 0; y < img.height(); ++y) {
         const QRgb* d = reinterpret_cast<const QRgb*>(img.scanLine(y));
         for (int x = 0; x < img.width(); ++x, ++d)
-            mHistogram.add((qRed(*d) + qGreen(*d) + qBlue(*d)) / 3);
+            mHistogram.add(lightness(*d));
     }
     mHistogram.postprocess();
 }

@@ -23,7 +23,7 @@ void Histogram::postprocess(void)
         if (*i > mMaxBrightness)
             mMaxBrightness = *i;
     mTotalBrightness /= mN;
-    qDebug() << "mMaxBrightness =" << mMaxBrightness << ", mTotalBrightness =" << mTotalBrightness << ", mN =" << mN;
+    // qDebug() << "mMaxBrightness =" << mMaxBrightness << ", mTotalBrightness =" << mTotalBrightness << ", mN =" << mN;
 }
 
 
