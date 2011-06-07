@@ -48,6 +48,10 @@ protected:
 
 private:
     QImage mImage;
+    static const int HistogramBinCount = 256;
+    qreal mHistogram[HistogramBinCount];
+    qreal mHistogramMax;
+    bool mDrawHistogram;
     qreal mWindowAspectRatio;
     qreal mFrameAspectRatio;
     QRect mDestRect;
@@ -55,10 +59,12 @@ private:
     bool mDragging;
     bool mVerticalStripe;
     int mStripePos;
+    bool mCalculating;
     QPoint mMousePos;
 
     void calcDestRect(void);
     void calcStripePos(void);
+    qreal calcHistogram(void);
 
 
 signals:

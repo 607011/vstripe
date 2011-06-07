@@ -1,9 +1,21 @@
+FEHLER
+======
+
+[ ] Wenn die Histogramm-Berechnung eingeschaltet ist, läuft der Speicher beim Rendern voll.
+
+
 TODO
 ====
 
-[ ] Deflicker-Funktion à la LRTimeLapse implementieren
+[ ] Unter Linux und Mac OS X testen
 
-[ ] 
+[ ] Deployment unter Windows, Mac OS X und ggf. Linux
+
+
+FEATURES
+========
+
+[ ] Deflicker-Funktion à la LRTimeLapse implementieren
 
 [ ] Anzahl der mit [A und B] markierten Frames anzeigen
 
@@ -12,8 +24,6 @@ TODO
 [ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
 
 [ ] Mehr Informationen über das Video in infoPlainTextEdit ausgeben, z.B. Framerate, Codec-Kurzname, Format-Kurzname, ...
-
-[ ] Unter Linux und Mac OS X testen
 
 [ ] Hilfe implementieren (actionHelp)
 
