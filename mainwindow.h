@@ -15,6 +15,7 @@
 #include "picturewidget.h"
 #include "markableslider.h"
 #include "project.h"
+#include "previewform.h"
 
 namespace Ui {
     class MainWindow;
@@ -71,7 +72,7 @@ public slots:
     void setPictureSize(const QSize&);
     void setStripeOrientation(bool vertical);
     void autoFitPreview(void);
-    void deflicker(void);
+    void deflicker(int lvl = 0);
 
 protected:
     void closeEvent(QCloseEvent*);
@@ -81,7 +82,7 @@ private: // variables
     Ui::MainWindow* ui;
     MarkableSlider* mFrameSlider;
     VideoWidget* mVideoWidget;
-    PictureWidget* mPictureWidget;
+    PreviewForm* mPreviewForm;
     VideoReaderThread* mVideoReaderThread;
     qreal mFrameDelta;
     int mFrameCount;

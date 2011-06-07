@@ -563,25 +563,8 @@
      </property>
      <addaction name="separator"/>
     </widget>
-    <widget class="QMenu" name="menuDeflicker">
-     <property name="title">
-      <string>Deflicker</string>
-     </property>
-     <addaction name="action0_0"/>
-     <addaction name="action0_1"/>
-     <addaction name="action0_2"/>
-     <addaction name="action0_3"/>
-     <addaction name="action0_4"/>
-     <addaction name="action0_5"/>
-     <addaction name="action0_6"/>
-     <addaction name="action0_7"/>
-     <addaction name="action0_8"/>
-     <addaction name="action0_9"/>
-     <addaction name="action1_0"/>
-    </widget>
     <addaction name="menuUse_video_camera"/>
     <addaction name="actionHistogram"/>
-    <addaction name="menuDeflicker"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuEdit"/>
