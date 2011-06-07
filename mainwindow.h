@@ -71,6 +71,7 @@ public slots:
     void setPictureSize(const QSize&);
     void setStripeOrientation(bool vertical);
     void autoFitPreview(void);
+    void deflicker(void);
 
 protected:
     void closeEvent(QCloseEvent*);
@@ -92,13 +93,17 @@ private: // variables
     int mDesiredFrameTime;
     int mPreRenderFrameNumber;
     QString mFileNameFromCmdLine;
-    QVector<qreal> mFrameBrightness;
+
+    typedef QVector<qreal> BrightnessData;
+    BrightnessData mFrameBrightness;
+    qreal mAvgBrightness;
 
     Project mProject;
 
     static const int MaxRecentFiles = 16;
     QAction* recentVideoFileActs[MaxRecentFiles];
     QAction* recentProjectFileActs[MaxRecentFiles];
+
 
 private: // methods
     void showPictureWidget(void);
