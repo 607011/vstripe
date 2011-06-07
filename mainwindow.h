@@ -16,6 +16,7 @@
 #include "markableslider.h"
 #include "project.h"
 #include "previewform.h"
+#include "histogram.h"
 
 namespace Ui {
     class MainWindow;
@@ -35,6 +36,7 @@ public:
 
     static const QString Company;
     static const QString AppName;
+
 
 public slots:
     void openVideoFile(void);
@@ -95,7 +97,6 @@ private: // variables
     int mPreRenderFrameNumber;
     QString mFileNameFromCmdLine;
 
-    typedef QVector<qreal> BrightnessData;
     BrightnessData mFrameBrightness;
     qreal mAvgBrightness;
 

@@ -1,7 +1,7 @@
 FEHLER
 ======
 
-[ ] Wenn die Histogramm-Berechnung eingeschaltet ist, läuft der Speicher beim Rendern voll.
+[ ] Setzen des "size constraint" vom PreviewForm funktioniert nicht
 
 
 TODO
@@ -14,8 +14,6 @@ TODO
 
 FEATURES
 ========
-
-[ ] Deflicker-Funktion à la LRTimeLapse implementieren
 
 [ ] Anzahl der mit [A und B] markierten Frames anzeigen
 
