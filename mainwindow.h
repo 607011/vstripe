@@ -20,8 +20,6 @@ namespace Ui {
     class MainWindow;
 }
 
-typedef QVector<qreal> Histogram;
-
 
 class MainWindow : public QMainWindow
 {
@@ -60,7 +58,7 @@ public slots:
     void jumpToNextMark(void);
     void savePicture(void);
     void showPercentReady(int);
-    void frameReady(QImage, int, int, int);
+    void frameReady(QImage, Histogram, int, int, int);
     void renderButtonClicked(void);
     void setParamsButtonClicked(void);
     void about(void);
