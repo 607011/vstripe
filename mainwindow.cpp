@@ -34,8 +34,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), &mProject, SLOT(setStripeOrientation(bool)));
     connect(mVideoWidget, SIGNAL(stripePosChanged(int)), &mProject, SLOT(setStripePos(int)));
 
-    ui->AButton->setStyleSheet("background: green");
-    ui->BButton->setStyleSheet("background: red");
+//    ui->AButton->setStyleSheet("background: green");
+//    ui->BButton->setStyleSheet("background: red");
 
     connect(ui->action_OpenVideoFile, SIGNAL(triggered()), this, SLOT(openVideoFile()));
     connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
@@ -118,18 +118,6 @@ void MainWindow::closeEvent(QCloseEvent* event)
     saveAppSettings();
     QMainWindow::closeEvent(event);
     mPreviewForm->close();
-}
-
-
-void MainWindow::changeEvent(QEvent* event)
-{
-//    if (event->spontaneous() && isVisible() && event->type() == QEvent::ActivationChange) {
-//        if (!mFileNameFromCmdLine.isEmpty()) {
-//            fileDropped(mFileNameFromCmdLine); // TODO
-//            mFileNameFromCmdLine.clear();
-//        }
-//    }
-    QWidget::changeEvent(event);
 }
 
 

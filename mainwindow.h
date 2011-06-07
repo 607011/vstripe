@@ -78,7 +78,6 @@ public slots:
 
 protected:
     void closeEvent(QCloseEvent*);
-    void changeEvent(QEvent*);
 
 private: // variables
     Ui::MainWindow* ui;
