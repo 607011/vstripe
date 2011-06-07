@@ -9,7 +9,6 @@
 #include <QMainWindow>
 #include <QString>
 #include <QVector>
-#include <QPair>
 
 #include "videoreaderthread.h"
 #include "videowidget.h"
@@ -20,6 +19,9 @@
 namespace Ui {
     class MainWindow;
 }
+
+typedef QVector<qreal> Histogram;
+
 
 class MainWindow : public QMainWindow
 {
@@ -34,6 +36,8 @@ public:
 
     static const QString Company;
     static const QString AppName;
+
+    static const int HistogramBinCount = 256;
 
 public slots:
     void openVideoFile(void);
@@ -92,6 +96,8 @@ private: // variables
     int mDesiredFrameTime;
     int mPreRenderFrameNumber;
     QString mFileNameFromCmdLine;
+    QVector<qreal> mFrameBrightness;
+    qreal mHistogram[HistogramBinCount];
 
     Project mProject;
 
@@ -113,6 +119,7 @@ private: // methods
     void updateRecentProjectFileActions(void);
     void setCurrentVideoFile(const QString&);
     void setCurrentProjectFile(const QString&);
+    qreal calculateHistogram(void);
 
     static QString ms2hmsz(int ms, bool withMs = true);
     static QString strippedName(const QString& fullFileName);
