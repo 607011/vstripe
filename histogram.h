@@ -62,12 +62,12 @@ public:
         /* ... */
     }
     void init(int);
-    inline void add(const QColor& rgb)
+    inline void add(QRgb rgb)
     {
-        const int l = rgb.lightness();
-        const int r = rgb.red();
-        const int g = rgb.green();
-        const int b = rgb.blue();
+        const int l = QColor(rgb).lightness();
+        const int r = qRed(rgb);
+        const int g = qGreen(rgb);
+        const int b = qBlue(rgb);
         ++mBrightness[l];
         mTotalBrightness += l;
         ++mRed[r];
