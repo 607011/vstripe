@@ -5,8 +5,6 @@ FEHLER
 
 [ ] size constraints der PreviewForm funktionieren nicht
 
-[ ] Der Streifen wird an einer anderen als der markierten Stelle ausgeschnitten
-
 
 TODO
 ====
