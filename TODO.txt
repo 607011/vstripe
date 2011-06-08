@@ -1,7 +1,7 @@
 FEHLER
 ======
 
-[ ] size constraints der PreviewForm funktionieren nicht
+[ ] size constraints der PreviewForm funktionieren nicht ???
 
 
 TODO
@@ -14,6 +14,8 @@ TODO
 
 FEATURES
 ========
+
+[ ] Automatischer Weißbildabgleich im Vorschaufenster.
 
 [ ] Gerendertes Bild soll beliebig groß werden können -> Bild in Vorschaufenster skalierbar machen
 

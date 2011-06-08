@@ -41,6 +41,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
     connect(ui->actionAutofitPreview, SIGNAL(triggered()), this, SLOT(autoFitPreview()));
     connect(ui->actionHistogram, SIGNAL(toggled(bool)), mVideoWidget, SLOT(setHistogramEnabled(bool)));
+    connect(ui->actionClear_histogram_region, SIGNAL(triggered()), this, SLOT(clearHistogramRegion()));
 
     mFrameSlider = new MarkableSlider(&mProject);
     mFrameSlider->setEnabled(false);
@@ -383,6 +384,14 @@ void MainWindow::clearMarks(void)
     mProject.clearMarks();
     updateButtons();
     mFrameSlider->update();
+}
+
+
+void MainWindow::clearHistogramRegion(void)
+{
+    mProject.setHistogramRegion(QRect());
+    mVideoReaderThread->setHistogramRegion(QRect());
+    mVideoWidget->setHistogramRegion(QRect());
 }
 
 

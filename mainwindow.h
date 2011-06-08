@@ -57,6 +57,7 @@ public slots:
     void setMarkB(void);
     void setMark(void);
     void clearMarks(void);
+    void clearHistogramRegion(void);
     void jumpToPrevMark(void);
     void jumpToNextMark(void);
     void savePicture(void);
