@@ -15,7 +15,7 @@ TODO
 FEATURES
 ========
 
-[ ] 
+[ ] Gerendertes Bild soll beliebig groß werden können -> Bild in Vorschaufenster skalierbar machen
 
 [ ] Anzahl der mit [A und B] markierten Frames anzeigen
 

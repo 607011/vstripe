@@ -24,6 +24,7 @@ VideoReaderThread::~VideoReaderThread()
 bool VideoReaderThread::setFile(QString videoFileName)
 {
     Q_ASSERT(!videoFileName.isNull());
+    Q_ASSERT(!isRunning());
 
     bool ok = mDecoder.openFile(videoFileName.toLatin1().constData());
     return ok;
@@ -56,6 +57,10 @@ void VideoReaderThread::stopReading(void)
 
 void VideoReaderThread::setHistogramRegion(const QRect& rect)
 {
+    if (isRunning()) {
+        qDebug() << "VideoReaderThread is running, cannot execute setHistogramRegion(). Returning ...";
+        return;
+    }
     mHistogramRegion = rect;
 }
 
