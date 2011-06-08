@@ -10,14 +10,14 @@
 #include <QMetaType>
 #include <QDebug>
 
-typedef QVector<unsigned int> HistogramData;
+typedef QVector<int> HistogramData;
 typedef QVector<qreal> BrightnessData;
 
 
 class Histogram {
 public:
-    static const unsigned int WIDTH = 256;
-    Histogram() : mData(WIDTH, 0U), mMinBrightness(4294967295U), mMaxBrightness(0U), mTotalBrightness(0.0), mN(1)
+    static const int WIDTH = 256;
+    Histogram() : mData(WIDTH, 0), mMinBrightness(2147483647), mMaxBrightness(-2147483647-1), mTotalBrightness(0.0), mN(1)
     {
         /* ... */
     }
@@ -25,8 +25,8 @@ public:
     {
         /* ... */
     }
-    void init(unsigned int);
-    inline void add(unsigned int val)
+    void init(int);
+    inline void add(int val)
     {
         Q_ASSERT(val < WIDTH);
         ++mData[val];
@@ -37,16 +37,16 @@ public:
 
 public: // variables
     const HistogramData& data(void) const { return mData; }
-    inline unsigned int minBrightness(void) const { return mMinBrightness; }
-    inline unsigned int maxBrightness(void) const { return mMaxBrightness; }
+    inline int minBrightness(void) const { return mMinBrightness; }
+    inline int maxBrightness(void) const { return mMaxBrightness; }
     inline qreal totalBrightness(void) const { return mTotalBrightness; }
 
 private:
     HistogramData mData;
-    unsigned int mMinBrightness;
-    unsigned int mMaxBrightness;
+    int mMinBrightness;
+    int mMaxBrightness;
     qreal mTotalBrightness;
-    unsigned int mN;
+    int mN;
 };
 
 

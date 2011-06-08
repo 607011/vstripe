@@ -19,7 +19,7 @@ public:
     explicit PictureWidget(QWidget* parent = NULL);
     QSize minimumSizeHint(void) const { return QSize(720, 576); }
     void setPicture(const QImage&);
-    void setBrightnessData(BrightnessData*);
+    void setBrightnessData(const BrightnessData*, qreal avgBrightness = -1);
     inline const QImage& picture(void) const { return mImage; }
 
 protected:
@@ -27,7 +27,8 @@ protected:
 
 private:
     QImage mImage;
-    BrightnessData* brightnessData;
+    const BrightnessData* mBrightnessData;
+    qreal mAvgBrightness;
 
 };
 

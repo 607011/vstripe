@@ -6,11 +6,11 @@
 #include "histogram.h"
 
 
-void Histogram::init(unsigned int N)
+void Histogram::init(int N)
 {
     mN = N;
-    mMinBrightness = 4294967295U;
-    mMaxBrightness = 0;
+    mMinBrightness = 2147483647;
+    mMaxBrightness = -2147483647-1;
     mTotalBrightness = 0;
     for (HistogramData::iterator i = mData.begin(); i != mData.end(); ++i)
         *i = 0;

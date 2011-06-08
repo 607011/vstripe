@@ -51,7 +51,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     mVideoReaderThread = new VideoReaderThread;
     connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
     connect(mVideoReaderThread, SIGNAL(percentReady(int)), this, SLOT(showPercentReady(int)));
-    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), this, SLOT(frameReady(QImage,Histogram,int,int,int)), Qt::QueuedConnection);
+    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), this, SLOT(frameReady(QImage,Histogram,int,int,int)));
     connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), mVideoWidget, SLOT(setFrame(QImage,Histogram)));
     connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), mVideoReaderThread, SLOT(setHistogramRegion(QRect)));
     connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), &mProject, SLOT(setHistogramRegion(QRect)));
@@ -292,6 +292,7 @@ void MainWindow::startRendering(void)
 {
     ui->renderButton->setText(tr("Stop rendering"));
     mFrameBrightness.clear();
+    mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness);
     mProject.setFixed(mVideoWidget->stripeIsFixed());
     int firstFrame, lastFrame;
     mFrameCount = mVideoWidget->stripeIsVertical()? qreal(mCurrentFrame.width()) : qreal(mCurrentFrame.height());
@@ -467,14 +468,13 @@ void MainWindow::decodingFinished()
     ui->renderButton->setText(tr("Start rendering"));
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);
-    if (ui->actionHistogram->isChecked()) {
-        qreal sum = 0.0;
-        for (BrightnessData::const_iterator i = mFrameBrightness.begin(); i != mFrameBrightness.end(); ++i)
-            sum += *i;
-        mAvgBrightness = sum / mFrameBrightness.count();
-        ui->infoPlainTextEdit->appendPlainText(tr("avg. brightness = %1").arg(mAvgBrightness));
-        deflicker(mPreviewForm->levelSlider()->value());
-    }
+    qreal sum = 0.0;
+    for (BrightnessData::const_iterator i = mFrameBrightness.begin(); i != mFrameBrightness.end(); ++i)
+        sum += *i;
+    mAvgBrightness = sum / mFrameBrightness.count();
+    ui->infoPlainTextEdit->appendPlainText(tr("avg. brightness = %1").arg(mAvgBrightness));
+    mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness, mAvgBrightness);
+    deflicker(mPreviewForm->levelSlider()->value());
 }
 
 
@@ -595,17 +595,18 @@ void MainWindow::openProject(const QString& fileName)
 {
     setCurrentProjectFile(fileName);
     mProject.load(fileName);
-    if (!mProject.videoFileName().isNull())
-        loadVideoFile();
-    if (mProject.currentFrame() != Project::INVALID_FRAME)
-        mFrameSlider->setValue(mProject.currentFrame());
+    mVideoReaderThread->setHistogramRegion(mProject.histogramRegion());
     mVideoWidget->setStripePos(mProject.stripePos());
     mVideoWidget->setStripeOrientation(mProject.stripeIsVertical());
     mVideoWidget->setHistogramRegion(mProject.histogramRegion());
     mPreviewForm->levelSlider()->setValue(mProject.levelExposure()*100);
+    if (mProject.currentFrame() != Project::INVALID_FRAME)
+        mFrameSlider->setValue(mProject.currentFrame());
     if (mProject.markAIsSet() && mProject.markBIsSet())
         ui->infoPlainTextEdit->appendPlainText(tr("%1 frames selected").arg(mProject.markB() - mProject.markA()));
     updateButtons();
+    if (!mProject.videoFileName().isNull())
+        loadVideoFile();
 }
 
 
