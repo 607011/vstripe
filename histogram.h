@@ -7,6 +7,8 @@
 #define __HISTOGRAM_H_
 
 #include <QVector>
+#include <QRgb>
+#include <QColor>
 #include <QMetaType>
 #include <QDebug>
 
@@ -17,25 +19,67 @@ typedef QVector<qreal> BrightnessData;
 class Histogram {
 public:
     static const int WIDTH = 256;
-    Histogram() : mBrightness(WIDTH, 0), mMinBrightness(2147483647), mMaxBrightness(-2147483647-1), mTotalBrightness(0.0), mN(1)
+    Histogram() :
+            mBrightness(WIDTH, 0),
+            mRed(WIDTH, 0),
+            mGreen(WIDTH, 0),
+            mBlue(WIDTH, 0),
+            mMinBrightness(2147483647),
+            mMaxBrightness(-2147483647-1),
+            mMinRed(2147483647),
+            mMaxRed(-2147483647-1),
+            mMinGreen(2147483647),
+            mMaxGreen(-2147483647-1),
+            mMinBlue(2147483647),
+            mMaxBlue(-2147483647-1),
+            mTotalBrightness(0.0),
+            mTotalRed(0.0),
+            mTotalGreen(0.0),
+            mTotalBlue(0.0),
+            mN(1)
     {
         /* ... */
     }
-    Histogram(const Histogram& other) : mBrightness(other.mBrightness), mMinBrightness(other.mMinBrightness), mMaxBrightness(other.mMaxBrightness), mTotalBrightness(other.mTotalBrightness)
+    Histogram(const Histogram& other) :
+            mBrightness(other.mBrightness),
+            mRed(other.mRed),
+            mGreen(other.mGreen),
+            mBlue(other.mBlue),
+            mMinBrightness(other.mMinBrightness),
+            mMaxBrightness(other.mMaxBrightness),
+            mMinRed(other.mMinRed),
+            mMaxRed(other.mMaxRed),
+            mMinGreen(other.mMinGreen),
+            mMaxGreen(other.mMaxGreen),
+            mMinBlue(other.mMinBlue),
+            mMaxBlue(other.mMaxBlue),
+            mTotalBrightness(other.mTotalBrightness),
+            mTotalRed(other.mTotalRed),
+            mTotalGreen(other.mTotalGreen),
+            mTotalBlue(other.mTotalBlue),
+            mN(other.mN)
     {
         /* ... */
     }
     void init(int);
-    inline void add(int val)
+    inline void add(const QColor& rgb)
     {
-        Q_ASSERT(val < WIDTH);
-        ++mBrightness[val];
-        mTotalBrightness += val;
+        const int l = rgb.lightness();
+        const int r = rgb.red();
+        const int g = rgb.green();
+        const int b = rgb.blue();
+        ++mBrightness[l];
+        mTotalBrightness += l;
+        ++mRed[r];
+        mTotalRed += r;
+        ++mGreen[g];
+        mTotalGreen += g;
+        ++mBlue[b];
+        mTotalBlue += b;
     }
     void postprocess(void);
     Histogram& operator= (const Histogram&);
-
-    const HistogramData& data(void) const { return mBrightness; }
+    const HistogramData& brightness(void) const { return mBrightness; }
     const HistogramData& red(void) const { return mRed; }
     const HistogramData& green(void) const { return mGreen; }
     const HistogramData& blue(void) const { return mBlue; }
@@ -57,10 +101,14 @@ private:// variables
     HistogramData mRed;
     HistogramData mGreen;
     HistogramData mBlue;
-    int mMinBrightness, mMaxBrightness;
-    int mMinRed, mMaxRed;
-    int mMinGreen, mMaxGreen;
-    int mMinBlue, mMaxBlue;
+    int mMinBrightness;
+    int mMaxBrightness;
+    int mMinRed;
+    int mMaxRed;
+    int mMinGreen;
+    int mMaxGreen;
+    int mMinBlue;
+    int mMaxBlue;
     qreal mTotalBrightness;
     qreal mTotalRed;
     qreal mTotalGreen;

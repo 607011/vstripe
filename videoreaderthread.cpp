@@ -74,7 +74,7 @@ void VideoReaderThread::calcHistogram(const QImage& src)
     for (int y = 0; y < img.height(); ++y) {
         const QRgb* d = reinterpret_cast<const QRgb*>(img.scanLine(y));
         for (int x = 0; x < img.width(); ++x, ++d)
-            mHistogram.add(QColor(*d).lightness());
+            mHistogram.add(*d);
     }
     mHistogram.postprocess();
 }
