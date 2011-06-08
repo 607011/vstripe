@@ -58,17 +58,17 @@ private:
     qreal mFrameAspectRatio;
     QRect mDestRect;
     int mStripeWidth;
-    bool mDragging;
+    bool mMouseButtonDown;
     bool mVerticalStripe;
     int mStripePos;
+    QRect mHistoRegion;
     QPoint mMousePos;
-    QPoint mMouseStartPos;
-    QPoint mMouseEndPos;
-    bool mMarkMode;
 
     void calcDestRect(void);
     void calcStripePos(void);
-
+    QPoint toRealPos(const QPoint&);
+    QPoint toFramePos(const QPoint&);
+    void constrainMousePos(void);
 
 signals:
     void fileDropped(QString fileName);
