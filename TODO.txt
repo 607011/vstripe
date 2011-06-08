@@ -1,7 +1,11 @@
 FEHLER
 ======
 
-[ ] Setzen des "size constraint" vom PreviewForm funktioniert nicht
+[ ] Histogramm-Region und Exposure-Level in Projekt speichern.
+
+[ ] size constraints der PreviewForm funktionieren nicht
+
+[ ] Der Streifen wird an einer anderen als der markierten Stelle ausgeschnitten
 
 
 TODO
@@ -14,6 +18,8 @@ TODO
 
 FEATURES
 ========
+
+[ ] 
 
 [ ] Anzahl der mit [A und B] markierten Frames anzeigen
 

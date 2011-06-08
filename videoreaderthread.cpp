@@ -54,27 +54,23 @@ void VideoReaderThread::stopReading(void)
 }
 
 
-void VideoReaderThread::setHistogramEnabled(bool enabled)
+void VideoReaderThread::setHistogramRegion(const QRect& rect)
 {
-    mHistogramEnabled = enabled;
-}
-
-
-
-inline int lightness(const QRgb& rgb) {
-    return QColor(rgb).lightness();
-    // return (qRed(rgb) + qGreen(rgb) + qBlue(rgb)) / 3;
+    mHistogramRegion = rect;
 }
 
 
 void VideoReaderThread::calcHistogram(const QImage& src)
 {
-    QImage img(src.scaled(src.size() / 16)); // downscale image for faster histogram generation
+    const QRect histoRect = mHistogramRegion.isNull()? src.rect() : mHistogramRegion;
+    const QSize histoSize = src.size().boundedTo(QSize(100, 100));
+    QImage img(src.copy(histoRect).scaled(histoSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)); // downscale image (region) for faster histogram generation
+    qDebug() << "histoSize =" << histoSize;
     mHistogram.init(img.width() * img.height());
     for (int y = 0; y < img.height(); ++y) {
         const QRgb* d = reinterpret_cast<const QRgb*>(img.scanLine(y));
         for (int x = 0; x < img.width(); ++x, ++d)
-            mHistogram.add(lightness(*d));
+            mHistogram.add(QColor(*d).lightness());
     }
     mHistogram.postprocess();
 }
@@ -89,17 +85,16 @@ void VideoReaderThread::run(void)
     int percent = 0, prevPercent = 0;
     int effFrameNum, effFrameTime;
     mDecoder.seekFrame(mFrameNumber);
-    QImage img;
     while (!mAbort && frameCount < mMaxFrameCount) {
         int skip = int(mFrameNumber) - int(prevFrameNumber);
         if (skip > 0) {
             mDecoder.seekNextFrame(skip);
             prevFrameNumber = mFrameNumber;
         }
-        mDecoder.getFrame(img, &effFrameNum, &effFrameTime);
+        mDecoder.getFrame(mCurrentFrame, &effFrameNum, &effFrameTime);
         if (skip > 0 && mHistogramEnabled)
-            calcHistogram(img);
-        emit frameReady(img, mHistogram, frameCount, effFrameNum, effFrameTime);
+            calcHistogram(mCurrentFrame);
+        emit frameReady(mCurrentFrame, mHistogram, frameCount, effFrameNum, effFrameTime);
         ++frameCount;
         mFrameNumber += mFrameDelta;
         percent = 100 * frameCount / mMaxFrameCount;

@@ -52,8 +52,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
     connect(mVideoReaderThread, SIGNAL(percentReady(int)), this, SLOT(showPercentReady(int)));
     connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), this, SLOT(frameReady(QImage,Histogram,int,int,int)), Qt::QueuedConnection);
-    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), mVideoWidget, SLOT(setFrame(QImage,Histogram)), Qt::QueuedConnection);
-    connect(ui->actionHistogram, SIGNAL(toggled(bool)), mVideoReaderThread, SLOT(setHistogramEnabled(bool)));
+    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), mVideoWidget, SLOT(setFrame(QImage,Histogram)));
+    connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), mVideoReaderThread, SLOT(setHistogramRegion(QRect)));
 
     mPreviewForm = new PreviewForm;
     connect(ui->actionPreview_picture, SIGNAL(toggled(bool)), this, SLOT(togglePictureWidget(bool)));

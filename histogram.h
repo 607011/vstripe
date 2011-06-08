@@ -17,11 +17,11 @@ typedef QVector<qreal> BrightnessData;
 class Histogram {
 public:
     static const unsigned int WIDTH = 256;
-    Histogram() : mData(WIDTH, 0), mMaxBrightness(0), mTotalBrightness(0), mN(1)
+    Histogram() : mData(WIDTH, 0U), mMinBrightness(4294967295U), mMaxBrightness(0U), mTotalBrightness(0.0), mN(1)
     {
         /* ... */
     }
-    Histogram(const Histogram& other) : mData(other.mData), mMaxBrightness(other.mMaxBrightness), mTotalBrightness(other.mTotalBrightness)
+    Histogram(const Histogram& other) : mData(other.mData), mMinBrightness(other.mMinBrightness), mMaxBrightness(other.mMaxBrightness), mTotalBrightness(other.mTotalBrightness)
     {
         /* ... */
     }
@@ -37,11 +37,13 @@ public:
 
 public: // variables
     const HistogramData& data(void) const { return mData; }
+    inline unsigned int minBrightness(void) const { return mMinBrightness; }
     inline unsigned int maxBrightness(void) const { return mMaxBrightness; }
     inline qreal totalBrightness(void) const { return mTotalBrightness; }
 
 private:
     HistogramData mData;
+    unsigned int mMinBrightness;
     unsigned int mMaxBrightness;
     qreal mTotalBrightness;
     unsigned int mN;
