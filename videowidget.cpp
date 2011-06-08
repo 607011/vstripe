@@ -124,10 +124,10 @@ void VideoWidget::paintEvent(QPaintEvent*)
         const qreal hs = (qreal)hh / mHistogram.maxBrightness();
         painter.setPen(QColor(0xff, 0xff, 0xff, 0x66));
         painter.setBrush(QColor(0xff, 0xff, 0xff, 0x66));
-        painter.drawRect(x0, y0, mHistogram.data().size(), hh);
+        painter.drawRect(x0, y0, mHistogram.brightness().size(), hh);
         painter.setPen(QColor(0x33, 0x33, 0x33, 0x80));
         painter.setBrush(Qt::NoBrush);
-        const HistogramData& d = mHistogram.data();
+        const HistogramData& d = mHistogram.brightness();
         for (int i = 0; i < d.count(); ++i)
             painter.drawLine(x0+i, y0+hh, x0+i, y0+hh-(int)(d[i]*hs));
         painter.setPen(QColor(0x00, 0x00, 0x00, 0x80));
