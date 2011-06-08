@@ -25,27 +25,6 @@ VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
 }
 
 
-int VideoWidget::stripePos(void) const
-{
-    if (mVerticalStripe)
-        return (mDestRect.width() != 0)?  mStripePos * mImage.width()  / mDestRect.width()  : -1;
-    else
-        return (mDestRect.height() != 0)? mStripePos * mImage.height() / mDestRect.height() : -1;
-}
-
-
-void VideoWidget::calcDestRect(void) {
-    if (mWindowAspectRatio < mFrameAspectRatio) {
-        const int h = int(width() / mFrameAspectRatio);
-        mDestRect = QRect(0, (height()-h)/2, width(), h);
-    }
-    else {
-        const int w = int(height() * mFrameAspectRatio);
-        mDestRect = QRect((width()-w)/2, 0, w, height());
-    }
-}
-
-
 void VideoWidget::setFrameSize(const QSize& sz) {
     mFrameAspectRatio = qreal(sz.width()) / qreal(sz.height());
     calcDestRect();
@@ -138,8 +117,8 @@ void VideoWidget::paintEvent(QPaintEvent*)
         painter.setBrush(QColor(0x30, 0xc0, 0x00, 0xa0));
     }
     QRect destRect;
-    destRect.setTopLeft(toRealPos(mHistoRegion.topLeft()));
-    destRect.setBottomRight(toRealPos(mHistoRegion.bottomRight()));
+    destRect.setTopLeft(toPosInWidget(mHistoRegion.topLeft()));
+    destRect.setBottomRight(toPosInWidget(mHistoRegion.bottomRight()));
     painter.drawRect(destRect);
     //
     // draw stripe or direction marker
@@ -181,19 +160,31 @@ void VideoWidget::paintEvent(QPaintEvent*)
 }
 
 
-QPoint VideoWidget::toFramePos(const QPoint& p)
+QPoint VideoWidget::toPosInWidget(const QPoint& framePos)
 {
-    return (mImage.isNull())? p :
-            QPoint((p.x() - mDestRect.x()) * mDestRect.width() / mImage.width(),
-                   (p.y() - mDestRect.y()) * mDestRect.height() / mImage.height());
+    return (mImage.isNull())? framePos :
+            QPoint(mDestRect.x() + framePos.x() * mDestRect.width()  / mImage.width(),
+                   mDestRect.y() + framePos.y() * mDestRect.height() / mImage.height());
 }
 
 
-QPoint VideoWidget::toRealPos(const QPoint& p)
+QPoint VideoWidget::toPosInFrame(const QPoint& windowPos)
 {
-    return (mImage.isNull())? p :
-            QPoint((p.x() - mDestRect.x()) * mDestRect.width() / mImage.width(),
-                   (p.y() - mDestRect.y()) * mDestRect.height() / mImage.height());
+    return (mImage.isNull())? windowPos :
+            QPoint((windowPos.x() - mDestRect.x()) * mImage.width()  / mDestRect.width(),
+                   (windowPos.y() - mDestRect.y()) * mImage.height() / mDestRect.height());
+}
+
+
+void VideoWidget::calcDestRect(void) {
+    if (mWindowAspectRatio < mFrameAspectRatio) {
+        const int h = int(width() / mFrameAspectRatio);
+        mDestRect = QRect(0, (height()-h)/2, width(), h);
+    }
+    else {
+        const int w = int(height() * mFrameAspectRatio);
+        mDestRect = QRect((width()-w)/2, 0, w, height());
+    }
 }
 
 
@@ -217,6 +208,15 @@ void VideoWidget::calcStripePos(void)
             emit stripePosChanged(stripePos());
         }
     }
+}
+
+
+int VideoWidget::stripePos(void) const
+{
+    if (mVerticalStripe)
+        return (mDestRect.width() != 0)?  mStripePos * mImage.width()  / mDestRect.width()  : -1;
+    else
+        return (mDestRect.height() != 0)? mStripePos * mImage.height() / mDestRect.height() : -1;
 }
 
 
@@ -249,7 +249,8 @@ void VideoWidget::mouseMoveEvent(QMouseEvent* event)
     mMousePos = event->pos();
     if (mMouseButtonDown && (event->modifiers() & Qt::AltModifier) != 0) {
         constrainMousePos();
-        mHistoRegion.setBottomRight(mMousePos);
+        mMousePosInFrame = toPosInFrame(mMousePos);
+        mHistoRegion.setBottomRight(mMousePosInFrame);
         update();
     }
     else {
@@ -274,8 +275,10 @@ void VideoWidget::mousePressEvent(QMouseEvent* event)
         setFocus(Qt::MouseFocusReason);
         if ((event->modifiers() & Qt::AltModifier) != 0) {
             constrainMousePos();
-            mHistoRegion.setTopLeft(mMousePos);
-            mHistoRegion.setBottomRight(mMousePos);
+            mMousePosInFrame = toPosInFrame(mMousePos);
+            mHistoRegion.setTopLeft(mMousePosInFrame);
+            mHistoRegion.setBottomRight(mMousePosInFrame);
+            update();
         }
     }
 }
@@ -287,7 +290,8 @@ void VideoWidget::mouseReleaseEvent(QMouseEvent* event)
     mMousePos = event->pos();
     if (event->button() == Qt::LeftButton && (event->modifiers() & Qt::AltModifier) != 0) {
         constrainMousePos();
-        mHistoRegion.setBottomRight(mMousePos);
+        mMousePosInFrame = toPosInFrame(mMousePos);
+        mHistoRegion.setBottomRight(mMousePosInFrame);
         update();
     }
 }

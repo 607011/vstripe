@@ -63,11 +63,12 @@ private:
     int mStripePos;
     QRect mHistoRegion;
     QPoint mMousePos;
+    QPoint mMousePosInFrame;
 
     void calcDestRect(void);
     void calcStripePos(void);
-    QPoint toRealPos(const QPoint&);
-    QPoint toFramePos(const QPoint&);
+    QPoint toPosInFrame(const QPoint&);
+    QPoint toPosInWidget(const QPoint&);
     void constrainMousePos(void);
 
 signals:
