@@ -15,7 +15,7 @@ bool markLess(const Project::mark_type& m1, const Project::mark_type& m2)
 
 
 Project::Project(QObject* parent) :
-    QObject(parent), mFixedStripe(false), mVerticalStripe(true), mModified(false)
+    QObject(parent), mFixedStripe(false), mVerticalStripe(true), mLevelExposure(0.7), mModified(false)
 {
 }
 
@@ -67,6 +67,44 @@ void Project::readMarksTag(void)
 }
 
 
+void Project::readRegionTag(void)
+{
+    Q_ASSERT(mXml.isStartElement() && mXml.name() == "region");
+
+    while (!(mXml.tokenType() == QXmlStreamReader::EndElement && mXml.name() == "region")) {
+        if (mXml.tokenType() == QXmlStreamReader::StartElement) {
+            if (mXml.name() == "x")
+                mHistogramRegion.setLeft(mXml.readElementText().toInt());
+            else if (mXml.name() == "y")
+                mHistogramRegion.setTop(mXml.readElementText().toInt());
+            else if (mXml.name() == "width")
+                mHistogramRegion.setWidth(mXml.readElementText().toInt());
+            else if (mXml.name() == "height")
+                mHistogramRegion.setHeight(mXml.readElementText().toInt());
+        }
+        mXml.readNext();
+    }
+}
+
+
+void Project::readHistogramTag(void)
+{
+    Q_ASSERT(mXml.isStartElement() && mXml.name() == "histogram");
+
+    while (!(mXml.tokenType() == QXmlStreamReader::EndElement && mXml.name() == "histogram")) {
+        if (mXml.tokenType() == QXmlStreamReader::StartElement) {
+            if (mXml.name() == "region") {
+                readRegionTag();
+            }
+            else if (mXml.name() == "level") {
+                mLevelExposure = mXml.readElementText().toDouble();
+            }
+        }
+        mXml.readNext();
+    }
+}
+
+
 void Project::readInputTag(void)
 {
     Q_ASSERT(mXml.isStartElement() && mXml.name() == "input");
@@ -88,6 +126,8 @@ void Project::read(void)
             readInputTag();
         else if (mXml.name() == "marks")
             readMarksTag();
+        else if (mXml.name() == "histogram")
+            readHistogramTag();
         else if (mXml.name() == "recent")
             mCurrentFrame = mXml.readElementText().toInt();
         else if (mXml.name() == "stripe") {
@@ -162,6 +202,17 @@ void Project::save(void)
         xml.writeEndElement();
     }
     xml.writeTextElement("recent", QString("%1").arg(mCurrentFrame));
+    xml.writeStartElement("histogram");
+    if (!mHistogramRegion.isEmpty()) {
+        xml.writeStartElement("region");
+        xml.writeTextElement("x", QString("%1").arg(mHistogramRegion.x()));
+        xml.writeTextElement("y", QString("%1").arg(mHistogramRegion.y()));
+        xml.writeTextElement("width", QString("%1").arg(mHistogramRegion.width()));
+        xml.writeTextElement("height", QString("%1").arg(mHistogramRegion.height()));
+        xml.writeEndElement();
+    }
+    xml.writeTextElement("level", QString("%1").arg(mLevelExposure));
+    xml.writeEndElement();
     xml.writeStartElement("stripe");
     xml.writeAttribute("orientation", mVerticalStripe? "vertical" : "horizontal");
     xml.writeCharacters(QString("%1").arg(mStripePos));
@@ -226,6 +277,18 @@ void Project::setStripeOrientation(bool vertical)
 {
     mVerticalStripe = vertical;
     mModified = true;
+}
+
+
+void Project::setHistogramRegion(const QRect& region)
+{
+    mHistogramRegion = region;
+}
+
+
+void Project::setLevelExposure(qreal level)
+{
+    mLevelExposure = level;
 }
 
 

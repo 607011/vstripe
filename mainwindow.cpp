@@ -54,6 +54,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), this, SLOT(frameReady(QImage,Histogram,int,int,int)), Qt::QueuedConnection);
     connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), mVideoWidget, SLOT(setFrame(QImage,Histogram)));
     connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), mVideoReaderThread, SLOT(setHistogramRegion(QRect)));
+    connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), &mProject, SLOT(setHistogramRegion(QRect)));
 
     mPreviewForm = new PreviewForm;
     connect(ui->actionPreview_picture, SIGNAL(toggled(bool)), this, SLOT(togglePictureWidget(bool)));
@@ -480,6 +481,7 @@ void MainWindow::decodingFinished()
 void MainWindow::deflicker(int lvl)
 {
     qreal level = (qreal)lvl / 100;
+    mProject.setLevelExposure(level);
     if (level > 0) {
         QImage img(mCurrentFrame.size(), mCurrentFrame.format());
         if (mVideoWidget->stripeIsVertical()) {
@@ -599,6 +601,8 @@ void MainWindow::openProject(const QString& fileName)
         mFrameSlider->setValue(mProject.currentFrame());
     mVideoWidget->setStripePos(mProject.stripePos());
     mVideoWidget->setStripeOrientation(mProject.stripeIsVertical());
+    mVideoWidget->setHistogramRegion(mProject.histogramRegion());
+    mPreviewForm->levelSlider()->setValue(mProject.levelExposure()*100);
     if (mProject.markAIsSet() && mProject.markBIsSet())
         ui->infoPlainTextEdit->appendPlainText(tr("%1 frames selected").arg(mProject.markB() - mProject.markA()));
     updateButtons();

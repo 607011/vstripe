@@ -10,6 +10,7 @@
 #include <QPair>
 #include <QString>
 #include <QFile>
+#include <QRect>
 #include <QXmlStreamReader>
 
 class Project : public QObject
@@ -33,6 +34,8 @@ public:
     explicit Project(QObject* parent = NULL);
 
     Project::mark_type readMarkTag(void);
+    void readRegionTag(void);
+    void readHistogramTag(void);
     void readMarksTag(void);
     void readInputTag(void);
     void read(void);
@@ -54,6 +57,8 @@ public:
     inline bool stripeIsVertical(void) const { return mVerticalStripe; }
     inline const QString& videoFileName(void) const { return mVideoFileName; }
     inline const QString& fileName(void) const { return mFileName; }
+    inline const QRect& histogramRegion(void) const { return mHistogramRegion; }
+    inline qreal levelExposure(void) const { return mLevelExposure; }
     inline bool modified(void) const { return mModified; }
 
 public slots:
@@ -63,6 +68,8 @@ public slots:
     void setCurrentFrame(int);
     void setStripePos(int);
     void setStripeOrientation(bool vertical);
+    void setHistogramRegion(const QRect&);
+    void setLevelExposure(qreal);
     void setFixed(bool);
     void setMarkA(int);
     void setMarkB(int);
@@ -79,6 +86,8 @@ private: // members
     bool mVerticalStripe;
     int mStripePos;
     int mCurrentFrame;
+    QRect mHistogramRegion;
+    qreal mLevelExposure;
     bool mModified;
 
     mark_type* findMark(int id) const;

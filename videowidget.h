@@ -33,6 +33,7 @@ public:
     inline bool stripeIsFixed(void) const { return mVerticalStripe? (mStripePos.x() >= 0) : (mStripePos.y() >= 0); }
     void setStripePos(int);
     void setStripeOrientation(bool vertical);
+    void setHistogramRegion(const QRect&);
 
 public slots:
     void setFrameSize(const QSize&);

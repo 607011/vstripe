@@ -72,6 +72,13 @@ void VideoWidget::setFrame(QImage img, Histogram histogram)
 }
 
 
+void VideoWidget::setHistogramRegion(const QRect& rect)
+{
+    mHistoRegion = rect;
+    update();
+}
+
+
 void VideoWidget::resizeEvent(QResizeEvent* e)
 {
     mWindowAspectRatio = qreal(e->size().width()) / qreal(e->size().height());
