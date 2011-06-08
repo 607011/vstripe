@@ -30,7 +30,7 @@ public:
     QSize sizeHint(void) const { return QSize(1920, 1080); }
     int stripePos(void) const;
     inline bool stripeIsVertical(void) const { return mVerticalStripe; }
-    inline bool stripeIsFixed(void) const { return mStripePos >= 0; }
+    inline bool stripeIsFixed(void) const { return mVerticalStripe? (mStripePos.x() >= 0) : (mStripePos.y() >= 0); }
     void setStripePos(int);
     void setStripeOrientation(bool vertical);
 
@@ -59,22 +59,23 @@ private:
     QRect mDestRect;
     int mStripeWidth;
     bool mMouseButtonDown;
+    bool mDrawingHistogram;
     bool mVerticalStripe;
-    int mStripePos;
+    QPoint mStripePos;
     QRect mHistoRegion;
     QPoint mMousePos;
     QPoint mMousePosInFrame;
 
     void calcDestRect(void);
-    void calcStripePos(void);
-    QPoint toPosInFrame(const QPoint&);
-    QPoint toPosInWidget(const QPoint&);
+    QPoint toPosInFrame(const QPoint&) const;
+    QPoint toPosInWidget(const QPoint&) const;
     void constrainMousePos(void);
 
 signals:
     void fileDropped(QString fileName);
     void stripeOrientationChanged(bool vertical);
     void stripePosChanged(int pos);
+    void histogramRegionChanged(const QRect&);
 };
 
 #endif // VIDEOWIDGET_H

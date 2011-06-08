@@ -9,6 +9,7 @@
 void Histogram::init(unsigned int N)
 {
     mN = N;
+    mMinBrightness = 4294967295U;
     mMaxBrightness = 0;
     mTotalBrightness = 0;
     for (HistogramData::iterator i = mData.begin(); i != mData.end(); ++i)
@@ -19,16 +20,19 @@ void Histogram::init(unsigned int N)
 void Histogram::postprocess(void)
 {
     mMaxBrightness = 0;
-    for (HistogramData::const_iterator i = mData.constBegin(); i != mData.constEnd(); ++i)
+    for (HistogramData::const_iterator i = mData.constBegin(); i != mData.constEnd(); ++i) {
+        if (*i < mMinBrightness)
+            mMinBrightness = *i;
         if (*i > mMaxBrightness)
             mMaxBrightness = *i;
+    }
     mTotalBrightness /= mN;
-    // qDebug() << "mMaxBrightness =" << mMaxBrightness << ", mTotalBrightness =" << mTotalBrightness << ", mN =" << mN;
 }
 
 
 Histogram& Histogram::operator= (const Histogram &other)
 {
+    mMinBrightness = other.minBrightness();
     mMaxBrightness = other.maxBrightness();
     mTotalBrightness = other.totalBrightness();
     mData = other.data();
