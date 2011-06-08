@@ -92,22 +92,8 @@ void VideoWidget::paintEvent(QPaintEvent*)
     if (!mImage.isNull())
         painter.drawImage(mDestRect, mImage);
     painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
-    if (mHistogramEnabled) {
-        const int hh = 128, x0 = 8, y0 = 8;
-        const qreal hs = (qreal)hh / mHistogram.maxBrightness();
-        painter.setPen(QColor(0xff, 0xff, 0xff, 0x66));
-        painter.setBrush(QColor(0xff, 0xff, 0xff, 0x66));
-        painter.drawRect(x0, y0, mHistogram.data().size(), hh);
-        painter.setPen(QColor(0x33, 0x33, 0x33, 0x80));
-        painter.setBrush(Qt::NoBrush);
-        const HistogramData& d = mHistogram.data();
-        for (int i = 0; i < d.count(); ++i)
-            painter.drawLine(x0+i, y0+hh, x0+i, y0+hh-(int)(d[i]*hs));
-        painter.setPen(QColor(0x00, 0x00, 0x00, 0x80));
-        painter.drawText(x0+6, y0+14, QString("%1").arg(mHistogram.totalBrightness()));
-    }
     //
-    // draw histogram region
+    // draw marked histogram region
     //
     if (!mHistoRegion.isNull()) {
         if (mDrawingHistogram) {
@@ -122,6 +108,23 @@ void VideoWidget::paintEvent(QPaintEvent*)
         destRect.setTopLeft(toPosInWidget(mHistoRegion.topLeft()));
         destRect.setBottomRight(toPosInWidget(mHistoRegion.bottomRight()));
         painter.drawRect(destRect);
+    }
+    //
+    // draw histogram
+    //
+    if (mHistogramEnabled) {
+        const int hh = 128, x0 = 8, y0 = 8;
+        const qreal hs = (qreal)hh / mHistogram.maxBrightness();
+        painter.setPen(QColor(0xff, 0xff, 0xff, 0x66));
+        painter.setBrush(QColor(0xff, 0xff, 0xff, 0x66));
+        painter.drawRect(x0, y0, mHistogram.data().size(), hh);
+        painter.setPen(QColor(0x33, 0x33, 0x33, 0x80));
+        painter.setBrush(Qt::NoBrush);
+        const HistogramData& d = mHistogram.data();
+        for (int i = 0; i < d.count(); ++i)
+            painter.drawLine(x0+i, y0+hh, x0+i, y0+hh-(int)(d[i]*hs));
+        painter.setPen(QColor(0x00, 0x00, 0x00, 0x80));
+        painter.drawText(x0+6, y0+14, QString("%1").arg(mHistogram.totalBrightness()));
     }
     //
     // draw stripe or direction marker
@@ -195,9 +198,9 @@ void VideoWidget::calcDestRect(void) {
 int VideoWidget::stripePos(void) const
 {
     if (mVerticalStripe)
-        return (mDestRect.width() != 0)?  toPosInWidget(mStripePos).x() : -1;
+        return (mDestRect.width()  != 0)? mStripePos.x() : -1;
     else
-        return (mDestRect.height() != 0)? toPosInWidget(mStripePos).y() : -1;
+        return (mDestRect.height() != 0)? mStripePos.y() : -1;
 }
 
 
@@ -216,7 +219,7 @@ void VideoWidget::constrainMousePos(void)
 
 void VideoWidget::keyPressEvent(QKeyEvent* event)
 {
-    if (mMouseButtonDown && (event->modifiers() & Qt::AltModifier) == 0) {
+    if (mDraggingStripe && (event->modifiers() & Qt::AltModifier) == 0) {
         mVerticalStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
         mStripePos = toPosInFrame(mMousePos);
         emit stripePosChanged(mVerticalStripe? mStripePos.x() : mStripePos.y());
@@ -235,17 +238,15 @@ void VideoWidget::mouseMoveEvent(QMouseEvent* event)
         mHistoRegion.setBottomRight(mMousePosInFrame);
         update();
     }
-    else {
-        if (mMouseButtonDown) {
-            bool vStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
-            if (vStripe != mVerticalStripe) {
-                mVerticalStripe = vStripe;
-                emit stripeOrientationChanged(mVerticalStripe);
-            }
-            mStripePos = toPosInFrame(mMousePos);
-            emit stripePosChanged(mVerticalStripe? mStripePos.x() : mStripePos.y());
-            update();
+    else if (mDraggingStripe) {
+        bool vStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
+        if (vStripe != mVerticalStripe) {
+            mVerticalStripe = vStripe;
+            emit stripeOrientationChanged(mVerticalStripe);
         }
+        mStripePos = toPosInFrame(mMousePos);
+        emit stripePosChanged(mVerticalStripe? mStripePos.x() : mStripePos.y());
+        update();
     }
 }
 
@@ -263,6 +264,9 @@ void VideoWidget::mousePressEvent(QMouseEvent* event)
             mHistoRegion.setTopLeft(mMousePosInFrame);
             mHistoRegion.setBottomRight(mMousePosInFrame);
             update();
+        }
+        else {
+            mDraggingStripe = true;
         }
     }
 }

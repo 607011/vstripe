@@ -60,6 +60,7 @@ private:
     int mStripeWidth;
     bool mMouseButtonDown;
     bool mDrawingHistogram;
+    bool mDraggingStripe;
     bool mVerticalStripe;
     QPoint mStripePos;
     QRect mHistoRegion;
