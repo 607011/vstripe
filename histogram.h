@@ -62,21 +62,7 @@ public:
         /* ... */
     }
     void init(int);
-    inline void add(QRgb rgb)
-    {
-        const int l = QColor(rgb).lightness();
-        const int r = qRed(rgb);
-        const int g = qGreen(rgb);
-        const int b = qBlue(rgb);
-        ++mBrightness[l];
-        mTotalBrightness += l;
-        ++mRed[r];
-        mTotalRed += r;
-        ++mGreen[g];
-        mTotalGreen += g;
-        ++mBlue[b];
-        mTotalBlue += b;
-    }
+    void add(QRgb rgb);
     void postprocess(void);
     Histogram& operator= (const Histogram&);
     const HistogramData& brightness(void) const { return mBrightness; }
