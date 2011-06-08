@@ -23,12 +23,19 @@ void Histogram::init(int N)
     mTotalBlue = 0;
     for (HistogramData::iterator i = mBrightness.begin(); i != mBrightness.end(); ++i)
         *i = 0;
+    for (HistogramData::iterator i = mRed.begin(); i != mRed.end(); ++i)
+        *i = 0;
+    for (HistogramData::iterator i = mGreen.begin(); i != mGreen.end(); ++i)
+        *i = 0;
+    for (HistogramData::iterator i = mBlue.begin(); i != mBlue.end(); ++i)
+        *i = 0;
 }
 
 
 void Histogram::postprocess(void)
 {
-    mMaxBrightness = 0;
+    mMinBrightness = 2147483647;
+    mMaxBrightness = -2147483647-1;
     for (HistogramData::const_iterator i = mBrightness.constBegin(); i != mBrightness.constEnd(); ++i) {
         if (*i < mMinBrightness)
             mMinBrightness = *i;
@@ -37,7 +44,8 @@ void Histogram::postprocess(void)
     }
     mTotalBrightness /= mN;
 
-    mMaxRed = 0;
+    mMinRed = 2147483647;
+    mMaxRed = -2147483647-1;
     for (HistogramData::const_iterator i = mRed.constBegin(); i != mRed.constEnd(); ++i) {
         if (*i < mMinRed)
             mMinRed = *i;
@@ -46,7 +54,8 @@ void Histogram::postprocess(void)
     }
     mTotalRed /= mN;
 
-    mMaxGreen = 0;
+    mMinGreen = 2147483647;
+    mMaxGreen = -2147483647-1;
     for (HistogramData::const_iterator i = mGreen.constBegin(); i != mGreen.constEnd(); ++i) {
         if (*i < mMinGreen)
             mMinGreen = *i;
@@ -55,7 +64,8 @@ void Histogram::postprocess(void)
     }
     mTotalGreen /= mN;
 
-    mMaxBlue = 0;
+    mMinBlue = 2147483647;
+    mMaxBlue = -2147483647-1;
     for (HistogramData::const_iterator i = mBlue.constBegin(); i != mBlue.constEnd(); ++i) {
         if (*i < mMinBlue)
             mMinBlue = *i;

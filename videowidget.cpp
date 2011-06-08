@@ -133,6 +133,8 @@ void VideoWidget::paintEvent(QPaintEvent*)
         for (int i = 0; i < l.count(); ++i)
             painter.drawLine(x0+i, y0+hh, x0+i, y0+hh-(int)(l[i]*hl));
 
+        painter.setRenderHint(QPainter::Antialiasing);
+
         QPainterPath rPath;
         const qreal hr = (qreal)hh / mHistogram.maxRed();
         painter.setPen(QColor(0x99, 0x00, 0x00, 0x80));
@@ -166,7 +168,6 @@ void VideoWidget::paintEvent(QPaintEvent*)
     //
     // draw stripe or direction marker
     //
-    painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
     QPoint sPos = toPosInWidget(mStripePos);
     if (mVerticalStripe) {
