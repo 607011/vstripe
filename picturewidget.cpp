@@ -37,7 +37,7 @@ void PictureWidget::paintEvent(QPaintEvent*)
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setPen(QPen(QColor(0xff, 0x30, 0x30, 0xa0), 1.65));
         painter.setBrush(Qt::NoBrush);
-        int y0 = mImage.height();
+        const int y0 = mImage.height();
         QPainterPath path;
         path.moveTo(0, y0);
         for (int i = 0; i < mBrightnessData->size(); ++i)
