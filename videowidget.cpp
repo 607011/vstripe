@@ -121,15 +121,45 @@ void VideoWidget::paintEvent(QPaintEvent*)
     //
     if (mHistogramEnabled) {
         const int hh = 128, x0 = 8, y0 = 8;
-        const qreal hs = (qreal)hh / mHistogram.maxBrightness();
         painter.setPen(QColor(0xff, 0xff, 0xff, 0x66));
         painter.setBrush(QColor(0xff, 0xff, 0xff, 0x66));
         painter.drawRect(x0, y0, mHistogram.brightness().size(), hh);
-        painter.setPen(QColor(0x33, 0x33, 0x33, 0x80));
+
         painter.setBrush(Qt::NoBrush);
-        const HistogramData& d = mHistogram.brightness();
-        for (int i = 0; i < d.count(); ++i)
-            painter.drawLine(x0+i, y0+hh, x0+i, y0+hh-(int)(d[i]*hs));
+
+        const qreal hl = (qreal)hh / mHistogram.maxBrightness();
+        painter.setPen(QColor(0x33, 0x33, 0x33, 0x80));
+        const HistogramData& l = mHistogram.brightness();
+        for (int i = 0; i < l.count(); ++i)
+            painter.drawLine(x0+i, y0+hh, x0+i, y0+hh-(int)(l[i]*hl));
+
+        QPainterPath rPath;
+        const qreal hr = (qreal)hh / mHistogram.maxRed();
+        painter.setPen(QColor(0x99, 0x00, 0x00, 0x80));
+        const HistogramData& r = mHistogram.red();
+        rPath.moveTo(x0, y0+hh-(int)(r[0]*hr));
+        for (int i = 1; i < r.count(); ++i)
+            rPath.lineTo(x0+i, y0+hh-(int)(r[i]*hr));
+        painter.drawPath(rPath);
+
+        QPainterPath gPath;
+        const qreal hg = (qreal)hh / mHistogram.maxGreen();
+        painter.setPen(QColor(0x00, 0x99, 0x00, 0x80));
+        const HistogramData& g = mHistogram.green();
+        gPath.moveTo(x0, y0+hh-(int)(g[0]*hg));
+        for (int i = 1; i < g.count(); ++i)
+            gPath.lineTo(x0+i, y0+hh-(int)(g[i]*hg));
+        painter.drawPath(gPath);
+
+        QPainterPath bPath;
+        const qreal hb = (qreal)hh / mHistogram.maxBlue();
+        painter.setPen(QColor(0x00, 0x00, 0x99, 0x80));
+        const HistogramData& b = mHistogram.blue();
+        bPath.moveTo(x0, y0+hh-(int)(b[0]*hb));
+        for (int i = 1; i < b.count(); ++i)
+            bPath.lineTo(x0+i, y0+hh-(int)(b[i]*hb));
+        painter.drawPath(bPath);
+
         painter.setPen(QColor(0x00, 0x00, 0x00, 0x80));
         painter.drawText(x0+6, y0+14, QString("%1").arg(mHistogram.totalBrightness()));
     }
