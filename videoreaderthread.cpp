@@ -69,7 +69,7 @@ void VideoReaderThread::calcHistogram(const QImage& src)
 {
     const QRect histoRect = mHistogramRegion.isNull()? src.rect() : mHistogramRegion;
     // downscale image (region) for faster histogram generation
-    QImage img(src.copy(histoRect).scaled(src.size().boundedTo(QSize(100, 100)), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    QImage img(src.copy(histoRect).scaled(histoRect.size().boundedTo(QSize(100, 100)), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     mHistogram.init(img.width() * img.height());
     for (int y = 0; y < img.height(); ++y) {
         const QRgb* d = reinterpret_cast<const QRgb*>(img.scanLine(y));
