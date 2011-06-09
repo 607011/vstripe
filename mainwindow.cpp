@@ -542,6 +542,9 @@ void MainWindow::deflicker(void)
     qreal gLevel = (qreal)mPreviewForm->greenSlider()->value()/100;
     qreal bLevel = (qreal)mPreviewForm->blueSlider()->value()/100;
     mProject.setBrightnessLevel(lLevel);
+    mProject.setRedLevel(rLevel);
+    mProject.setGreenLevel(gLevel);
+    mProject.setBlueLevel(bLevel);
     if (lLevel > 0 || rLevel != 0 || gLevel != 0 || bLevel != 0) {
         QImage img(mCurrentFrame.size(), mCurrentFrame.format());
         if (mVideoWidget->stripeIsVertical()) {

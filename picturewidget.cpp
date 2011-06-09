@@ -59,41 +59,48 @@ void PictureWidget::paintEvent(QPaintEvent*)
     painter.drawImage(QPoint(0, 0), mImage);
     if (mBrightnessData && !mBrightnessData->isEmpty()) {
         const int y0l = mImage.height();
-        const int y0r = mImage.height()/4;
+        const int y0r = mImage.height()*1/4;
         const int y0g = mImage.height()*2/4;
         const int y0b = mImage.height()*3/4;
-        painter.setRenderHint(QPainter::Antialiasing);
         painter.setBrush(Qt::NoBrush);
-        if (mAvgBrightness >= 0) {
-            painter.setPen(QPen(QColor(0xff, 0xff, 0xff, 0xa0), 1.65));
+        painter.setPen(QColor(0xcc, 0xcc, 0xcc, 0xa0));
+        if (mAvgBrightness >= 0)
             painter.drawLine(QLineF(0, y0l-mAvgBrightness, mImage.width(), y0l-mAvgBrightness));
-        }
-        if (mAvgRed >= 0) {
-            painter.setPen(QPen(QColor(0xff, 0x00, 0x00, 0xa0), 1.65));
+        if (mAvgRed >= 0)
             painter.drawLine(QLineF(0, y0r-mAvgRed, mImage.width(), y0r-mAvgRed));
-        }
-        if (mAvgGreen >= 0) {
-            painter.setPen(QPen(QColor(0x00, 0xff, 0x00, 0xa0), 1.65));
+        if (mAvgGreen >= 0)
             painter.drawLine(QLineF(0, y0g-mAvgGreen, mImage.width(), y0g-mAvgGreen));
-        }
-        if (mAvgBlue >= 0) {
-            painter.setPen(QPen(QColor(0x00, 0x00, 0xff, 0xa0), 1.65));
+        if (mAvgBlue >= 0)
             painter.drawLine(QLineF(0, y0b-mAvgBlue, mImage.width(), y0b-mAvgBlue));
-        }
-        painter.setPen(QPen(QColor(0xcc, 0xcc, 0xcc, 0xa0), 1.65));
-        QPainterPath path;
-        path.moveTo(0, y0l);
+
+        painter.setRenderHint(QPainter::Antialiasing);
+        QPainterPath lPath;
+        lPath.moveTo(0, y0l);
+        painter.setPen(QPen(QColor(0xff, 0xff, 0xff, 0xa0), 1.2));
         for (int i = 0; i < mBrightnessData->size(); ++i)
-            path.lineTo(i, y0l-(*mBrightnessData)[i]);
-        path.moveTo(0, y0r);
+            lPath.lineTo(i, y0l-(*mBrightnessData)[i]);
+        painter.drawPath(lPath);
+
+        QPainterPath rPath;
+        rPath.moveTo(0, y0r);
+        painter.setPen(QPen(QColor(0xff, 0x00, 0x00, 0xa0), 1.2));
         for (int i = 0; i < mRedData->size(); ++i)
-            path.lineTo(i, y0r-(*mRedData)[i]);
-        path.moveTo(0, y0g);
+            rPath.lineTo(i, y0r-(*mRedData)[i]);
+        painter.drawPath(rPath);
+
+        QPainterPath gPath;
+        gPath.moveTo(0, y0g);
+        painter.setPen(QPen(QColor(0x00, 0xff, 0x00, 0xa0), 1.2));
         for (int i = 0; i < mGreenData->size(); ++i)
-            path.lineTo(i, y0g-(*mGreenData)[i]);
-        path.moveTo(0, y0b);
+            gPath.lineTo(i, y0g-(*mGreenData)[i]);
+        painter.drawPath(gPath);
+
+        QPainterPath bPath;
+        bPath.moveTo(0, y0b);
+        painter.setPen(QPen(QColor(0x00, 0x00, 0xff, 0xa0), 1.2));
         for (int i = 0; i < mBlueData->size(); ++i)
-            path.lineTo(i, y0b-(*mBlueData)[i]);
-        painter.drawPath(path);
+            bPath.lineTo(i, y0b-(*mBlueData)[i]);
+        painter.drawPath(bPath);
+
     }
 }
