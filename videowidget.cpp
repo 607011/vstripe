@@ -125,42 +125,53 @@ void VideoWidget::paintEvent(QPaintEvent*)
         painter.setBrush(QColor(0xff, 0xff, 0xff, 0x66));
         painter.drawRect(x0, y0, mHistogram.brightness().size(), hh);
 
-        painter.setBrush(Qt::NoBrush);
-
-        const qreal hl = (qreal)hh / mHistogram.maxBrightness();
-        painter.setPen(QColor(0x33, 0x33, 0x33, 0x80));
-        const HistogramData& l = mHistogram.brightness();
-        for (int i = 0; i < l.count(); ++i)
-            painter.drawLine(x0+i, y0+hh, x0+i, y0+hh-(int)(l[i]*hl));
-
-        painter.setRenderHint(QPainter::Antialiasing);
+        // painter.setRenderHint(QPainter::Antialiasing);
 
         QPainterPath rPath;
         const qreal hr = (qreal)hh / mHistogram.maxRed();
-        painter.setPen(QColor(0x99, 0x00, 0x00, 0x80));
+        painter.setPen(QColor(0xcc, 0x00, 0x00, 0x80));
+        painter.setBrush(QColor(0x99, 0x00, 0x00, 0x80));
         const HistogramData& r = mHistogram.red();
         rPath.moveTo(x0, y0+hh-(int)(r[0]*hr));
         for (int i = 1; i < r.count(); ++i)
             rPath.lineTo(x0+i, y0+hh-(int)(r[i]*hr));
+        rPath.lineTo(x0+r.count()-1, y0+hh);
+        rPath.lineTo(x0, y0+hh);
         painter.drawPath(rPath);
 
         QPainterPath gPath;
         const qreal hg = (qreal)hh / mHistogram.maxGreen();
-        painter.setPen(QColor(0x00, 0x99, 0x00, 0x80));
+        painter.setPen(QColor(0x00, 0xcc, 0x00, 0x80));
+        painter.setBrush(QColor(0x00, 0x99, 0x00, 0x80));
         const HistogramData& g = mHistogram.green();
         gPath.moveTo(x0, y0+hh-(int)(g[0]*hg));
         for (int i = 1; i < g.count(); ++i)
             gPath.lineTo(x0+i, y0+hh-(int)(g[i]*hg));
+        gPath.lineTo(x0+g.count()-1, y0+hh);
+        gPath.lineTo(x0, y0+hh);
         painter.drawPath(gPath);
 
         QPainterPath bPath;
         const qreal hb = (qreal)hh / mHistogram.maxBlue();
-        painter.setPen(QColor(0x00, 0x00, 0x99, 0x80));
+        painter.setPen(QColor(0x00, 0x00, 0xcc, 0x80));
+        painter.setBrush(QColor(0x00, 0x00, 0xcc, 0x80));
         const HistogramData& b = mHistogram.blue();
         bPath.moveTo(x0, y0+hh-(int)(b[0]*hb));
         for (int i = 1; i < b.count(); ++i)
             bPath.lineTo(x0+i, y0+hh-(int)(b[i]*hb));
+        bPath.lineTo(x0+b.count()-1, y0+hh);
+        bPath.lineTo(x0, y0+hh);
         painter.drawPath(bPath);
+
+        QPainterPath lPath;
+        const qreal hl = (qreal)hh / mHistogram.maxBrightness();
+        painter.setPen(QColor(0xff, 0xff, 0xff));
+        painter.setBrush(Qt::NoBrush);
+        const HistogramData& l = mHistogram.brightness();
+        lPath.moveTo(x0, y0+hh-(int)(l[0]*hl));
+        for (int i = 0; i < l.count(); ++i)
+            lPath.lineTo(x0+i, y0+hh-(int)(l[i]*hl));
+        painter.drawPath(lPath);
 
         painter.setPen(QColor(0x00, 0x00, 0x00, 0x80));
         painter.drawText(x0+6, y0+14, QString("%1").arg(mHistogram.totalBrightness()));
@@ -249,9 +260,9 @@ void VideoWidget::constrainMousePos(void)
     if (mMousePos.y() < mDestRect.y())
         mMousePos.setY(mDestRect.y());
     if (mMousePos.x() > mDestRect.bottomRight().x())
-        mMousePos.setX(mDestRect.bottomRight().x());
+        mMousePos.setX(mDestRect.bottomRight().x()-1);
     if (mMousePos.y() > mDestRect.bottomRight().y())
-        mMousePos.setY(mDestRect.bottomRight().y());
+        mMousePos.setY(mDestRect.bottomRight().y()-1);
 }
 
 

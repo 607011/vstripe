@@ -36,7 +36,7 @@ public:
             mTotalRed(0.0),
             mTotalGreen(0.0),
             mTotalBlue(0.0),
-            mN(1)
+            mN(0)
     {
         /* ... */
     }
@@ -65,10 +65,10 @@ public:
     void add(QRgb rgb);
     void postprocess(void);
     Histogram& operator= (const Histogram&);
-    const HistogramData& brightness(void) const { return mBrightness; }
-    const HistogramData& red(void) const { return mRed; }
-    const HistogramData& green(void) const { return mGreen; }
-    const HistogramData& blue(void) const { return mBlue; }
+    inline const HistogramData& brightness(void) const { return mBrightness; }
+    inline const HistogramData& red(void) const { return mRed; }
+    inline const HistogramData& green(void) const { return mGreen; }
+    inline const HistogramData& blue(void) const { return mBlue; }
     inline int minBrightness(void) const { return mMinBrightness; }
     inline int maxBrightness(void) const { return mMaxBrightness; }
     inline int minRed(void) const { return mMinRed; }
@@ -82,7 +82,7 @@ public:
     inline qreal totalGreen(void) const { return mTotalGreen; }
     inline qreal totalBlue(void) const { return mTotalBlue; }
 
-private:// variables
+private: // variables
     HistogramData mBrightness;
     HistogramData mRed;
     HistogramData mGreen;
@@ -99,7 +99,7 @@ private:// variables
     qreal mTotalRed;
     qreal mTotalGreen;
     qreal mTotalBlue;
-    int mN;
+    qreal mN;
 };
 
 

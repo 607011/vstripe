@@ -250,6 +250,7 @@ QString MainWindow::ms2hmsz(int ms, bool withMs)
 
 void MainWindow::seekToFrame(int n)
 {
+    setCursor(Qt::WaitCursor);
     QImage img;
     ui->statusBar->showMessage(tr("Seeking to frame #%1 ...").arg(n), 3000);
     mVideoReaderThread->decoder()->seekFrame(n);
@@ -260,6 +261,7 @@ void MainWindow::seekToFrame(int n)
     mVideoWidget->setFrame(img, mVideoReaderThread->histogram());
     ui->frameNumberLineEdit->setText(QString("%1").arg(mEffectiveFrameNumber));
     ui->frameTimeLineEdit->setText(ms2hmsz(mEffectiveFrameTime));
+    setCursor(Qt::ArrowCursor);
 }
 
 
@@ -603,19 +605,21 @@ void MainWindow::openRecentProjectFile(void)
 void MainWindow::openProject(const QString& fileName)
 {
     setCurrentProjectFile(fileName);
+    setCursor(Qt::WaitCursor);
     mProject.load(fileName);
     mVideoReaderThread->setHistogramRegion(mProject.histogramRegion());
     mVideoWidget->setStripePos(mProject.stripePos());
     mVideoWidget->setStripeOrientation(mProject.stripeIsVertical());
     mVideoWidget->setHistogramRegion(mProject.histogramRegion());
     mPreviewForm->levelSlider()->setValue(mProject.levelExposure()*100);
-    if (mProject.currentFrame() != Project::INVALID_FRAME)
-        mFrameSlider->setValue(mProject.currentFrame());
     if (mProject.markAIsSet() && mProject.markBIsSet())
         ui->infoPlainTextEdit->appendPlainText(tr("%1 frames selected").arg(mProject.markB() - mProject.markA()));
     updateButtons();
     if (!mProject.videoFileName().isNull())
         loadVideoFile();
+    if (mProject.currentFrame() != Project::INVALID_FRAME)
+        mFrameSlider->setValue(mProject.currentFrame());
+    setCursor(Qt::ArrowCursor);
 }
 
 
