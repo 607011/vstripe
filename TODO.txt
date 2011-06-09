@@ -15,7 +15,9 @@ TODO
 FEATURES
 ========
 
-[ ] Automatischer Weißbildabgleich im Vorschaufenster.
+[ ] Automatischer Weißabgleich im Vorschaufenster.
+
+[ ] Helligkeitskorrektur im Vorschaufenster über QFuture/QtConcurrent::run() implementieren
 
 [ ] Gerendertes Bild soll beliebig groß werden können -> Bild in Vorschaufenster skalierbar machen
 

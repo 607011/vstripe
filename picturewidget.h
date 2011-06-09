@@ -3,8 +3,8 @@
  * $Id$
  */
 
-#ifndef PICTUREWIDGET_H
-#define PICTUREWIDGET_H
+#ifndef __PICTUREWIDGET_H_
+#define __PICTUREWIDGET_H_
 
 #include <QWidget>
 #include <QImage>
@@ -16,10 +16,19 @@ class PictureWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PictureWidget(QWidget* parent = NULL);
+    PictureWidget(QWidget* parent = NULL);
+    QSize sizeHint(void) const { return QSize(1920, 1080); }
     QSize minimumSizeHint(void) const { return QSize(720, 576); }
     void setPicture(const QImage&);
-    void setBrightnessData(const BrightnessData*, qreal avgBrightness = -1);
+    void setBrightnessData(
+            const BrightnessData* brightness,
+            const BrightnessData* red,
+            const BrightnessData* green,
+            const BrightnessData* blue,
+            qreal avgBrightness = -1,
+            qreal avgRed = -1,
+            qreal avgGreen = -1,
+            qreal avgBlue = -1);
     inline const QImage& picture(void) const { return mImage; }
 
 protected:
@@ -28,8 +37,14 @@ protected:
 private:
     QImage mImage;
     const BrightnessData* mBrightnessData;
+    const BrightnessData* mRedData;
+    const BrightnessData* mGreenData;
+    const BrightnessData* mBlueData;
     qreal mAvgBrightness;
+    qreal mAvgRed;
+    qreal mAvgGreen;
+    qreal mAvgBlue;
 
 };
 
-#endif // PICTUREWIDGET_H
+#endif // __PICTUREWIDGET_H_

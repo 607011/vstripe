@@ -3,8 +3,8 @@
  * $Id$
  */
 
-#ifndef PROJECT_H
-#define PROJECT_H
+#ifndef __PROJECT_H_
+#define __PROJECT_H_
 
 #include <QObject>
 #include <QPair>
@@ -31,7 +31,7 @@ public:
         bool isNull(void) const { return frame < 0; }
     };
 
-    explicit Project(QObject* parent = NULL);
+    Project(QObject* parent = NULL);
 
     Project::mark_type readMarkTag(void);
     void readRegionTag(void);
@@ -58,7 +58,10 @@ public:
     inline const QString& videoFileName(void) const { return mVideoFileName; }
     inline const QString& fileName(void) const { return mFileName; }
     inline const QRect& histogramRegion(void) const { return mHistogramRegion; }
-    inline qreal levelExposure(void) const { return mLevelExposure; }
+    inline qreal brightnessLevel(void) const { return mBrightnessLevel; }
+    inline qreal redLevel(void) const { return mRedLevel; }
+    inline qreal greenLevel(void) const { return mGreenLevel; }
+    inline qreal blueLevel(void) const { return mBlueLevel; }
     inline bool modified(void) const { return mModified; }
 
 public slots:
@@ -69,7 +72,10 @@ public slots:
     void setStripePos(int);
     void setStripeOrientation(bool vertical);
     void setHistogramRegion(const QRect&);
-    void setLevelExposure(qreal);
+    void setBrightnessLevel(qreal);
+    void setRedLevel(qreal);
+    void setGreenLevel(qreal);
+    void setBlueLevel(qreal);
     void setFixed(bool);
     void setMarkA(int);
     void setMarkB(int);
@@ -87,7 +93,10 @@ private: // members
     int mStripePos;
     int mCurrentFrame;
     QRect mHistogramRegion;
-    qreal mLevelExposure;
+    qreal mBrightnessLevel;
+    qreal mRedLevel;
+    qreal mGreenLevel;
+    qreal mBlueLevel;
     bool mModified;
 
     mark_type* findMark(int id) const;
@@ -95,4 +104,4 @@ private: // members
 
 };
 
-#endif // PROJECT_H
+#endif // __PROJECT_H_

@@ -24,14 +24,14 @@ public:
             mRed(WIDTH, 0),
             mGreen(WIDTH, 0),
             mBlue(WIDTH, 0),
-            mMinBrightness(2147483647),
-            mMaxBrightness(-2147483647-1),
-            mMinRed(2147483647),
-            mMaxRed(-2147483647-1),
-            mMinGreen(2147483647),
-            mMaxGreen(-2147483647-1),
-            mMinBlue(2147483647),
-            mMaxBlue(-2147483647-1),
+            mMinBrightness(INT_MAX),
+            mMaxBrightness(INT_MIN),
+            mMinRed(INT_MAX),
+            mMaxRed(INT_MIN),
+            mMinGreen(INT_MAX),
+            mMaxGreen(INT_MIN),
+            mMinBlue(INT_MAX),
+            mMaxBlue(INT_MIN),
             mTotalBrightness(0.0),
             mTotalRed(0.0),
             mTotalGreen(0.0),
@@ -62,7 +62,7 @@ public:
         /* ... */
     }
     void init(int);
-    void add(QRgb rgb);
+    void add(const QRgb rgb);
     void postprocess(void);
     Histogram& operator= (const Histogram&);
     inline const HistogramData& brightness(void) const { return mBrightness; }

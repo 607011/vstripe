@@ -11,6 +11,7 @@
 MarkableSlider::MarkableSlider(const Project* project, QSlider* parent) : QSlider(Qt::Horizontal, parent), mProject(project)
 {
     setMinimum(0);
+    setTracking(false);
 }
 
 

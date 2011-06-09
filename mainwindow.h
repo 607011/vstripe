@@ -3,8 +3,8 @@
  * $Id$
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef __MAINWINDOW_H_
+#define __MAINWINDOW_H_
 
 #include <QMainWindow>
 #include <QString>
@@ -75,7 +75,7 @@ public slots:
     void setPictureSize(const QSize&);
     void setStripeOrientation(bool vertical);
     void autoFitPreview(void);
-    void deflicker(int lvl = 0);
+    void deflicker(void);
 
 protected:
     void closeEvent(QCloseEvent*);
@@ -98,7 +98,13 @@ private: // variables
     QString mFileNameFromCmdLine;
 
     BrightnessData mFrameBrightness;
+    BrightnessData mFrameRed;
+    BrightnessData mFrameGreen;
+    BrightnessData mFrameBlue;
     qreal mAvgBrightness;
+    qreal mAvgRed;
+    qreal mAvgGreen;
+    qreal mAvgBlue;
 
     Project mProject;
 
@@ -124,7 +130,10 @@ private: // methods
 
     static QString ms2hmsz(int ms, bool withMs = true);
     static QString strippedName(const QString& fullFileName);
+
+    static int darker(int v, int factor);
+    static int lighter(int v, int factor);
 };
 
-#endif // MAINWINDOW_H
+#endif // __MAINWINDOW_H_
 

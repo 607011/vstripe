@@ -47,7 +47,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     mFrameSlider->setEnabled(false);
     ui->sliderLayout->insertWidget(0, mFrameSlider);
     connect(mFrameSlider, SIGNAL(valueChanged(int)), this, SLOT(seekToFrame(int)));
-    connect(mFrameSlider, SIGNAL(valueChanged(int)), &mProject, SLOT(setCurrentFrame(int)));
 
     mVideoReaderThread = new VideoReaderThread;
     connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
@@ -63,7 +62,10 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
         mPreviewForm->show();
     connect(mPreviewForm, SIGNAL(visibilityChanged(bool)), ui->actionPreview_picture, SLOT(setChecked(bool)));
     connect(mPreviewForm, SIGNAL(sizeChanged(const QSize&)), this, SLOT(setPictureSize(const QSize&)));
-    connect(mPreviewForm->levelSlider(), SIGNAL(valueChanged(int)), this, SLOT(deflicker(int)));
+    connect(mPreviewForm->brightnessSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
+    connect(mPreviewForm->redSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
+    connect(mPreviewForm->greenSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
+    connect(mPreviewForm->blueSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
         recentVideoFileActs[i] = new QAction(this);
@@ -251,17 +253,20 @@ QString MainWindow::ms2hmsz(int ms, bool withMs)
 void MainWindow::seekToFrame(int n)
 {
     setCursor(Qt::WaitCursor);
+    mPreviewForm->setCursor(Qt::WaitCursor);
+    mProject.setCurrentFrame(n);
     QImage img;
     ui->statusBar->showMessage(tr("Seeking to frame #%1 ...").arg(n), 3000);
     mVideoReaderThread->decoder()->seekFrame(n);
     mVideoReaderThread->decoder()->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime, &mDesiredFrameNumber, &mDesiredFrameTime);
-    qDebug() << QString("effective: %1 (%2 ms), desired: %3 (%4 ms)").arg(mEffectiveFrameNumber).arg(mEffectiveFrameTime).arg(mDesiredFrameNumber).arg(mDesiredFrameTime);
+    // qDebug() << QString("effective: %1 (%2 ms), desired: %3 (%4 ms)").arg(mEffectiveFrameNumber).arg(mEffectiveFrameTime).arg(mDesiredFrameNumber).arg(mDesiredFrameTime);
     if (ui->actionHistogram->isChecked())
         mVideoReaderThread->calcHistogram(img);
     mVideoWidget->setFrame(img, mVideoReaderThread->histogram());
     ui->frameNumberLineEdit->setText(QString("%1").arg(mEffectiveFrameNumber));
     ui->frameTimeLineEdit->setText(ms2hmsz(mEffectiveFrameTime));
     setCursor(Qt::ArrowCursor);
+    mPreviewForm->setCursor(Qt::ArrowCursor);
 }
 
 
@@ -295,7 +300,10 @@ void MainWindow::startRendering(void)
 {
     ui->renderButton->setText(tr("Stop rendering"));
     mFrameBrightness.clear();
-    mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness);
+    mFrameRed.clear();
+    mFrameGreen.clear();
+    mFrameBlue.clear();
+    mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness, &mFrameRed, &mFrameGreen, &mFrameBlue);
     mProject.setFixed(mVideoWidget->stripeIsFixed());
     int firstFrame, lastFrame;
     mFrameCount = mVideoWidget->stripeIsVertical()? qreal(mCurrentFrame.width()) : qreal(mCurrentFrame.height());
@@ -320,6 +328,8 @@ void MainWindow::stopRendering(void) {
     ui->statusBar->showMessage(tr("Rendering stopped."), 5000);
     ui->renderButton->setText(tr("Start rendering"));
     mVideoReaderThread->stopReading();
+    setCursor(Qt::ArrowCursor);
+    mPreviewForm->setCursor(Qt::ArrowCursor);
 }
 
 
@@ -454,6 +464,9 @@ void MainWindow::frameReady(QImage src, Histogram histogram, int frameNumber, in
     Q_ASSERT(!mCurrentFrame.isNull());
     Q_ASSERT(!src.isNull());
     mFrameBrightness.append(histogram.totalBrightness());
+    mFrameRed.append(histogram.totalRed());
+    mFrameGreen.append(histogram.totalGreen());
+    mFrameBlue.append(histogram.totalBlue());
     const int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : (frameNumber % (mVideoWidget->stripeIsVertical()? src.width() : src.height()));
     const int dstpos = frameNumber;
     if (mVideoWidget->stripeIsVertical()) {
@@ -473,36 +486,78 @@ void MainWindow::frameReady(QImage src, Histogram histogram, int frameNumber, in
 }
 
 
+static qreal average(const BrightnessData& v) {
+    qreal sum = 0.0;
+    for (BrightnessData::const_iterator i = v.begin(); i != v.end(); ++i)
+        sum += *i;
+    return sum / v.count();
+}
+
+
 void MainWindow::decodingFinished()
 {
     ui->action_Save_picture->setEnabled(true);
     ui->renderButton->setText(tr("Start rendering"));
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);
-    qreal sum = 0.0;
-    for (BrightnessData::const_iterator i = mFrameBrightness.begin(); i != mFrameBrightness.end(); ++i)
-        sum += *i;
-    mAvgBrightness = sum / mFrameBrightness.count();
-    ui->infoPlainTextEdit->appendPlainText(tr("avg. brightness = %1").arg(mAvgBrightness));
-    mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness, mAvgBrightness);
-    deflicker(mPreviewForm->levelSlider()->value());
+    mAvgBrightness = average(mFrameBrightness);
+    mAvgRed = average(mFrameRed);
+    mAvgGreen = average(mFrameGreen);
+    mAvgBlue = average(mFrameBlue);
+    mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness, &mFrameRed, &mFrameGreen, &mFrameBlue, mAvgBrightness, mAvgRed, mAvgGreen, mAvgBlue);
+    deflicker();
 }
 
 
-void MainWindow::deflicker(int lvl)
+int MainWindow::darker(int v, int factor)
 {
-    qreal level = (qreal)lvl / 100;
-    mProject.setLevelExposure(level);
-    if (level > 0) {
+    if (factor <= 0)
+        return v;
+    else if (factor < 100)
+        return lighter(v, 10000 / factor);
+    v = (v * 100) / factor;
+    return v;
+}
+
+
+int MainWindow::lighter(int v, int factor)
+{
+    if (factor <= 0)
+        return v;
+    else if (factor < 100)
+        return darker(v, 10000 / factor);
+    v = (factor * v) / 100;
+    if (v > UCHAR_MAX)
+        v = UCHAR_MAX;
+    return v;
+}
+
+
+void MainWindow::deflicker(void)
+{
+    setCursor(Qt::BusyCursor);
+    mPreviewForm->setCursor(Qt::BusyCursor);
+    qreal lLevel = (qreal)mPreviewForm->brightnessSlider()->value()/100;
+    qreal rLevel = (qreal)mPreviewForm->redSlider()->value()/100;
+    qreal gLevel = (qreal)mPreviewForm->greenSlider()->value()/100;
+    qreal bLevel = (qreal)mPreviewForm->blueSlider()->value()/100;
+    mProject.setBrightnessLevel(lLevel);
+    if (lLevel > 0 || rLevel != 0 || gLevel != 0 || bLevel != 0) {
         QImage img(mCurrentFrame.size(), mCurrentFrame.format());
         if (mVideoWidget->stripeIsVertical()) {
             if (img.width() != mFrameBrightness.count())
                 return;
             for (int x = 0; x < mFrameBrightness.count(); ++x) {
-                int diff = (int) ((mFrameBrightness[x] - mAvgBrightness) * level);
+                int dl = (int) ((mFrameBrightness[x] - mAvgBrightness) * lLevel);
+                int dr = (int) ((mFrameRed[x] - mAvgRed) * rLevel);
+                int dg = (int) ((mFrameGreen[x] - mAvgGreen) * gLevel);
+                int db = (int) ((mFrameBlue[x] - mAvgBlue) * bLevel);
                 for (int y = 0; y < img.height(); ++y) {
-                    QColor c = mCurrentFrame.pixel(x, y);
-                    img.setPixel(x, y, c.lighter(100-diff).rgb());
+                    QRgb rgb = mCurrentFrame.pixel(x, y);
+                    int r = lighter(qRed(rgb), 100+dr);
+                    int g = lighter(qGreen(rgb), 100+dg);
+                    int b = lighter(qBlue(rgb), 100+db);
+                    img.setPixel(x, y, QColor(r, g, b).lighter(100-dl).rgb());
                 }
             }
         }
@@ -510,7 +565,7 @@ void MainWindow::deflicker(int lvl)
             if (img.height() != mFrameBrightness.count())
                 return;
             for (int y = 0; y < mFrameBrightness.count(); ++y) {
-                int diff = (int) ((mFrameBrightness[y] - mAvgBrightness) * level);
+                int diff = (int) ((mFrameBrightness[y] - mAvgBrightness) * lLevel);
                 const QRgb* d = reinterpret_cast<const QRgb*>(mCurrentFrame.constScanLine(y));
                 for (int x = 0; x < img.width(); ++x, ++d)
                     img.setPixel(x, y, QColor(*d).lighter(100-diff).rgb());
@@ -520,6 +575,8 @@ void MainWindow::deflicker(int lvl)
     }
     else
         mPreviewForm->pictureWidget()->setPicture(mCurrentFrame);
+    setCursor(Qt::ArrowCursor);
+    mPreviewForm->setCursor(Qt::ArrowCursor);
 }
 
 
@@ -604,13 +661,15 @@ void MainWindow::openRecentProjectFile(void)
 void MainWindow::openProject(const QString& fileName)
 {
     setCurrentProjectFile(fileName);
-    setCursor(Qt::WaitCursor);
     mProject.load(fileName);
     mVideoReaderThread->setHistogramRegion(mProject.histogramRegion());
     mVideoWidget->setStripePos(mProject.stripePos());
     mVideoWidget->setStripeOrientation(mProject.stripeIsVertical());
     mVideoWidget->setHistogramRegion(mProject.histogramRegion());
-    mPreviewForm->levelSlider()->setValue(mProject.levelExposure()*100);
+    mPreviewForm->brightnessSlider()->setValue(mProject.brightnessLevel()*100);
+    mPreviewForm->redSlider()->setValue(mProject.redLevel()*100);
+    mPreviewForm->greenSlider()->setValue(mProject.greenLevel()*100);
+    mPreviewForm->blueSlider()->setValue(mProject.blueLevel()*100);
     if (mProject.markAIsSet() && mProject.markBIsSet())
         ui->infoPlainTextEdit->appendPlainText(tr("%1 frames selected").arg(mProject.markB() - mProject.markA()));
     updateButtons();
@@ -618,7 +677,6 @@ void MainWindow::openProject(const QString& fileName)
         loadVideoFile();
     if (mProject.currentFrame() != Project::INVALID_FRAME)
         mFrameSlider->setValue(mProject.currentFrame());
-    setCursor(Qt::ArrowCursor);
 }
 
 

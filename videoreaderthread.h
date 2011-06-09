@@ -3,8 +3,8 @@
  * $Id$
  */
 
-#ifndef VIDEOREADERTHREAD_H
-#define VIDEOREADERTHREAD_H
+#ifndef __VIDEOREADERTHREAD_H_
+#define __VIDEOREADERTHREAD_H_
 
 #include <QThread>
 #include <QString>
@@ -55,4 +55,4 @@ private:
     QImage mCurrentFrame;
 };
 
-#endif // VIDEOREADERTHREAD_H
+#endif // __VIDEOREADERTHREAD_H_

@@ -3,8 +3,8 @@
  * $Id$
  */
 
-#ifndef MARKABLESLIDER_H
-#define MARKABLESLIDER_H
+#ifndef __MARKABLESLIDER_H_
+#define __MARKABLESLIDER_H_
 
 #include <QSlider>
 #include <QVector>
@@ -30,4 +30,4 @@ private:
 
 };
 
-#endif // MARKABLESLIDER_H
+#endif // __MARKABLESLIDER_H_

@@ -15,7 +15,14 @@ bool markLess(const Project::mark_type& m1, const Project::mark_type& m2)
 
 
 Project::Project(QObject* parent) :
-    QObject(parent), mFixedStripe(false), mVerticalStripe(true), mLevelExposure(0.7), mModified(false)
+    QObject(parent),
+    mFixedStripe(false),
+    mVerticalStripe(true),
+    mBrightnessLevel(0.7),
+    mRedLevel(0),
+    mGreenLevel(0),
+    mBlueLevel(0),
+    mModified(false)
 {
 }
 
@@ -97,7 +104,15 @@ void Project::readHistogramTag(void)
                 readRegionTag();
             }
             else if (mXml.name() == "level") {
-                mLevelExposure = mXml.readElementText().toDouble();
+                QString channel = mXml.attributes().value("channel").toString();
+                if (channel == "brightness")
+                    mBrightnessLevel = mXml.readElementText().toDouble();
+                else if (channel == "red")
+                    mRedLevel = mXml.readElementText().toDouble();
+                else if (channel == "green")
+                    mGreenLevel = mXml.readElementText().toDouble();
+                else if (channel == "blue")
+                    mBlueLevel = mXml.readElementText().toDouble();
             }
         }
         mXml.readNext();
@@ -211,7 +226,21 @@ void Project::save(void)
         xml.writeTextElement("height", QString("%1").arg(mHistogramRegion.height()));
         xml.writeEndElement();
     }
-    xml.writeTextElement("level", QString("%1").arg(mLevelExposure));
+    xml.writeStartElement("level");
+    xml.writeAttribute("channel", "brightness");
+    xml.writeCharacters(QString("%1").arg(mBrightnessLevel));
+    xml.writeEndElement();
+    xml.writeStartElement("level");
+    xml.writeAttribute("channel", "red");
+    xml.writeCharacters(QString("%1").arg(mRedLevel));
+    xml.writeEndElement();
+    xml.writeStartElement("level");
+    xml.writeAttribute("channel", "green");
+    xml.writeCharacters(QString("%1").arg(mGreenLevel));
+    xml.writeEndElement();
+    xml.writeStartElement("level");
+    xml.writeAttribute("channel", "blue");
+    xml.writeCharacters(QString("%1").arg(mBlueLevel));
     xml.writeEndElement();
     xml.writeStartElement("stripe");
     xml.writeAttribute("orientation", mVerticalStripe? "vertical" : "horizontal");
@@ -286,9 +315,27 @@ void Project::setHistogramRegion(const QRect& region)
 }
 
 
-void Project::setLevelExposure(qreal level)
+void Project::setBrightnessLevel(qreal level)
 {
-    mLevelExposure = level;
+    mBrightnessLevel = level;
+}
+
+
+void Project::setRedLevel(qreal level)
+{
+    mRedLevel = level;
+}
+
+
+void Project::setGreenLevel(qreal level)
+{
+    mGreenLevel = level;
+}
+
+
+void Project::setBlueLevel(qreal level)
+{
+    mBlueLevel = level;
 }
 
 

@@ -25,10 +25,10 @@ PreviewForm::~PreviewForm()
 }
 
 
-QSlider* PreviewForm::levelSlider(void)
-{
-    return ui->exposureLevelSlider;
-}
+QSlider* PreviewForm::brightnessSlider(void) { return ui->exposureLSlider; }
+QSlider* PreviewForm::redSlider(void) { return ui->exposureRSlider; }
+QSlider* PreviewForm::greenSlider(void) { return ui->exposureGSlider; }
+QSlider* PreviewForm::blueSlider(void) { return ui->exposureBSlider; }
 
 
 void PreviewForm::setVisible(bool visible)
