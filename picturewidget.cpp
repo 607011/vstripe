@@ -17,7 +17,11 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mAvgBrightness(-1),
         mAvgRed(-1),
         mAvgGreen(-1),
-        mAvgBlue(-1)
+        mAvgBlue(-1),
+        mMinBrightness(-1),
+        mMinRed(-1),
+        mMinGreen(-1),
+        mMinBlue(-1)
 {
     setStyleSheet("background: #444");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -39,7 +43,11 @@ void PictureWidget::setBrightnessData(
         qreal avgBrightness,
         qreal avgRed,
         qreal avgGreen,
-        qreal avgBlue)
+        qreal avgBlue,
+        qreal minBrightness,
+        qreal minRed,
+        qreal minGreen,
+        qreal minBlue)
 {
     mBrightnessData = brightness;
     mRedData = red;
@@ -49,6 +57,10 @@ void PictureWidget::setBrightnessData(
     mAvgRed = avgRed;
     mAvgGreen = avgGreen;
     mAvgBlue = avgBlue;
+    mMinBrightness = minBrightness;
+    mMinRed = minRed;
+    mMinGreen = minGreen;
+    mMinBlue = minBlue;
     update();
 }
 
@@ -57,11 +69,11 @@ void PictureWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
     painter.drawImage(QPoint(0, 0), mImage);
-    if (mBrightnessData && !mBrightnessData->isEmpty()) {
-        const int y0l = mImage.height();
-        const int y0r = mImage.height()*1/4;
-        const int y0g = mImage.height()*2/4;
-        const int y0b = mImage.height()*3/4;
+    if (mBrightnessData && !mBrightnessData->isEmpty() && mMinBrightness >= 0) {
+        const int y0l = mImage.height()     + mMinBrightness;
+        const int y0r = mImage.height()*1/4 + mMinRed;
+        const int y0g = mImage.height()*2/4 + mMinGreen;
+        const int y0b = mImage.height()*3/4 + mMinBlue;
         painter.setBrush(Qt::NoBrush);
         painter.setPen(QColor(0xcc, 0xcc, 0xcc, 0xa0));
         if (mAvgBrightness >= 0)

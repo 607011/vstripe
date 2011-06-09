@@ -105,6 +105,10 @@ private: // variables
     qreal mAvgRed;
     qreal mAvgGreen;
     qreal mAvgBlue;
+    qreal mMinTotalBrightness;
+    qreal mMinTotalRed;
+    qreal mMinTotalGreen;
+    qreal mMinTotalBlue;
 
     Project mProject;
 
