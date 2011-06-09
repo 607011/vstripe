@@ -3,8 +3,8 @@
  * $Id$
  */
 
-#ifndef VIDEOWIDGET_H
-#define VIDEOWIDGET_H
+#ifndef __VIDEOWIDGET_H_
+#define __VIDEOWIDGET_H_
 
 #include <QFrame>
 #include <QImage>
@@ -80,4 +80,4 @@ signals:
     void histogramRegionChanged(const QRect&);
 };
 
-#endif // VIDEOWIDGET_H
+#endif // __VIDEOWIDGET_H_

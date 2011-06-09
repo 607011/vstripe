@@ -9,14 +9,14 @@
 void Histogram::init(int N)
 {
     mN = 1.0 / N;
-    mMinBrightness = 2147483647;
-    mMaxBrightness = -2147483647-1;
-    mMinRed = 2147483647;
-    mMaxRed = -2147483647-1;
-    mMinGreen = 2147483647;
-    mMaxGreen = -2147483647-1;
-    mMinBlue = 2147483647;
-    mMaxBlue = -2147483647-1;
+    mMinBrightness = INT_MAX;
+    mMaxBrightness = INT_MIN;
+    mMinRed = INT_MAX;
+    mMaxRed = INT_MIN;
+    mMinGreen = INT_MAX;
+    mMaxGreen = INT_MIN;
+    mMinBlue = INT_MAX;
+    mMaxBlue = INT_MIN;
     mTotalBrightness = 0;
     mTotalRed = 0;
     mTotalGreen = 0;
@@ -32,20 +32,20 @@ void Histogram::init(int N)
 }
 
 
-void Histogram::add(QRgb rgb)
+void Histogram::add(const QRgb rgb)
 {
-    const int l = qGray(rgb); // QColor(rgb).lightness();
-    ++mBrightness[l];
-    mTotalBrightness += l;
     const int r = qRed(rgb);
-    ++mRed[r];
-    mTotalRed += r;
     const int g = qGreen(rgb);
-    ++mGreen[g];
-    mTotalGreen += g;
     const int b = qBlue(rgb);
+    const int l = qGray(r, g, b); // QColor(rgb).lightness() ist viel langsamer
+    ++mRed[r];
+    ++mGreen[g];
     ++mBlue[b];
+    ++mBrightness[l];
+    mTotalRed += r;
+    mTotalGreen += g;
     mTotalBlue += b;
+    mTotalBrightness += l;
 }
 
 

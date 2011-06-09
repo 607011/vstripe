@@ -3,8 +3,8 @@
  * $Id$
  */
 
-#ifndef PREVIEWFORM_H
-#define PREVIEWFORM_H
+#ifndef __PREVIEWFORM_H_
+#define __PREVIEWFORM_H_
 
 #include <QWidget>
 #include <QSlider>
@@ -19,14 +19,17 @@ class PreviewForm : public QWidget
 {
     Q_OBJECT
 
+
 public:
-    explicit PreviewForm(QWidget* parent = 0);
+    explicit PreviewForm(QWidget* parent = NULL);
     ~PreviewForm();
     void setVisible(bool visible);
     void setSizeConstraint(const QSize&, const QSize&);
-
     PictureWidget* pictureWidget(void) { return mPictureWidget; }
-    QSlider* levelSlider(void);
+    QSlider* brightnessSlider(void);
+    QSlider* redSlider(void);
+    QSlider* greenSlider(void);
+    QSlider* blueSlider(void);
 
 signals:
     void visibilityChanged(bool);
@@ -43,4 +46,4 @@ private:
 
 };
 
-#endif // PREVIEWFORM_H
+#endif // __PREVIEWFORM_H_

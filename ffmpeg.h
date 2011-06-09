@@ -15,8 +15,8 @@ THIS SOFTWARE IS PROVIDED BY COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESS OR IMPL
    Wraps the ffmpeg includes in a namespace and ensures extern "C"
 */
 
-#ifndef _FFMPEG_H
-#define _FFMPEG_H
+#ifndef __FFMPEG_H_
+#define __FFMPEG_H_
 
 #include <stdio.h>
 
@@ -32,4 +32,4 @@ extern "C" {
 }
 }
 
-#endif // _FFMPEG_H
+#endif // __FFMPEG_H_
