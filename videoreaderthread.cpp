@@ -72,7 +72,7 @@ void VideoReaderThread::calcHistogram(const QImage& src)
     QImage img(src.copy(histoRect).scaled(histoRect.size().boundedTo(QSize(100, 100)), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     mHistogram.init(img.width() * img.height());
     for (int y = 0; y < img.height(); ++y) {
-        const QRgb* d = reinterpret_cast<const QRgb*>(img.scanLine(y));
+        const QRgb* d = reinterpret_cast<const QRgb*>(img.constScanLine(y));
         for (int x = 0; x < img.width(); ++x, ++d)
             mHistogram.add(*d);
     }
