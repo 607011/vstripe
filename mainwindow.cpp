@@ -303,6 +303,10 @@ void MainWindow::startRendering(void)
     mFrameRed.clear();
     mFrameGreen.clear();
     mFrameBlue.clear();
+    mMinTotalBrightness = INT_MAX;
+    mMinTotalRed = INT_MAX;
+    mMinTotalGreen = INT_MAX;
+    mMinTotalBlue = INT_MAX;
     mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness, &mFrameRed, &mFrameGreen, &mFrameBlue);
     mProject.setFixed(mVideoWidget->stripeIsFixed());
     int firstFrame, lastFrame;
@@ -467,6 +471,14 @@ void MainWindow::frameReady(QImage src, Histogram histogram, int frameNumber, in
     mFrameRed.append(histogram.totalRed());
     mFrameGreen.append(histogram.totalGreen());
     mFrameBlue.append(histogram.totalBlue());
+    if (histogram.totalBrightness() < mMinTotalBrightness)
+        mMinTotalBrightness = histogram.totalBrightness();
+    if (histogram.totalRed() < mMinTotalRed)
+        mMinTotalRed = histogram.totalRed();
+    if (histogram.totalGreen() < mMinTotalGreen)
+        mMinTotalGreen = histogram.totalGreen();
+    if (histogram.totalBlue() < mMinTotalBlue)
+        mMinTotalBlue = histogram.totalBlue();
     const int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : (frameNumber % (mVideoWidget->stripeIsVertical()? src.width() : src.height()));
     const int dstpos = frameNumber;
     if (mVideoWidget->stripeIsVertical()) {
@@ -487,7 +499,7 @@ void MainWindow::frameReady(QImage src, Histogram histogram, int frameNumber, in
 
 
 static qreal average(const BrightnessData& v) {
-    qreal sum = 0.0;
+    qreal sum = 0;
     for (BrightnessData::const_iterator i = v.begin(); i != v.end(); ++i)
         sum += *i;
     return sum / v.count();
@@ -504,7 +516,19 @@ void MainWindow::decodingFinished()
     mAvgRed = average(mFrameRed);
     mAvgGreen = average(mFrameGreen);
     mAvgBlue = average(mFrameBlue);
-    mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness, &mFrameRed, &mFrameGreen, &mFrameBlue, mAvgBrightness, mAvgRed, mAvgGreen, mAvgBlue);
+    mPreviewForm->pictureWidget()->setBrightnessData(
+            &mFrameBrightness, &mFrameRed, &mFrameGreen, &mFrameBlue,
+            mAvgBrightness, mAvgRed, mAvgGreen, mAvgBlue,
+            mMinTotalBrightness, mMinTotalRed, mMinTotalGreen, mMinTotalBlue);
+    // guess an appropriate brightness correction factor
+    qreal diffSum = 0;
+    for (BrightnessData::const_iterator i = mFrameBrightness.begin(); i != mFrameBrightness.end(); ++i)
+        if (*i > mAvgBrightness)
+            diffSum += qAbs(*i - mAvgBrightness);
+    if (mFrameBrightness.count() > 0)
+        diffSum /= mFrameBrightness.count();
+    ui->infoPlainTextEdit->appendPlainText(tr("avg. luminance error: %1").arg(diffSum));
+    mPreviewForm->brightnessSlider()->setValue((int)(diffSum*6.7));
     deflicker();
 }
 
@@ -568,10 +592,18 @@ void MainWindow::deflicker(void)
             if (img.height() != mFrameBrightness.count())
                 return;
             for (int y = 0; y < mFrameBrightness.count(); ++y) {
-                int diff = (int) ((mFrameBrightness[y] - mAvgBrightness) * lLevel);
+                int dl = (int) ((mFrameBrightness[y] - mAvgBrightness) * lLevel);
+                int dr = (int) ((mFrameRed[y] - mAvgRed) * rLevel);
+                int dg = (int) ((mFrameGreen[y] - mAvgGreen) * gLevel);
+                int db = (int) ((mFrameBlue[y] - mAvgBlue) * bLevel);
                 const QRgb* d = reinterpret_cast<const QRgb*>(mCurrentFrame.constScanLine(y));
-                for (int x = 0; x < img.width(); ++x, ++d)
-                    img.setPixel(x, y, QColor(*d).lighter(100-diff).rgb());
+                for (int x = 0; x < img.width(); ++x, ++d) {
+                    QRgb rgb = mCurrentFrame.pixel(x, y);
+                    int r = lighter(qRed(rgb), 100+dr);
+                    int g = lighter(qGreen(rgb), 100+dg);
+                    int b = lighter(qBlue(rgb), 100+db);
+                    img.setPixel(x, y, QColor(r, g, b).lighter(100-dl).rgb());
+                }
             }
         }
         mPreviewForm->pictureWidget()->setPicture(img);

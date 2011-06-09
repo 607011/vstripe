@@ -28,7 +28,11 @@ public:
             qreal avgBrightness = -1,
             qreal avgRed = -1,
             qreal avgGreen = -1,
-            qreal avgBlue = -1);
+            qreal avgBlue = -1,
+            qreal minBrightness = -1,
+            qreal minRed = -1,
+            qreal minGreen = -1,
+            qreal minBlue = -1);
     inline const QImage& picture(void) const { return mImage; }
 
 protected:
@@ -44,7 +48,10 @@ private:
     qreal mAvgRed;
     qreal mAvgGreen;
     qreal mAvgBlue;
-
+    qreal mMinBrightness;
+    qreal mMinRed;
+    qreal mMinGreen;
+    qreal mMinBlue;
 };
 
 #endif // __PICTUREWIDGET_H_
