@@ -214,7 +214,7 @@ void Project::save(void)
                 xml.writeTextElement("name", m.name);
             xml.writeEndElement();
         }
-        xml.writeEndElement();
+        xml.writeEndElement(); // marks
     }
     xml.writeTextElement("recent", QString("%1").arg(mCurrentFrame));
     xml.writeStartElement("histogram");
@@ -224,7 +224,7 @@ void Project::save(void)
         xml.writeTextElement("y", QString("%1").arg(mHistogramRegion.y()));
         xml.writeTextElement("width", QString("%1").arg(mHistogramRegion.width()));
         xml.writeTextElement("height", QString("%1").arg(mHistogramRegion.height()));
-        xml.writeEndElement();
+        xml.writeEndElement(); // region
     }
     xml.writeStartElement("level");
     xml.writeAttribute("channel", "brightness");
@@ -242,10 +242,13 @@ void Project::save(void)
     xml.writeAttribute("channel", "blue");
     xml.writeCharacters(QString("%1").arg(mBlueLevel));
     xml.writeEndElement();
+    xml.writeEndElement(); // histogram
+
     xml.writeStartElement("stripe");
     xml.writeAttribute("orientation", mVerticalStripe? "vertical" : "horizontal");
     xml.writeCharacters(QString("%1").arg(mStripePos));
-    xml.writeEndElement();
+    xml.writeEndElement(); // stripe
+
     xml.writeEndDocument();
     mFile.close();
     mModified = false;
