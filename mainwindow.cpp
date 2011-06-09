@@ -511,10 +511,9 @@ void MainWindow::deflicker(int lvl)
                 return;
             for (int y = 0; y < mFrameBrightness.count(); ++y) {
                 int diff = (int) ((mFrameBrightness[y] - mAvgBrightness) * level);
-                for (int x = 0; x < img.width(); ++x) {
-                    QColor c = mCurrentFrame.pixel(x, y);
-                    img.setPixel(x, y, c.lighter(100-diff).rgb());
-                }
+                const QRgb* d = reinterpret_cast<const QRgb*>(mCurrentFrame.constScanLine(y));
+                for (int x = 0; x < img.width(); ++x, ++d)
+                    img.setPixel(x, y, QColor(*d).lighter(100-diff).rgb());
             }
         }
         mPreviewForm->pictureWidget()->setPicture(img);
