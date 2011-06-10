@@ -26,6 +26,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
 {
     ui->setupUi(this);
 
+    setWindowTitle(tr("%1 %2").arg(MainWindow::AppName).arg(MainWindow::AppVersion));
+
     qRegisterMetaType<Histogram>();
 
     mVideoWidget = new VideoWidget;
@@ -89,6 +91,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(openProject()));
     connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(saveProject()));
     connect(ui->actionSave_project_as, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
+    connect(ui->actionCopy_to_clipboard, SIGNAL(triggered()), mPreviewForm->pictureWidget(), SLOT(copyImageToClipboard()));
 
     mEffectiveFrameNumber = Project::INVALID_FRAME;
     mEffectiveFrameTime = -1;
@@ -153,7 +156,7 @@ void MainWindow::restoreAppSettings(void)
 void MainWindow::setCurrentVideoFile(const QString& fileName)
 {
     mProject.setVideoFileName(fileName);
-    setWindowTitle(tr("%1 - %2").arg(MainWindow::AppName).arg(mProject.videoFileName()));
+    setWindowTitle(tr("%1 %2 - %3").arg(MainWindow::AppName).arg(MainWindow::AppVersion).arg(mProject.videoFileName()));
     setWindowFilePath(mProject.videoFileName());
     QSettings settings(MainWindow::Company, MainWindow::AppName);
     QStringList files = settings.value("recentVideoFileList").toStringList();
@@ -500,7 +503,7 @@ void MainWindow::frameReady(QImage src, Histogram histogram, int frameNumber, in
 }
 
 
-static qreal average(const BrightnessData& v) {
+qreal MainWindow::averageBrightnessData(const BrightnessData& v) {
     qreal sum = 0;
     for (BrightnessData::const_iterator i = v.begin(); i != v.end(); ++i)
         sum += *i;
@@ -514,14 +517,15 @@ void MainWindow::decodingFinished()
     ui->renderButton->setText(tr("Start rendering"));
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);
-    mAvgBrightness = average(mFrameBrightness);
-    mAvgRed = average(mFrameRed);
-    mAvgGreen = average(mFrameGreen);
-    mAvgBlue = average(mFrameBlue);
+    mAvgBrightness = averageBrightnessData(mFrameBrightness);
+    mAvgRed = averageBrightnessData(mFrameRed);
+    mAvgGreen = averageBrightnessData(mFrameGreen);
+    mAvgBlue = averageBrightnessData(mFrameBlue);
     mPreviewForm->pictureWidget()->setBrightnessData(
             &mFrameBrightness, &mFrameRed, &mFrameGreen, &mFrameBlue,
             mAvgBrightness, mAvgRed, mAvgGreen, mAvgBlue,
             mMinTotalBrightness, mMinTotalRed, mMinTotalGreen, mMinTotalBlue);
+
     // guess an appropriate brightness correction factor
     qreal diffSum = 0;
     for (BrightnessData::const_iterator i = mFrameBrightness.begin(); i != mFrameBrightness.end(); ++i)
@@ -531,6 +535,7 @@ void MainWindow::decodingFinished()
         diffSum /= mFrameBrightness.count();
     ui->infoPlainTextEdit->appendPlainText(tr("avg. luminance error: %1").arg(diffSum));
     mPreviewForm->brightnessSlider()->setValue((int)(diffSum*6.7));
+
     deflicker();
     enablePreviewForm();
     setCursor(Qt::ArrowCursor);
@@ -671,6 +676,7 @@ void MainWindow::enablePreviewForm(void)
     mPreviewForm->redSlider()->setEnabled(true);
     mPreviewForm->greenSlider()->setEnabled(true);
     mPreviewForm->blueSlider()->setEnabled(true);
+    ui->actionCopy_to_clipboard->setEnabled(true);
 }
 
 
@@ -680,6 +686,7 @@ void MainWindow::disablePreviewForm(void)
     mPreviewForm->redSlider()->setEnabled(false);
     mPreviewForm->greenSlider()->setEnabled(false);
     mPreviewForm->blueSlider()->setEnabled(false);
+    ui->actionCopy_to_clipboard->setEnabled(false);
 }
 
 

@@ -565,6 +565,7 @@
      <addaction name="separator"/>
     </widget>
     <addaction name="menuUse_video_camera"/>
+    <addaction name="actionCopy_to_clipboard"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -766,6 +767,14 @@
   <action name="actionClear_histogram_region">
    <property name="text">
     <string>Clear histogram region</string>
+   </property>
+  </action>
+  <action name="actionCopy_to_clipboard">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Copy to clipboard</string>
    </property>
   </action>
  </widget>

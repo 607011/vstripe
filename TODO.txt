@@ -19,7 +19,7 @@ TODO
 FEATURES
 ========
 
-[ ] Helligkeitskorrektur im Vorschaufenster über QFuture/QtConcurrent::run() implementieren ???
+[ ] Einlesen eines Frames in MainWindow::seekToFrame() mit QFuture/QtConcurrent::run() implementieren ???
 
 [ ] Gerendertes Bild soll beliebig groß werden können -> Bild in Vorschaufenster skalierbar machen
 

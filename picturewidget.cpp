@@ -5,6 +5,8 @@
 
 #include <QPainter>
 #include <QPainterPath>
+#include <QApplication>
+#include <QClipboard>
 #include "picturewidget.h"
 
 
@@ -25,6 +27,20 @@ PictureWidget::PictureWidget(QWidget* parent) :
 {
     setStyleSheet("background: #444");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+}
+
+
+void PictureWidget::copyImageToClipboard(void)
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setImage(mImage);
+}
+
+
+void PictureWidget::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_C && (event->modifiers() & Qt::ControlModifier))
+        copyImageToClipboard();
 }
 
 
