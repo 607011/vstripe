@@ -28,7 +28,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(int argc, char* argv[], QWidget* parent = NULL);
+    MainWindow(int argc, char* argv[], QWidget* parent = NULL);
     ~MainWindow();
 
     QSize minimumSizeHint(void) const { return QSize(720, 576); }
@@ -36,6 +36,7 @@ public:
 
     static const QString Company;
     static const QString AppName;
+    static const QString AppVersion;
 
 
 public slots:
@@ -124,6 +125,8 @@ private: // methods
     void stopRendering(void);
     void enableGuiButtons(void);
     void disableGuiButtons(void);
+    void enablePreviewForm(void);
+    void disablePreviewForm(void);
     void updateButtons(void);
     void restoreAppSettings(void);
     void saveAppSettings(void);

@@ -30,7 +30,7 @@ public:
     QSize sizeHint(void) const { return QSize(1920, 1080); }
     int stripePos(void) const;
     inline bool stripeIsVertical(void) const { return mVerticalStripe; }
-    inline bool stripeIsFixed(void) const { return mVerticalStripe? (mStripePos.x() >= 0) : (mStripePos.y() >= 0); }
+    bool stripeIsFixed(void) const;
     void setStripePos(int);
     void setStripeOrientation(bool vertical);
     void setHistogramRegion(const QRect&);

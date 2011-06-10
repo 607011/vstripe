@@ -108,8 +108,8 @@ void VideoWidget::paintEvent(QPaintEvent*)
             painter.setBrush(QBrush(QColor(0x30, 0xc0, 0x30, 0xc0), Qt::DiagCrossPattern));
         }
         else {
-            painter.setPen(QColor(0x30, 0xf0, 0x00, 0x90));
-            painter.setBrush(QColor(0x30, 0xc0, 0x00, 0x90));
+            painter.setPen(QPen(QColor(0x30, 0xf0, 0x00, 0x90), 1, Qt::SolidLine));
+            painter.setBrush(QBrush(QColor(0x30, 0xc0, 0x00, 0x90), Qt::Dense5Pattern));
         }
         QRect destRect;
         destRect.setTopLeft(toPosInWidget(mHistoRegion.topLeft()));
@@ -120,14 +120,15 @@ void VideoWidget::paintEvent(QPaintEvent*)
     // draw histogram
     //
     if (mHistogramEnabled) {
+
         const int hh = 128, x0 = 8, y0 = 8;
-        painter.setPen(QColor(0xff, 0xff, 0xff, 0x66));
-        painter.setBrush(QColor(0xff, 0xff, 0xff, 0x66));
-        painter.drawRect(x0, y0, mHistogram.brightness().size(), hh);
-
-        // painter.setRenderHint(QPainter::Antialiasing);
-
         const qreal scale = (qreal)hh / qMax(qMax(qMax(mHistogram.maxRed(), mHistogram.maxGreen()), mHistogram.maxBlue()), mHistogram.maxBrightness());
+
+        painter.setPen(QColor(0xff, 0xff, 0xff, 0x99));
+        painter.setBrush(QColor(0xff, 0xff, 0xff, 0x66));
+        painter.drawRect(x0-1, y0-1, mHistogram.brightness().size()+1, hh+2);
+
+        painter.setRenderHint(QPainter::Antialiasing);
 
         QPainterPath rPath;
         painter.setPen(QColor(0xcc, 0x00, 0x00, 0x80));
@@ -147,7 +148,7 @@ void VideoWidget::paintEvent(QPaintEvent*)
         gPath.moveTo(x0, y0+hh-(int)(g[0]*scale));
         for (int i = 1; i < g.count(); ++i)
             gPath.lineTo(x0+i, y0+hh-(int)(g[i]*scale));
-        gPath.lineTo(x0+g.count()-1, y0+hh);
+        gPath.lineTo(x0+g.last(), y0+hh);
         gPath.lineTo(x0, y0+hh);
         painter.drawPath(gPath);
 
@@ -158,7 +159,7 @@ void VideoWidget::paintEvent(QPaintEvent*)
         bPath.moveTo(x0, y0+hh-(int)(b[0]*scale));
         for (int i = 1; i < b.count(); ++i)
             bPath.lineTo(x0+i, y0+hh-(int)(b[i]*scale));
-        bPath.lineTo(x0+b.count()-1, y0+hh);
+        bPath.lineTo(x0+b.last(), y0+hh);
         bPath.lineTo(x0, y0+hh);
         painter.drawPath(bPath);
 
@@ -171,16 +172,17 @@ void VideoWidget::paintEvent(QPaintEvent*)
             lPath.lineTo(x0+i, y0+hh-(int)(l[i]*scale));
         painter.drawPath(lPath);
 
-        painter.setPen(QColor(0x00, 0x00, 0x00, 0x80));
+        painter.setPen(Qt::white);
         painter.drawText(x0+6, y0+14, QString("%1").arg(mHistogram.totalBrightness()));
     }
     //
     // draw stripe or direction marker
     //
+    painter.setRenderHint(QPainter::NonCosmeticDefaultPen);
     painter.setPen(Qt::NoPen);
-    QPoint sPos = toPosInWidget(mStripePos);
+    const QPoint sPos = toPosInWidget(mStripePos);
     if (mVerticalStripe) {
-        if (mStripePos.x() >= 0) {
+        if (sPos.x() >= mDestRect.x() && sPos.x() < mDestRect.x() + mDestRect.width()) {
             painter.setBrush(QColor(0xff, 0x00, 0x00, 0xcc));
             painter.drawRect(sPos.x(), mDestRect.y(), mStripeWidth, mDestRect.height());
         }
@@ -196,7 +198,7 @@ void VideoWidget::paintEvent(QPaintEvent*)
         }
     }
     else {
-        if (mStripePos.y() >= 0) {
+        if (sPos.y() >= mDestRect.y() && sPos.y() < mDestRect.y() + mDestRect.height()) {
             painter.setBrush(QColor(0xff, 0x00, 0x00, 0xcc));
             painter.drawRect(mDestRect.x(), sPos.y(), mDestRect.width(), mStripeWidth);
         }
@@ -251,6 +253,14 @@ int VideoWidget::stripePos(void) const
 }
 
 
+bool VideoWidget::stripeIsFixed(void) const {
+    const QPoint sPos = toPosInWidget(mStripePos);
+    return mVerticalStripe?
+            (sPos.x() >= mDestRect.x() && sPos.x() < mDestRect.x() + mDestRect.width()) :
+            (sPos.y() >= mDestRect.y() && sPos.y() < mDestRect.y() + mDestRect.height());
+}
+
+
 void VideoWidget::constrainMousePos(void)
 {
     if (mMousePos.x() < mDestRect.x())
@@ -278,7 +288,7 @@ void VideoWidget::keyPressEvent(QKeyEvent* event)
 
 void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 {
-    mMousePos = event->pos();
+    mMousePos = event->pos() + QPoint(1, 1);
     if (mDrawingHistogram && (event->modifiers() & Qt::AltModifier)) {
         constrainMousePos();
         mMousePosInFrame = toPosInFrame(mMousePos);
@@ -301,7 +311,7 @@ void VideoWidget::mouseMoveEvent(QMouseEvent* event)
 void VideoWidget::mousePressEvent(QMouseEvent* event)
 {
     mMouseButtonDown = (event->button() == Qt::LeftButton);
-    mMousePos = event->pos();
+    mMousePos = event->pos() + QPoint(1, 1);
     if (mMouseButtonDown) {
         setFocus(Qt::MouseFocusReason);
         if (event->modifiers() & Qt::AltModifier) {
@@ -322,7 +332,7 @@ void VideoWidget::mousePressEvent(QMouseEvent* event)
 void VideoWidget::mouseReleaseEvent(QMouseEvent* event)
 {
     mMouseButtonDown = false;
-    mMousePos = event->pos();
+    mMousePos = event->pos() + QPoint(1, 1);
     if (event->button() == Qt::LeftButton && mDrawingHistogram && (event->modifiers() & Qt::AltModifier)) {
         mDrawingHistogram = false;
         constrainMousePos();
