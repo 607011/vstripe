@@ -9,7 +9,11 @@ TODO
 
 [ ] Unter Linux und Mac OS X testen
 
-[ ] Deployment unter Windows, Mac OS X und ggf. Linux
+[ ] Deployment unter Windows
+
+[ ] Deployment unter Mac OS X
+
+[ ] Deployment unter Linux
 
 
 FEATURES

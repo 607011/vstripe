@@ -19,6 +19,7 @@
 
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
+const QString MainWindow::AppVersion = "0.9.2 beta";
 
 
 MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -299,6 +300,7 @@ void MainWindow::setPictureSize(const QSize& size)
 void MainWindow::startRendering(void)
 {
     ui->renderButton->setText(tr("Stop rendering"));
+    disablePreviewForm();
     mFrameBrightness.clear();
     mFrameRed.clear();
     mFrameGreen.clear();
@@ -530,6 +532,9 @@ void MainWindow::decodingFinished()
     ui->infoPlainTextEdit->appendPlainText(tr("avg. luminance error: %1").arg(diffSum));
     mPreviewForm->brightnessSlider()->setValue((int)(diffSum*6.7));
     deflicker();
+    enablePreviewForm();
+    setCursor(Qt::ArrowCursor);
+    mPreviewForm->setCursor(Qt::ArrowCursor);
 }
 
 
@@ -657,6 +662,24 @@ void MainWindow::disableGuiButtons(void)
     ui->action_Save_picture->setEnabled(false);
     ui->actionClear_marks->setEnabled(false);
     ui->actionAutofitPreview->setEnabled(false);
+}
+
+
+void MainWindow::enablePreviewForm(void)
+{
+    mPreviewForm->brightnessSlider()->setEnabled(true);
+    mPreviewForm->redSlider()->setEnabled(true);
+    mPreviewForm->greenSlider()->setEnabled(true);
+    mPreviewForm->blueSlider()->setEnabled(true);
+}
+
+
+void MainWindow::disablePreviewForm(void)
+{
+    mPreviewForm->brightnessSlider()->setEnabled(false);
+    mPreviewForm->redSlider()->setEnabled(false);
+    mPreviewForm->greenSlider()->setEnabled(false);
+    mPreviewForm->blueSlider()->setEnabled(false);
 }
 
 
