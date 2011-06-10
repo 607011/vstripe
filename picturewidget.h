@@ -35,6 +35,9 @@ public:
             qreal minBlue = -1);
     inline const QImage& picture(void) const { return mImage; }
 
+public slots:
+    void copyImageToClipboard(void);
+
 protected:
     void paintEvent(QPaintEvent*);
 

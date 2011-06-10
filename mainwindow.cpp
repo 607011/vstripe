@@ -19,11 +19,14 @@
 
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
+const QString MainWindow::AppVersion = "0.9.2 beta";
 
 
 MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    setWindowTitle(tr("%1 %2").arg(MainWindow::AppName).arg(MainWindow::AppVersion));
 
     qRegisterMetaType<Histogram>();
 
@@ -88,6 +91,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(pa
     connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(openProject()));
     connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(saveProject()));
     connect(ui->actionSave_project_as, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
+    connect(ui->actionCopy_to_clipboard, SIGNAL(triggered()), mPreviewForm->pictureWidget(), SLOT(copyImageToClipboard()));
 
     mEffectiveFrameNumber = Project::INVALID_FRAME;
     mEffectiveFrameTime = -1;
@@ -152,7 +156,7 @@ void MainWindow::restoreAppSettings(void)
 void MainWindow::setCurrentVideoFile(const QString& fileName)
 {
     mProject.setVideoFileName(fileName);
-    setWindowTitle(tr("%1 - %2").arg(MainWindow::AppName).arg(mProject.videoFileName()));
+    setWindowTitle(tr("%1 %2 - %3").arg(MainWindow::AppName).arg(MainWindow::AppVersion).arg(mProject.videoFileName()));
     setWindowFilePath(mProject.videoFileName());
     QSettings settings(MainWindow::Company, MainWindow::AppName);
     QStringList files = settings.value("recentVideoFileList").toStringList();
@@ -299,6 +303,7 @@ void MainWindow::setPictureSize(const QSize& size)
 void MainWindow::startRendering(void)
 {
     ui->renderButton->setText(tr("Stop rendering"));
+    disablePreviewForm();
     mFrameBrightness.clear();
     mFrameRed.clear();
     mFrameGreen.clear();
@@ -498,7 +503,7 @@ void MainWindow::frameReady(QImage src, Histogram histogram, int frameNumber, in
 }
 
 
-static qreal average(const BrightnessData& v) {
+qreal MainWindow::averageBrightnessData(const BrightnessData& v) {
     qreal sum = 0;
     for (BrightnessData::const_iterator i = v.begin(); i != v.end(); ++i)
         sum += *i;
@@ -512,14 +517,15 @@ void MainWindow::decodingFinished()
     ui->renderButton->setText(tr("Start rendering"));
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);
-    mAvgBrightness = average(mFrameBrightness);
-    mAvgRed = average(mFrameRed);
-    mAvgGreen = average(mFrameGreen);
-    mAvgBlue = average(mFrameBlue);
+    mAvgBrightness = averageBrightnessData(mFrameBrightness);
+    mAvgRed = averageBrightnessData(mFrameRed);
+    mAvgGreen = averageBrightnessData(mFrameGreen);
+    mAvgBlue = averageBrightnessData(mFrameBlue);
     mPreviewForm->pictureWidget()->setBrightnessData(
             &mFrameBrightness, &mFrameRed, &mFrameGreen, &mFrameBlue,
             mAvgBrightness, mAvgRed, mAvgGreen, mAvgBlue,
             mMinTotalBrightness, mMinTotalRed, mMinTotalGreen, mMinTotalBlue);
+
     // guess an appropriate brightness correction factor
     qreal diffSum = 0;
     for (BrightnessData::const_iterator i = mFrameBrightness.begin(); i != mFrameBrightness.end(); ++i)
@@ -529,7 +535,11 @@ void MainWindow::decodingFinished()
         diffSum /= mFrameBrightness.count();
     ui->infoPlainTextEdit->appendPlainText(tr("avg. luminance error: %1").arg(diffSum));
     mPreviewForm->brightnessSlider()->setValue((int)(diffSum*6.7));
+
     deflicker();
+    enablePreviewForm();
+    setCursor(Qt::ArrowCursor);
+    mPreviewForm->setCursor(Qt::ArrowCursor);
 }
 
 
@@ -596,8 +606,7 @@ void MainWindow::deflicker(void)
                 int dr = (int) ((mFrameRed[y] - mAvgRed) * rLevel);
                 int dg = (int) ((mFrameGreen[y] - mAvgGreen) * gLevel);
                 int db = (int) ((mFrameBlue[y] - mAvgBlue) * bLevel);
-                const QRgb* d = reinterpret_cast<const QRgb*>(mCurrentFrame.constScanLine(y));
-                for (int x = 0; x < img.width(); ++x, ++d) {
+                for (int x = 0; x < img.width(); ++x) {
                     QRgb rgb = mCurrentFrame.pixel(x, y);
                     int r = lighter(qRed(rgb), 100+dr);
                     int g = lighter(qGreen(rgb), 100+dg);
@@ -658,6 +667,26 @@ void MainWindow::disableGuiButtons(void)
     ui->action_Save_picture->setEnabled(false);
     ui->actionClear_marks->setEnabled(false);
     ui->actionAutofitPreview->setEnabled(false);
+}
+
+
+void MainWindow::enablePreviewForm(void)
+{
+    mPreviewForm->brightnessSlider()->setEnabled(true);
+    mPreviewForm->redSlider()->setEnabled(true);
+    mPreviewForm->greenSlider()->setEnabled(true);
+    mPreviewForm->blueSlider()->setEnabled(true);
+    ui->actionCopy_to_clipboard->setEnabled(true);
+}
+
+
+void MainWindow::disablePreviewForm(void)
+{
+    mPreviewForm->brightnessSlider()->setEnabled(false);
+    mPreviewForm->redSlider()->setEnabled(false);
+    mPreviewForm->greenSlider()->setEnabled(false);
+    mPreviewForm->blueSlider()->setEnabled(false);
+    ui->actionCopy_to_clipboard->setEnabled(false);
 }
 
 
