@@ -596,8 +596,7 @@ void MainWindow::deflicker(void)
                 int dr = (int) ((mFrameRed[y] - mAvgRed) * rLevel);
                 int dg = (int) ((mFrameGreen[y] - mAvgGreen) * gLevel);
                 int db = (int) ((mFrameBlue[y] - mAvgBlue) * bLevel);
-                const QRgb* d = reinterpret_cast<const QRgb*>(mCurrentFrame.constScanLine(y));
-                for (int x = 0; x < img.width(); ++x, ++d) {
+                for (int x = 0; x < img.width(); ++x) {
                     QRgb rgb = mCurrentFrame.pixel(x, y);
                     int r = lighter(qRed(rgb), 100+dr);
                     int g = lighter(qGreen(rgb), 100+dg);
