@@ -14,7 +14,7 @@ class MarkableSlider : public QSlider
 {
     Q_OBJECT
 public:
-    explicit MarkableSlider(const Project* project, QSlider* parent = NULL);
+    MarkableSlider(const Project* project, QSlider* parent = NULL);
     QSize minimumSizeHint(void) const { return QSize(200, 16); }
     QSize sizeHint(void) const { return QSize(384, 16); }
 
