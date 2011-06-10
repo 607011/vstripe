@@ -37,13 +37,6 @@ void PictureWidget::copyImageToClipboard(void)
 }
 
 
-void PictureWidget::keyPressEvent(QKeyEvent* event)
-{
-    if (event->key() == Qt::Key_C && (event->modifiers() & Qt::ControlModifier))
-        copyImageToClipboard();
-}
-
-
 void PictureWidget::setPicture(const QImage& img)
 {
     mImage = img;

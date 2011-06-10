@@ -44,6 +44,13 @@ void PreviewForm::setSizeConstraint(const QSize& minimum, const QSize& maximum)
 }
 
 
+void PreviewForm::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_C && (event->modifiers() & Qt::ControlModifier))
+        mPictureWidget->copyImageToClipboard();
+}
+
+
 void PreviewForm::closeEvent(QCloseEvent*)
 {
     emit visibilityChanged(false);

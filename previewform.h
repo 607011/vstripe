@@ -38,6 +38,7 @@ signals:
 protected:
     void resizeEvent(QResizeEvent*);
     void closeEvent(QCloseEvent*);
+    void keyPressEvent(QKeyEvent*);
 
 private:
     Ui::PreviewForm *ui;
