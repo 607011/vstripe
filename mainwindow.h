@@ -137,7 +137,7 @@ private: // methods
 
     static QString ms2hmsz(int ms, bool withMs = true);
     static QString strippedName(const QString& fullFileName);
-
+    static qreal averageBrightnessData(const BrightnessData&);
     static int darker(int v, int factor);
     static int lighter(int v, int factor);
 };
