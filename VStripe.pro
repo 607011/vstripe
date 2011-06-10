@@ -8,6 +8,10 @@ CONFIG += warn_on thread qt
 TARGET = VStripe
 TEMPLATE = app
 
+TRANSLATIONS = VStripe_de.ts
+
+CODECFORTR = UTF-8
+
 win32 {
 FFMPEGDIR = ../ffmpeg-static
 RC_FILE = VStripe.rc

@@ -40,7 +40,6 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent*);
-    void keyPressEvent(QKeyEvent*);
 
 private:
     QImage mImage;
