@@ -10,6 +10,7 @@ Makefile*
 qrc_*.cpp
 *.pro.user
 VStripe*.dmg
+VStripe*.qm
 .DS_Store
 *.swp
 

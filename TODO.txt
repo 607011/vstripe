@@ -11,8 +11,6 @@ TODO
 
 [ ] Deployment unter Windows
 
-[ ] Deployment unter Mac OS X
-
 [ ] Deployment unter Linux
 
 
@@ -38,6 +36,10 @@ FEATURES
 [ ] fileDropped(argv[1]) darf in MainWindow erst aufgerufen werden, wenn das Fenster aufgebaut ist.
     
     NOTIZEN: Versuche mit dem Abfangen von showEvent() und changeEvent() führten ins Leere.
+
+
+NOTIZEN
+=======
 
 [ ] Icons für Windows: http://msdn.microsoft.com/de-de/library/ms997636.aspx
 

@@ -28,8 +28,7 @@ FFMPEGDIR = /opt/local
 OPENCVDIR = /opt/local
 ICON = VStripe.icns
 QMAKE_INFO_PLIST = VStripe.plist
-QMAKE_CXXFLAGS += -msse -msse2 -msse3
-# QMAKE_CXXFLAGS += -static -fvisibility=hidden
+# QMAKE_CXXFLAGS += -msse -msse2 -msse3 -msse4.1 -msse4.2
 LIBS += -L$${FFMPEGDIR}/lib \
     -lavformat \
     -lavcodec \
