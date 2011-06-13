@@ -7,8 +7,6 @@ FEHLER
 TODO
 ====
 
-[ ] Unter Linux und Mac OS X testen
-
 [ ] Deployment unter Windows
 
 [ ] Deployment unter Linux
