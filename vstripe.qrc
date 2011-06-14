@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/images">
-        <file>VStripe-Icon.png</file>
+        <file>icons/VStripe.ico.png</file>
     </qresource>
 </RCC>

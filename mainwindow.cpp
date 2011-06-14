@@ -19,10 +19,12 @@
 
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
-const QString MainWindow::AppVersion = "0.9.2 beta";
+const QString MainWindow::AppVersion = "0.9.2";
 
 
-MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
+        QMainWindow(parent),
+        ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
