@@ -7,9 +7,7 @@ FEHLER
 TODO
 ====
 
-[ ] Deployment unter Windows
-
-[ ] Deployment unter Linux
+[ ] Icon für Windows hübscher machen
 
 
 FEATURES
