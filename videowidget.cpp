@@ -134,41 +134,41 @@ void VideoWidget::paintEvent(QPaintEvent*)
         painter.setPen(QColor(0xcc, 0x00, 0x00, 0x80));
         painter.setBrush(QColor(0x99, 0x00, 0x00, 0x80));
         const HistogramData& r = mHistogram.red();
-        rPath.moveTo(x0, y0+hh-(int)(r[0]*scale));
+        rPath.moveTo(x0+0, y0+hh-(int)(r.first()*scale));
         for (int i = 1; i < r.count(); ++i)
             rPath.lineTo(x0+i, y0+hh-(int)(r[i]*scale));
-        rPath.lineTo(x0+r.count()-1, y0+hh);
-        rPath.lineTo(x0, y0+hh);
+        rPath.lineTo(x0+r.count(), y0+hh);
+        rPath.lineTo(x0+0, y0+hh);
         painter.drawPath(rPath);
 
         QPainterPath gPath;
         painter.setPen(QColor(0x00, 0xcc, 0x00, 0x80));
         painter.setBrush(QColor(0x00, 0x99, 0x00, 0x80));
         const HistogramData& g = mHistogram.green();
-        gPath.moveTo(x0, y0+hh-(int)(g[0]*scale));
+        gPath.moveTo(x0+0, y0+hh-(int)(g.first()*scale));
         for (int i = 1; i < g.count(); ++i)
             gPath.lineTo(x0+i, y0+hh-(int)(g[i]*scale));
-        gPath.lineTo(x0+g.last(), y0+hh);
-        gPath.lineTo(x0, y0+hh);
+        gPath.lineTo(x0+r.count(), y0+hh);
+        gPath.lineTo(x0+0, y0+hh);
         painter.drawPath(gPath);
 
         QPainterPath bPath;
         painter.setPen(QColor(0x00, 0x00, 0xcc, 0x80));
         painter.setBrush(QColor(0x00, 0x00, 0xcc, 0x80));
         const HistogramData& b = mHistogram.blue();
-        bPath.moveTo(x0, y0+hh-(int)(b[0]*scale));
+        bPath.moveTo(x0+0, y0+hh-(int)(b.first()*scale));
         for (int i = 1; i < b.count(); ++i)
             bPath.lineTo(x0+i, y0+hh-(int)(b[i]*scale));
-        bPath.lineTo(x0+b.last(), y0+hh);
-        bPath.lineTo(x0, y0+hh);
+        bPath.lineTo(x0+r.count(), y0+hh);
+        bPath.lineTo(x0+0, y0+hh);
         painter.drawPath(bPath);
 
         QPainterPath lPath;
         painter.setPen(QColor(0xff, 0xff, 0xff));
         painter.setBrush(Qt::NoBrush);
         const HistogramData& l = mHistogram.brightness();
-        lPath.moveTo(x0, y0+hh-(int)(l[0]*scale));
-        for (int i = 0; i < l.count(); ++i)
+        lPath.moveTo(x0+0, y0+hh-(int)(l.first()*scale));
+        for (int i = 1; i < l.count(); ++i)
             lPath.lineTo(x0+i, y0+hh-(int)(l[i]*scale));
         painter.drawPath(lPath);
 
