@@ -13,4 +13,7 @@ VStripe*.dmg
 VStripe*.qm
 .DS_Store
 *.swp
-
+*.orig
+object_script.VStripe.*
+debug/*
+release/*
