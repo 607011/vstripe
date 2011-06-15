@@ -77,6 +77,7 @@ public slots:
     void setStripeOrientation(bool vertical);
     void autoFitPreview(void);
     void deflicker(void);
+    void resetRGBL(void);
 
 protected:
     void closeEvent(QCloseEvent*);

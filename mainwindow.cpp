@@ -19,7 +19,11 @@
 
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
+#ifndef QT_NO_DEBUG
+const QString MainWindow::AppVersion = "0.9.3 <DEBUG>";
+#else
 const QString MainWindow::AppVersion = "0.9.3";
+#endif
 
 
 MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
@@ -71,6 +75,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     connect(mPreviewForm->redSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
     connect(mPreviewForm->greenSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
     connect(mPreviewForm->blueSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
+    connect(ui->actionReset_RGB_L_levels, SIGNAL(triggered()), this, SLOT(resetRGBL()));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
         recentVideoFileActs[i] = new QAction(this);
@@ -623,6 +628,16 @@ void MainWindow::deflicker(void)
         mPreviewForm->pictureWidget()->setPicture(mCurrentFrame);
     setCursor(Qt::ArrowCursor);
     mPreviewForm->setCursor(Qt::ArrowCursor);
+}
+
+
+void MainWindow::resetRGBL(void)
+{
+    mPreviewForm->redSlider()->setValue(0);
+    mPreviewForm->greenSlider()->setValue(0);
+    mPreviewForm->blueSlider()->setValue(0);
+    mPreviewForm->brightnessSlider()->setValue(0);
+    deflicker();
 }
 
 

@@ -553,6 +553,7 @@
     </property>
     <addaction name="actionClear_marks"/>
     <addaction name="actionClear_histogram_region"/>
+    <addaction name="actionReset_RGB_L_levels"/>
    </widget>
    <widget class="QMenu" name="menuExtras">
     <property name="title">
@@ -775,6 +776,11 @@
    </property>
    <property name="text">
     <string>Copy to clipboard</string>
+   </property>
+  </action>
+  <action name="actionReset_RGB_L_levels">
+   <property name="text">
+    <string>Reset RGB/L levels</string>
    </property>
   </action>
  </widget>

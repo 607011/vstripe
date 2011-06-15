@@ -12,508 +12,513 @@
     <message>
         <location filename="mainwindow.ui" line="55"/>
         <source>go to previous mark</source>
-        <translation type="unfinished">zur vorherigen Marke springen</translation>
+        <translation>zur vorherigen Marke springen</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="58"/>
         <source>|&lt;</source>
-        <translation type="unfinished">|&lt;</translation>
+        <translation>|&lt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="61"/>
         <source>Shift+Left</source>
-        <translation type="unfinished">Umsch-Links</translation>
+        <translation>Umsch-Links</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="89"/>
         <source>fast rewind</source>
-        <translation type="unfinished">50 Frames zurück</translation>
+        <translation>50 Frames zurück</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="92"/>
         <source>&lt;&lt;</source>
-        <translation type="unfinished">&lt;&lt;</translation>
+        <translation>&lt;&lt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="95"/>
         <source>Ctrl+Left</source>
-        <translation type="unfinished">Strg-Links</translation>
+        <translation>Strg-Links</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="123"/>
         <source>step backward</source>
-        <translation type="unfinished">einen Frame zurück</translation>
+        <translation>einen Frame zurück</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="126"/>
         <source>&lt;</source>
-        <translation type="unfinished">&lt;</translation>
+        <translation>&lt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="129"/>
         <source>Left</source>
-        <translation type="unfinished">Links</translation>
+        <translation>Links</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="157"/>
         <source>step forward</source>
-        <translation type="unfinished">einen Frame vorwärts</translation>
+        <translation>einen Frame vorwärts</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="160"/>
         <source>&gt;</source>
-        <translation type="unfinished">&gt;</translation>
+        <translation>&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="163"/>
         <source>Right</source>
-        <translation type="unfinished">Rechts</translation>
+        <translation>Rechts</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="191"/>
         <source>fast forward</source>
-        <translation type="unfinished">50 Frames vorwärts</translation>
+        <translation>50 Frames vorwärts</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="194"/>
         <source>&gt;&gt;</source>
-        <translation type="unfinished">&gt;&gt;</translation>
+        <translation>&gt;&gt;</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="197"/>
         <source>Ctrl+Right</source>
-        <translation type="unfinished">Strg-Rechts</translation>
+        <translation>Strg-Rechts</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="225"/>
         <source>go to next mark</source>
-        <translation type="unfinished">zur nächsten Marke springen</translation>
+        <translation>zur nächsten Marke springen</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="228"/>
         <source>&gt;|</source>
-        <translation type="unfinished">&gt;|</translation>
+        <translation>&gt;|</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="231"/>
         <source>Shift+Right</source>
-        <translation type="unfinished">Umsch+Rechts</translation>
+        <translation>Umsch+Rechts</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="259"/>
         <source>mark start</source>
-        <translation type="unfinished">Anfang markieren</translation>
+        <translation>Anfang markieren</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="262"/>
         <source>[&amp;A</source>
-        <translation type="unfinished">[&amp;A</translation>
+        <translation>[&amp;A</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="265"/>
         <source>Ctrl+A</source>
-        <translation type="unfinished">Strg-A</translation>
+        <translation>Strg-A</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="299"/>
         <source>mark end</source>
-        <translation type="unfinished">Ende markieren</translation>
+        <translation>Ende markieren</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="302"/>
         <source>&amp;B]</source>
-        <translation type="unfinished">&amp;B]</translation>
+        <translation>&amp;B]</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="305"/>
         <source>Ctrl+B</source>
-        <translation type="unfinished">Strg-B</translation>
+        <translation>Strg-B</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="339"/>
         <source>mark current position</source>
-        <translation type="unfinished">aktuellen Frame markieren</translation>
+        <translation>aktuellen Frame markieren</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="342"/>
         <source>&amp;Mark</source>
-        <translation type="unfinished">&amp;Markieren</translation>
+        <translation>&amp;Markieren</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="345"/>
         <source>Ctrl+M</source>
-        <translation type="unfinished">Strg-M</translation>
+        <translation>Strg-M</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="373"/>
-        <location filename="mainwindow.cpp" line="338"/>
-        <location filename="mainwindow.cpp" line="347"/>
-        <location filename="mainwindow.cpp" line="517"/>
+        <location filename="mainwindow.cpp" line="341"/>
+        <location filename="mainwindow.cpp" line="350"/>
+        <location filename="mainwindow.cpp" line="520"/>
         <source>Start rendering</source>
-        <translation type="unfinished">Generieren starten</translation>
+        <translation>Generieren starten</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="404"/>
         <source>Current frame</source>
-        <translation type="unfinished">Aktueller Frame</translation>
+        <translation>Aktueller Frame</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="424"/>
         <source>frame number</source>
-        <translation type="unfinished">Frame-Nummer</translation>
+        <translation>Frame-Nummer</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="427"/>
         <source>#</source>
-        <translation type="unfinished">#</translation>
+        <translation>#</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="450"/>
         <source>Time</source>
-        <translation type="unfinished">Zeit</translation>
+        <translation>Zeit</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="466"/>
         <source>hh:mm:ss.zzz</source>
-        <translation type="unfinished">hh:mm:sss.zzz</translation>
+        <translation>hh:mm:sss.zzz</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="482"/>
         <source>Go to</source>
-        <translation type="unfinished">Gehe zu</translation>
+        <translation>Gehe zu</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="508"/>
         <source>&amp;File</source>
-        <translation type="unfinished">&amp;Datei</translation>
+        <translation>&amp;Datei</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="515"/>
         <source>Open recent video</source>
-        <translation type="unfinished">Zuletzt geöffnete Videos</translation>
+        <translation>Zuletzt geöffnete Videos</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="524"/>
         <source>Open recent project</source>
-        <translation type="unfinished">Zuletzt geöffnete Projekte</translation>
+        <translation>Zuletzt geöffnete Projekte</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="542"/>
         <source>Window</source>
-        <translation type="unfinished">Fenster</translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="552"/>
         <source>Edit</source>
-        <translation type="unfinished">Bearbeiten</translation>
+        <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="559"/>
+        <location filename="mainwindow.ui" line="560"/>
         <source>Extras</source>
-        <translation type="unfinished">Extras</translation>
+        <translation>Extras</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="563"/>
+        <location filename="mainwindow.ui" line="564"/>
         <source>Use video camera</source>
-        <translation type="unfinished">Von Videokamera lesen</translation>
+        <translation>Von Videokamera lesen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="572"/>
+        <location filename="mainwindow.ui" line="573"/>
         <source>View</source>
-        <translation type="unfinished">Ansicht</translation>
+        <translation>Ansicht</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="593"/>
+        <location filename="mainwindow.ui" line="594"/>
         <source>&amp;Open video file ...</source>
-        <translation type="unfinished">Videodatei öffnen ...</translation>
+        <translation>Videodatei öffnen ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="596"/>
-        <location filename="mainwindow.cpp" line="799"/>
+        <location filename="mainwindow.ui" line="597"/>
+        <location filename="mainwindow.cpp" line="812"/>
         <source>Open video file</source>
-        <translation type="unfinished">Videodatei öffnen</translation>
+        <translation>Videodatei öffnen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="599"/>
+        <location filename="mainwindow.ui" line="600"/>
         <source>Ctrl+O</source>
-        <translation type="unfinished">Strg-O</translation>
+        <translation>Strg-O</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="604"/>
+        <location filename="mainwindow.ui" line="605"/>
         <source>E&amp;xit</source>
-        <translation type="unfinished">Beenden</translation>
+        <translation>Beenden</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="612"/>
+        <location filename="mainwindow.ui" line="613"/>
         <source>Close video file</source>
-        <translation type="unfinished">Videodatei schließen</translation>
+        <translation>Videodatei schließen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="615"/>
+        <location filename="mainwindow.ui" line="616"/>
         <source>Ctrl+W</source>
-        <translation type="unfinished">Strg-W</translation>
+        <translation>Strg-W</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="626"/>
+        <location filename="mainwindow.ui" line="627"/>
         <source>Show preview</source>
-        <translation type="unfinished">Vorschaubild anzeigen</translation>
+        <translation>Vorschaubild anzeigen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="634"/>
+        <location filename="mainwindow.ui" line="635"/>
         <source>&amp;Save picture as ...</source>
-        <translation type="unfinished">Bild speichern unter ...</translation>
+        <translation>Bild speichern unter ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="637"/>
+        <location filename="mainwindow.ui" line="638"/>
         <source>Ctrl+S</source>
-        <translation type="unfinished">Strg-S</translation>
+        <translation>Strg-S</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="648"/>
+        <location filename="mainwindow.ui" line="649"/>
         <source>Vertical stripes</source>
-        <translation type="unfinished">Vertikale Streifen</translation>
+        <translation>Vertikale Streifen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="653"/>
+        <location filename="mainwindow.ui" line="654"/>
         <source>Help</source>
-        <translation type="unfinished">Hilfe</translation>
+        <translation>Hilfe</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="658"/>
+        <location filename="mainwindow.ui" line="659"/>
         <source>About</source>
-        <translation type="unfinished">Über</translation>
+        <translation>Über</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="666"/>
+        <location filename="mainwindow.ui" line="667"/>
         <source>Clear marks</source>
-        <translation type="unfinished">Markierungen entfernen</translation>
+        <translation>Markierungen entfernen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="674"/>
+        <location filename="mainwindow.ui" line="675"/>
         <source>Save project as ...</source>
-        <translation type="unfinished">Projekt speichern unter ...</translation>
+        <translation>Projekt speichern unter ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="679"/>
+        <location filename="mainwindow.ui" line="680"/>
         <source>Open project ...</source>
-        <translation type="unfinished">Projekt öffnen ...</translation>
+        <translation>Projekt öffnen ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="687"/>
+        <location filename="mainwindow.ui" line="688"/>
         <source>Save project</source>
-        <translation type="unfinished">Projekt speichern</translation>
+        <translation>Projekt speichern</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="695"/>
+        <location filename="mainwindow.ui" line="696"/>
         <source>Autofit preview</source>
-        <translation type="unfinished">Größe des Vorschaufensters automatisch anpassen</translation>
+        <translation>Größe des Vorschaufensters automatisch anpassen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="706"/>
+        <location filename="mainwindow.ui" line="707"/>
         <source>Histogram</source>
-        <translation type="unfinished">Histogramm</translation>
+        <translation>Histogramm</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="709"/>
+        <location filename="mainwindow.ui" line="710"/>
         <source>Enable/disable histogram</source>
-        <translation type="unfinished">Histogramm ein-/ausblenden</translation>
+        <translation>Histogramm ein-/ausblenden</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="714"/>
+        <location filename="mainwindow.ui" line="715"/>
         <source>0</source>
-        <translation type="unfinished">0</translation>
+        <translation>0</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="719"/>
+        <location filename="mainwindow.ui" line="720"/>
         <source>0.1</source>
-        <translation type="unfinished">0,1</translation>
+        <translation>0,1</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="724"/>
+        <location filename="mainwindow.ui" line="725"/>
         <source>0.2</source>
-        <translation type="unfinished">0,2</translation>
+        <translation>0,2</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="729"/>
+        <location filename="mainwindow.ui" line="730"/>
         <source>0.3</source>
-        <translation type="unfinished">0,3</translation>
+        <translation>0,3</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="734"/>
+        <location filename="mainwindow.ui" line="735"/>
         <source>0.4</source>
-        <translation type="unfinished">0,5</translation>
+        <translation>0,5</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="739"/>
+        <location filename="mainwindow.ui" line="740"/>
         <source>0.5</source>
-        <translation type="unfinished">0,5</translation>
+        <translation>0,5</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="744"/>
+        <location filename="mainwindow.ui" line="745"/>
         <source>0.6</source>
-        <translation type="unfinished">0,6</translation>
+        <translation>0,6</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="749"/>
+        <location filename="mainwindow.ui" line="750"/>
         <source>0.7</source>
-        <translation type="unfinished">0,7</translation>
+        <translation>0,7</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="754"/>
+        <location filename="mainwindow.ui" line="755"/>
         <source>0.8</source>
-        <translation type="unfinished">0,8</translation>
+        <translation>0,8</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="759"/>
+        <location filename="mainwindow.ui" line="760"/>
         <source>0.9</source>
-        <translation type="unfinished">0,9</translation>
+        <translation>0,9</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="764"/>
+        <location filename="mainwindow.ui" line="765"/>
         <source>1.0</source>
-        <translation type="unfinished">1,0</translation>
+        <translation>1,0</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="769"/>
+        <location filename="mainwindow.ui" line="770"/>
         <source>Clear histogram region</source>
-        <translation type="unfinished">Histogramm-Bereich entfernen</translation>
+        <translation>Histogramm-Bereich entfernen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="777"/>
+        <location filename="mainwindow.ui" line="778"/>
         <source>Copy to clipboard</source>
-        <translation type="unfinished">In Zwischenablage kopieren</translation>
+        <translation>In Zwischenablage kopieren</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="29"/>
+        <location filename="mainwindow.ui" line="783"/>
+        <source>Reset RGB/L levels</source>
+        <translation>Helligkeitskorrektur zurücksetzen</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="31"/>
         <source>%1 %2</source>
-        <translation type="unfinished">%1 %2</translation>
+        <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="108"/>
-        <location filename="mainwindow.cpp" line="839"/>
+        <location filename="mainwindow.cpp" line="111"/>
+        <location filename="mainwindow.cpp" line="852"/>
         <source>Ready.</source>
-        <translation type="unfinished">Fertig.</translation>
+        <translation>Fertig.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="159"/>
+        <location filename="mainwindow.cpp" line="162"/>
         <source>%1 %2 - %3</source>
-        <translation type="unfinished">%1 %2 - %3</translation>
+        <translation>%1 %2 - %3</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="201"/>
-        <location filename="mainwindow.cpp" line="241"/>
+        <location filename="mainwindow.cpp" line="204"/>
+        <location filename="mainwindow.cpp" line="244"/>
         <source>File does not exist</source>
-        <translation type="unfinished">Datei existiert nicht</translation>
+        <translation>Datei existiert nicht</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="201"/>
-        <location filename="mainwindow.cpp" line="241"/>
+        <location filename="mainwindow.cpp" line="204"/>
+        <location filename="mainwindow.cpp" line="244"/>
         <source>File &apos;%1&apos; does not exist</source>
-        <translation type="unfinished">Datei &apos;%1&apos; existiert nicht</translation>
+        <translation>Datei &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="211"/>
-        <location filename="mainwindow.cpp" line="785"/>
+        <location filename="mainwindow.cpp" line="214"/>
+        <location filename="mainwindow.cpp" line="798"/>
         <source>&amp;%1 %2</source>
-        <translation type="unfinished">&amp;%1 %2</translation>
+        <translation>&amp;%1 %2</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="263"/>
+        <location filename="mainwindow.cpp" line="266"/>
         <source>Seeking to frame #%1 ...</source>
-        <translation type="unfinished">Ansteuern von Frame #%1 ...</translation>
+        <translation>Ansteuern von Frame #%1 ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="279"/>
+        <location filename="mainwindow.cpp" line="282"/>
         <source>Loading %1 frames ... %2%</source>
-        <translation type="unfinished">Laden von %1 Frrames ... %2%</translation>
+        <translation>Laden von %1 Frrames ... %2%</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="305"/>
+        <location filename="mainwindow.cpp" line="308"/>
         <source>Stop rendering</source>
-        <translation type="unfinished">Generieren anhalten</translation>
+        <translation>Generieren anhalten</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="329"/>
+        <location filename="mainwindow.cpp" line="332"/>
         <source>Loading %1 frames ...</source>
-        <translation type="unfinished">Laden von %1 Frames ...</translation>
+        <translation>Laden von %1 Frames ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="337"/>
+        <location filename="mainwindow.cpp" line="340"/>
         <source>Rendering stopped.</source>
-        <translation type="unfinished">Generieren angehalten.</translation>
+        <translation>Generieren angehalten.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="383"/>
-        <location filename="mainwindow.cpp" line="392"/>
-        <location filename="mainwindow.cpp" line="738"/>
+        <location filename="mainwindow.cpp" line="386"/>
+        <location filename="mainwindow.cpp" line="395"/>
+        <location filename="mainwindow.cpp" line="751"/>
         <source>%1 frames selected</source>
-        <translation type="unfinished">%1 Frames ausgewählt</translation>
+        <translation>%1 Frames ausgewählt</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="536"/>
+        <location filename="mainwindow.cpp" line="539"/>
         <source>avg. luminance error: %1</source>
-        <translation type="unfinished">mittl. Helligkeitsabweichung: %1</translation>
+        <translation>mittl. Helligkeitsabweichung: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="702"/>
+        <location filename="mainwindow.cpp" line="715"/>
         <source>About %1</source>
-        <translation type="unfinished">Über %1</translation>
+        <translation>Über %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="703"/>
+        <location filename="mainwindow.cpp" line="716"/>
         <source>&lt;p&gt;&lt;strong&gt;%1&lt;/strong&gt; &amp;ndash; Generate synchroballistic photography alike images from footage.&lt;/p&gt;&lt;p&gt;Copyright (c) 2011 Oliver Lau &amp;lt;oliver@von-und-fuer-lau.de&amp;gt;&lt;/p&gt;&lt;p&gt;VideoDecoder Copyright (c) 2009-2010 by Daniel Roggen &amp;lt;droggen@gmail.com&amp;gt;&lt;/p&gt;&lt;p&gt;All rights reserved.&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;&lt;strong&gt;%1&lt;/strong&gt; &amp;ndash; Streifenfotos aus Videos erzeugen.&lt;/p&gt;&lt;p&gt;Copyright (c) 2011 Oliver Lau &amp;lt;oliver@von-und-fuer-lau.de&amp;gt;&lt;/p&gt;&lt;p&gt;VideoDecoder Copyright (c) 2009-2010 Daniel Roggen &amp;lt;droggen@gmail.com&amp;gt;&lt;/p&gt;&lt;p&gt;Alle Rechte vorbehalten.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;&lt;strong&gt;%1&lt;/strong&gt; &amp;ndash; Streifenfotos aus Videos erzeugen.&lt;/p&gt;&lt;p&gt;Copyright (c) 2011 Oliver Lau &amp;lt;oliver@von-und-fuer-lau.de&amp;gt;&lt;/p&gt;&lt;p&gt;VideoDecoder Copyright (c) 2009-2010 Daniel Roggen &amp;lt;droggen@gmail.com&amp;gt;&lt;/p&gt;&lt;p&gt;Alle Rechte vorbehalten.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="712"/>
+        <location filename="mainwindow.cpp" line="725"/>
         <source>Help on %1</source>
-        <translation type="unfinished">Hilfe zu %1</translation>
+        <translation>Hilfe zu %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="713"/>
+        <location filename="mainwindow.cpp" line="726"/>
         <source>&lt;p&gt;Not implemented yet&lt;/p&gt;</source>
-        <translation type="unfinished">Noch nicht implementiert</translation>
+        <translation>Noch nicht implementiert</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="749"/>
+        <location filename="mainwindow.cpp" line="762"/>
         <source>Open project file</source>
-        <translation type="unfinished">Projektdatei öffnen</translation>
+        <translation>Projektdatei öffnen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="763"/>
-        <location filename="mainwindow.cpp" line="775"/>
+        <location filename="mainwindow.cpp" line="776"/>
+        <location filename="mainwindow.cpp" line="788"/>
         <source>Project saved.</source>
-        <translation type="unfinished">Projektdatei gespeichert.</translation>
+        <translation>Projektdatei gespeichert.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="770"/>
+        <location filename="mainwindow.cpp" line="783"/>
         <source>Save project file as ...</source>
-        <translation type="unfinished">Projekt speichern unter ...</translation>
+        <translation>Projekt speichern unter ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="825"/>
+        <location filename="mainwindow.cpp" line="838"/>
         <source>Seeking last frame ...</source>
-        <translation type="unfinished">Ansteuern des letzten Frames ...</translation>
+        <translation>Ansteuern des letzten Frames ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="833"/>
+        <location filename="mainwindow.cpp" line="846"/>
         <source>Last frame # %1</source>
-        <translation type="unfinished">Letzter Frame: #%1</translation>
+        <translation>Letzter Frame: #%1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="834"/>
+        <location filename="mainwindow.cpp" line="847"/>
         <source>Video length: %1</source>
-        <translation type="unfinished">Länge des Videos: %1</translation>
+        <translation>Länge des Videos: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="853"/>
+        <location filename="mainwindow.cpp" line="866"/>
         <source>File closed.</source>
-        <translation type="unfinished">Datei geschlossen.</translation>
+        <translation>Datei geschlossen.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="859"/>
+        <location filename="mainwindow.cpp" line="872"/>
         <source>Save picture as ...</source>
-        <translation type="unfinished">Bild speichern untern ...</translation>
+        <translation>Bild speichern untern ...</translation>
     </message>
 </context>
 <context>
@@ -521,47 +526,47 @@
     <message>
         <location filename="previewform.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorschau</translation>
     </message>
     <message>
         <location filename="previewform.ui" line="30"/>
         <source>G</source>
-        <translation type="unfinished">G</translation>
+        <translation>G</translation>
     </message>
     <message>
         <location filename="previewform.ui" line="46"/>
         <source>stripes&apos; green level correction</source>
-        <translation type="unfinished">Grünwert der Streifen korrigieren</translation>
+        <translation>Grünwert der Streifen korrigieren</translation>
     </message>
     <message>
         <location filename="previewform.ui" line="83"/>
         <source>stripes&apos; red level correction</source>
-        <translation type="unfinished">Rotwert der Streifen korrigieren</translation>
+        <translation>Rotwert der Streifen korrigieren</translation>
     </message>
     <message>
         <location filename="previewform.ui" line="117"/>
         <source>R</source>
-        <translation type="unfinished">R</translation>
+        <translation>R</translation>
     </message>
     <message>
         <location filename="previewform.ui" line="130"/>
         <source>B</source>
-        <translation type="unfinished">B</translation>
+        <translation>B</translation>
     </message>
     <message>
         <location filename="previewform.ui" line="146"/>
         <source>stripes&apos; blue level correction</source>
-        <translation type="unfinished">Blauwert der Streifen korrigieren</translation>
+        <translation>Blauwert der Streifen korrigieren</translation>
     </message>
     <message>
         <location filename="previewform.ui" line="180"/>
         <source>L</source>
-        <translation type="unfinished">L</translation>
+        <translation>L</translation>
     </message>
     <message>
         <location filename="previewform.ui" line="196"/>
         <source>stripes&apos; brightness correction</source>
-        <translation type="unfinished">Helligkeit der Streifen korrigieren</translation>
+        <translation>Helligkeit der Streifen korrigieren</translation>
     </message>
 </context>
 <context>
@@ -569,17 +574,17 @@
     <message>
         <location filename="previewform.cpp" line="9"/>
         <source>VStripe - Picture Preview</source>
-        <translation type="unfinished">VStripe - Generiertes Streifenbild</translation>
+        <translation>VStripe - Generiertes Streifenbild</translation>
     </message>
     <message>
         <location filename="project.cpp" line="172"/>
         <source>The file is not a VStripe project file.</source>
-        <translation type="unfinished">Diese Datei ist keine VStripe-Projektdatei.</translation>
+        <translation>Diese Datei ist keine VStripe-Projektdatei.</translation>
     </message>
     <message>
         <location filename="videodecoder.cpp" line="198"/>
         <source>Cannot initialize the conversion context!</source>
-        <translation type="unfinished">Initialisierung des Conversion Context fehlgeschlagen!</translation>
+        <translation>Initialisierung des Conversion Context fehlgeschlagen!</translation>
     </message>
 </context>
 </TS>
