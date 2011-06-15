@@ -317,7 +317,6 @@ void MainWindow::startRendering(void)
     mMinTotalGreen = INT_MAX;
     mMinTotalBlue = INT_MAX;
     mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness, &mFrameRed, &mFrameGreen, &mFrameBlue);
-    mProject.setFixed(mVideoWidget->stripeIsFixed());
     int firstFrame, lastFrame;
     mFrameCount = mVideoWidget->stripeIsVertical()? qreal(mCurrentFrame.width()) : qreal(mCurrentFrame.height());
     if (mProject.markA() != Project::INVALID_FRAME && mProject.markB() != Project::INVALID_FRAME && mProject.markB() > mProject.markA()) {
@@ -488,9 +487,11 @@ void MainWindow::frameReady(QImage src, Histogram histogram, int frameNumber, in
         mMinTotalGreen = histogram.totalGreen();
     if (histogram.totalBlue() < mMinTotalBlue)
         mMinTotalBlue = histogram.totalBlue();
-    const int srcpos = mProject.stripeIsFixed()? mVideoWidget->stripePos() : (frameNumber % (mVideoWidget->stripeIsVertical()? src.width() : src.height()));
     const int dstpos = frameNumber;
-    if (mVideoWidget->stripeIsVertical()) {
+    const int srcpos = mProject.stripeIsFixed() ?
+                       mProject.stripePos() :
+                       (frameNumber % (mProject.stripeIsVertical()? src.width() : src.height()));
+    if (mProject.stripeIsVertical()) {
         for (int y = 0; y < src.height(); ++y)
             mCurrentFrame.setPixel(dstpos, y, src.pixel(srcpos, y));
     }

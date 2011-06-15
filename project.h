@@ -19,6 +19,7 @@ class Project : public QObject
 public:
     enum MarkId { ID_NONE = 0, ID_A = 1, ID_B = 2 };
     enum FrameType { INVALID_FRAME = -1 };
+    static const int MOVING_STRIPE = -1;
 
     struct mark_type {
         mark_type(int frame = INVALID_FRAME) : id(ID_NONE), frame(frame) {}
@@ -53,7 +54,7 @@ public:
     inline int currentFrame(void) const { return mCurrentFrame; }
     inline const QVector<mark_type>& marks(void) const { return mMarks; }
     inline int stripePos(void) const { return mStripePos; }
-    inline bool stripeIsFixed(void) const { return mFixedStripe; }
+    inline bool stripeIsFixed(void) const { return mStripePos >= 0; }
     inline bool stripeIsVertical(void) const { return mVerticalStripe; }
     inline const QString& videoFileName(void) const { return mVideoFileName; }
     inline const QString& fileName(void) const { return mFileName; }
@@ -76,7 +77,6 @@ public slots:
     void setRedLevel(qreal);
     void setGreenLevel(qreal);
     void setBlueLevel(qreal);
-    void setFixed(bool);
     void setMarkA(int);
     void setMarkB(int);
 
@@ -88,7 +88,6 @@ private: // members
     QXmlStreamReader mXml;
 
     QVector<mark_type> mMarks;
-    bool mFixedStripe; // true: der Streifen bleibt fest an der gewählten Position; false: der Streifen bewegt sich mit jedem Frame um mStripeWidth Pixel weiter
     bool mVerticalStripe;
     int mStripePos;
     int mCurrentFrame;
