@@ -16,8 +16,8 @@ bool markLess(const Project::mark_type& m1, const Project::mark_type& m2)
 
 Project::Project(QObject* parent) :
     QObject(parent),
-    mFixedStripe(false),
     mVerticalStripe(true),
+    mStripePos(-1),
     mBrightnessLevel(0.7),
     mRedLevel(0),
     mGreenLevel(0),
@@ -284,13 +284,6 @@ void Project::setFileName(const QString& fileName)
 }
 
 
-void Project::setFixed(bool fixed)
-{
-    mFixedStripe = fixed;
-    mModified = true;
-}
-
-
 void Project::setCurrentFrame(int frame)
 {
     mCurrentFrame = frame;
@@ -301,6 +294,7 @@ void Project::setCurrentFrame(int frame)
 void Project::setStripePos(int pos)
 {
     mStripePos = pos;
+    qDebug() << "Project::setStripePos(" << mStripePos << ")";
     mModified = true;
 }
 

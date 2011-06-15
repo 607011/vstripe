@@ -9,6 +9,7 @@
 #include <QtGlobal>
 
 #include "videowidget.h"
+#include "project.h"
 
 
 VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
@@ -247,9 +248,9 @@ void VideoWidget::calcDestRect(void) {
 int VideoWidget::stripePos(void) const
 {
     if (mVerticalStripe)
-        return (mDestRect.width()  != 0)? mStripePos.x() : -1;
+        return (mDestRect.width()  != 0)? mStripePos.x() : Project::MOVING_STRIPE;
     else
-        return (mDestRect.height() != 0)? mStripePos.y() : -1;
+        return (mDestRect.height() != 0)? mStripePos.y() : Project::MOVING_STRIPE;
 }
 
 
@@ -279,7 +280,9 @@ void VideoWidget::keyPressEvent(QKeyEvent* event)
     if (mDraggingStripe && (event->modifiers() & Qt::AltModifier) == 0) {
         mVerticalStripe = ((event->modifiers() & Qt::ControlModifier) == 0);
         mStripePos = toPosInFrame(mMousePos);
-        emit stripePosChanged(mVerticalStripe? mStripePos.x() : mStripePos.y());
+        emit stripePosChanged(stripeIsFixed()?
+                              (mVerticalStripe? mStripePos.x() : mStripePos.y()) :
+                              (Project::MOVING_STRIPE));
         emit stripeOrientationChanged(mVerticalStripe);
         update();
     }
@@ -302,7 +305,9 @@ void VideoWidget::mouseMoveEvent(QMouseEvent* event)
             emit stripeOrientationChanged(mVerticalStripe);
         }
         mStripePos = toPosInFrame(mMousePos);
-        emit stripePosChanged(mVerticalStripe? mStripePos.x() : mStripePos.y());
+        emit stripePosChanged(stripeIsFixed()?
+                              (mVerticalStripe? mStripePos.x() : mStripePos.y()) :
+                              (Project::MOVING_STRIPE));
         update();
     }
 }
