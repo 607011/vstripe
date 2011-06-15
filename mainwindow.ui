@@ -710,61 +710,6 @@
     <string>Enable/disable histogram</string>
    </property>
   </action>
-  <action name="action0_0">
-   <property name="text">
-    <string>0</string>
-   </property>
-  </action>
-  <action name="action0_1">
-   <property name="text">
-    <string>0.1</string>
-   </property>
-  </action>
-  <action name="action0_2">
-   <property name="text">
-    <string>0.2</string>
-   </property>
-  </action>
-  <action name="action0_3">
-   <property name="text">
-    <string>0.3</string>
-   </property>
-  </action>
-  <action name="action0_4">
-   <property name="text">
-    <string>0.4</string>
-   </property>
-  </action>
-  <action name="action0_5">
-   <property name="text">
-    <string>0.5</string>
-   </property>
-  </action>
-  <action name="action0_6">
-   <property name="text">
-    <string>0.6</string>
-   </property>
-  </action>
-  <action name="action0_7">
-   <property name="text">
-    <string>0.7</string>
-   </property>
-  </action>
-  <action name="action0_8">
-   <property name="text">
-    <string>0.8</string>
-   </property>
-  </action>
-  <action name="action0_9">
-   <property name="text">
-    <string>0.9</string>
-   </property>
-  </action>
-  <action name="action1_0">
-   <property name="text">
-    <string>1.0</string>
-   </property>
-  </action>
   <action name="actionClear_histogram_region">
    <property name="text">
     <string>Clear histogram region</string>
@@ -780,7 +725,7 @@
   </action>
   <action name="actionReset_RGB_L_levels">
    <property name="text">
-    <string>Reset RGB/L levels</string>
+    <string>Reset RGB/L corrections</string>
    </property>
   </action>
  </widget>

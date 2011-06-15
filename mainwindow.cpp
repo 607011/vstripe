@@ -20,7 +20,7 @@
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.3 <DEBUG>";
+const QString MainWindow::AppVersion = "0.9.3 DEBUG";
 #else
 const QString MainWindow::AppVersion = "0.9.3";
 #endif
@@ -42,9 +42,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), this, SLOT(setStripeOrientation(bool)));
     connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), &mProject, SLOT(setStripeOrientation(bool)));
     connect(mVideoWidget, SIGNAL(stripePosChanged(int)), &mProject, SLOT(setStripePos(int)));
-
-//    ui->AButton->setStyleSheet("background: green");
-//    ui->BButton->setStyleSheet("background: red");
 
     connect(ui->action_OpenVideoFile, SIGNAL(triggered()), this, SLOT(openVideoFile()));
     connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
