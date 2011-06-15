@@ -18,7 +18,6 @@ class PictureWidget : public QWidget
 public:
     PictureWidget(QWidget* parent = NULL);
     QSize sizeHint(void) const { return QSize(1920, 1080); }
-    QSize minimumSizeHint(void) const { return QSize(720, 576); }
     void setPicture(const QImage&);
     void setBrightnessData(
             const BrightnessData* brightness,
