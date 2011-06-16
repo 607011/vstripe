@@ -294,7 +294,6 @@ void Project::setCurrentFrame(int frame)
 void Project::setStripePos(int pos)
 {
     mStripePos = pos;
-    qDebug() << "Project::setStripePos(" << mStripePos << ")";
     mModified = true;
 }
 
