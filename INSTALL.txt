@@ -5,6 +5,7 @@ Installation
 
 VStripe basiert auf Nokias plattformübergreifender Open-Source-Bibliothek Qt und läuft daher unter Windows, Mac OS X und Linux gleichermaßen gut. Linuxer bekommen Qt über die eingebaute Paketverwaltung, etwa via apt-get bei Ubuntu, Windows- und Mac-Nutzer sollten das Qt SDK von Nokias Entwickler-Webseite http://qt.nokia.com/ installieren. Zum Dekodieren der Videos bedient sich VStripe der ebenfalls frei erhältlichen ffmpeg-Bibliothek, die je nach Plattform nachzuinstallieren oder aus den Quellen zu kompilieren ist.
 
+
 Windows
 -------
 
