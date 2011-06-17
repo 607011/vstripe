@@ -1,13 +1,15 @@
-VSTRIPE 0.9.4
+============================================================
+VSTRIPE 0.9.4 - Erzeugen von Streifenfotos aus Videomaterial
+============================================================
 
-Installation
-============
+Stand: 17. Juni 2011
+
+INSTALLATION
 
 VStripe basiert auf Nokias plattformübergreifender Open-Source-Bibliothek Qt und läuft daher unter Windows, Mac OS X und Linux gleichermaßen gut. Linuxer bekommen Qt über die eingebaute Paketverwaltung, etwa via apt-get bei Ubuntu, Windows- und Mac-Nutzer sollten das Qt SDK von Nokias Entwickler-Webseite http://qt.nokia.com/ installieren. Zum Dekodieren der Videos bedient sich VStripe der ebenfalls frei erhältlichen ffmpeg-Bibliothek, die je nach Plattform nachzuinstallieren oder aus den Quellen zu kompilieren ist.
 
 
 Windows
--------
 
 Windows-Nutzer haben es am einfachsten. Sie müssen zunächst die ffmpeg-Bibliotheken und Include-Dateien von http://hawkeye.arrozcru.org/builds/win32/dev/ herunterladen und in das Verzeichnis ffmpeg-static neben dem Verzeichnis des VStripe-Projekts entpacken.
 
@@ -20,7 +22,6 @@ ffmpeg (und damit auch VStripe) lässt sich nur in einer MinGW-Umgebung überset
 
 
 Linux
------
 
 Unter Linux müssen Sie die erforderliche ffmpeg-Version aus den Quelltexten kompilieren, weil sie noch nicht in aktuellen Linux-Distributionen enthalten ist. Vor den folgenden Schritten ist sicherzustellen, dass die GNU Compiler Collection (C/C++-Compiler nebst Bibliotheken) und das Paket yasm installiert sind. Nun wechseln Sie in das oberhalb des VStripe-Projekts gelegene Verzeichnis (im folgenden Beispiel workspace) und ziehen sich den ffmpeg-Quellcode aus dem Git-Repository:
 
@@ -45,29 +46,34 @@ Das im Unterverzeichnis release befindliche Binary VStripe kann man durch Eingab
 
 
 Mac OS X (64 Bit)
------------------
 
-Auf dem Mac ist ffmpeg über das MacPorts-Utility zu installieren. Es steht unter http://distfiles.macports.org/MacPorts/ in drei Ausgaben für Tiger, Leopard und Snow Leopard zur Verfügung (MacPorts-1.9.1-10.4-Tiger.dmg, MacPorts-1.9.2-10.5-Leopard.dmg, MacPorts-1.9.2-10.6-SnowLeopard.dmg).
+Auf dem Mac ist ffmpeg über das MacPorts-Utility zu installieren. Es steht unter http://distfiles.macports.org/MacPorts/ in drei Ausgaben für Leopard und Snow Leopard zur Verfügung (MacPorts-1.9.2-10.5-Leopard.dmg, MacPorts-1.9.2-10.6-SnowLeopard.dmg).
 
-Nach der Installation aus dem richtigen Disk Image sollte man die lokale Liste verfügbarer Portierungen auf den neuesten Stand bringen:
+Nach der Installation aus dem richtigen Disk Image sollten Sie die lokale Liste verfügbarer Portierungen auf den neuesten Stand bringen:
 
 	sudo post -v selfupdate
 
-Danach kann man das ffmpeg-Paket einspielen:
+Danach können Sie das ffmpeg-Paket einspielen:
 
 	port install ffmpeg
 
-Dieser Befehl zieht einige langwierige Downloads und Kompilierungen nach sich.
+Dieser Befehl zieht einige langwierige Downloads und Kompilierungen nach sich. 
 
+Alternativ können Sie wie unter Linux vorgehen, wonach sich die ffmpeg-Binaries und -Includes im Verzeichnis ffmpeg-static befinden und die Eingabe von
 
+	qmake CONFIG+=release
+	make
 
-@z:Bei allen
+den Quellcode von VStripe in ein Application Bundle übersetzt.
 
-@$:Nach diesen Vorbereitungen übersetzt der Qt-typische Zweisatz 
+Dieses Application Bundle ist nur auf der Maschine lauffähig, auf der es erzeugt wurde, weil das darin enthaltene Binary absolute Pfade auf benötigten Bibliotheken und Frameworks enthält.
 
-@lf:qmake CONFIG+=release
-make
+Zum Schnüren eines Bundle, das auch auf anderen Rechnern läuft, starten Sie das Skript
 
+	./deploymac.sh
 
--- 
-$Id$
+Es kopiert alle benötigten Komponenten in das Anwendungspaket und passt die Referenzen in den Binaries daran an. Zum Abschluss generiert es ein komprimiertes Disk Image, das sich bequem weitergeben lässt.
+
+Sehr wahrscheinlich läuft VStripe auch unter einem 32-bittigem Mac OS X. Das habe ich aber noch nicht probiert.
+
+Mit Fragen und Anregungen wenden Sie sich bitte an den Autoren des Programms: Oliver Lau <ola@ct.de>.
