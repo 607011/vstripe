@@ -39,9 +39,11 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent*);
+    void keyPressEvent(QKeyEvent*);
 
 private:
     QImage mImage;
+    bool mShowHistograms;
     const BrightnessData* mBrightnessData;
     const BrightnessData* mRedData;
     const BrightnessData* mGreenData;
