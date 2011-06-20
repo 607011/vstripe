@@ -12,6 +12,7 @@
 
 PictureWidget::PictureWidget(QWidget* parent) :
         QWidget(parent),
+        mShowHistograms(true),
         mBrightnessData(NULL),
         mRedData(NULL),
         mGreenData(NULL),
@@ -27,13 +28,27 @@ PictureWidget::PictureWidget(QWidget* parent) :
 {
     setStyleSheet("background: #444");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setFocus(Qt::PopupFocusReason);
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 
 void PictureWidget::copyImageToClipboard(void)
 {
-    QClipboard *clipboard = QApplication::clipboard();
+    QClipboard* clipboard = QApplication::clipboard();
     clipboard->setImage(mImage);
+}
+
+
+void PictureWidget::keyPressEvent(QKeyEvent* e)
+{
+    if (e->key() == Qt::Key_Space) {
+        mShowHistograms = !mShowHistograms;
+        update();
+    }
+    else if (e->key() == Qt::Key_C && (e->modifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
+        copyImageToClipboard();
+    }
 }
 
 
@@ -78,7 +93,7 @@ void PictureWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
     painter.drawImage(QPoint(0, 0), mImage);
-    if (mBrightnessData && !mBrightnessData->isEmpty() && mMinBrightness >= 0) {
+    if (mShowHistograms && mBrightnessData && !mBrightnessData->isEmpty() && mMinBrightness >= 0) {
         const int y0l = mImage.height()     + mMinBrightness;
         const int y0r = mImage.height()*1/4 + mMinRed;
         const int y0g = mImage.height()*2/4 + mMinGreen;
