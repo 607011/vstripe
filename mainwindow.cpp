@@ -726,9 +726,10 @@ void MainWindow::updateButtons(void)
 void MainWindow::about(void)
 {
     QMessageBox::about(this, tr("About %1").arg(MainWindow::AppName),
-        tr("<p><strong>%1</strong> &ndash; Generate synchroballistic photography alike images from footage.</p>"
+        tr("<p><strong>%1</strong> &ndash; Generate streak photos from footage.</p>"
            "<p>Copyright (c) 2011 Oliver Lau &lt;oliver@von-und-fuer-lau.de&gt;</p>"
            "<p>VideoDecoder Copyright (c) 2009-2010 by Daniel Roggen &lt;droggen@gmail.com&gt;</p>"
+           "<p>HelpBrowser Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).</p>"
            "<p>All rights reserved.</p>").arg(MainWindow::AppName));
 }
 
