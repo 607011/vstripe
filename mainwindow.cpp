@@ -58,7 +58,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
     connect(mVideoReaderThread, SIGNAL(percentReady(int)), this, SLOT(showPercentReady(int)));
     connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), this, SLOT(frameReady(QImage,Histogram,int,int,int)));
-    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), mVideoWidget, SLOT(setFrame(QImage,Histogram)));
+    // connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), mVideoWidget, SLOT(setFrame(QImage,Histogram)));
     connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), mVideoReaderThread, SLOT(setHistogramRegion(QRect)));
     connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), &mProject, SLOT(setHistogramRegion(QRect)));
 
@@ -270,7 +270,7 @@ void MainWindow::seekToFrame(int n)
     // qDebug() << QString("effective: %1 (%2 ms), desired: %3 (%4 ms)").arg(mEffectiveFrameNumber).arg(mEffectiveFrameTime).arg(mDesiredFrameNumber).arg(mDesiredFrameTime);
     if (ui->actionHistogram->isChecked())
         mVideoReaderThread->calcHistogram(img);
-    mVideoWidget->setFrame(img, mVideoReaderThread->histogram());
+    mVideoWidget->setFrame(img, mVideoReaderThread->histogram(), -1);
     ui->frameNumberLineEdit->setText(QString("%1").arg(mEffectiveFrameNumber));
     ui->frameTimeLineEdit->setText(ms2hmsz(mEffectiveFrameTime));
     setCursor(Qt::ArrowCursor);
@@ -471,7 +471,7 @@ void MainWindow::hidePictureWidget(void)
 }
 
 
-void MainWindow::frameReady(QImage src, Histogram histogram, int frameNumber, int effectiveFrameNumber, int effectiveFrameTime)
+void MainWindow::frameReady(const QImage& src, const Histogram& histogram, int frameNumber, int effectiveFrameNumber, int effectiveFrameTime)
 {
     Q_ASSERT(!mCurrentFrame.isNull());
     Q_ASSERT(!src.isNull());
@@ -499,7 +499,8 @@ void MainWindow::frameReady(QImage src, Histogram histogram, int frameNumber, in
         for (int x = 0; x < src.width(); ++x)
             mCurrentFrame.setPixel(x, dstpos, src.pixel(x, srcpos));
     }
-    mPreviewForm->pictureWidget()->setPicture(mCurrentFrame);
+    mPreviewForm->pictureWidget()->setPicture(mCurrentFrame, srcpos);
+    mVideoWidget->setFrame(src, histogram, srcpos);
     mFrameSlider->blockSignals(true);
     mFrameSlider->setValue(mPreRenderFrameNumber + int(frameNumber * mFrameDelta));
     mFrameSlider->blockSignals(false);
@@ -540,6 +541,8 @@ void MainWindow::decodingFinished()
         diffSum /= mFrameBrightness.count();
     ui->infoPlainTextEdit->appendPlainText(tr("avg. luminance error: %1").arg(diffSum));
     mPreviewForm->brightnessSlider()->setValue((int)(diffSum*6.7));
+
+    mVideoWidget->setRunningStripePos(-1);
 
     deflicker();
     enablePreviewForm();
@@ -620,10 +623,10 @@ void MainWindow::deflicker(void)
                 }
             }
         }
-        mPreviewForm->pictureWidget()->setPicture(img);
+        mPreviewForm->pictureWidget()->setPicture(img, -1);
     }
     else
-        mPreviewForm->pictureWidget()->setPicture(mCurrentFrame);
+        mPreviewForm->pictureWidget()->setPicture(mCurrentFrame, -1);
     setCursor(Qt::ArrowCursor);
     mPreviewForm->setCursor(Qt::ArrowCursor);
 }
@@ -834,7 +837,7 @@ void MainWindow::loadVideoFile(void)
         mPreviewForm->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
     else
         mPreviewForm->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
-    mPreviewForm->pictureWidget()->setPicture(QImage());
+    mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     showPictureWidget();
     QImage img;
     ui->statusBar->showMessage(tr("Seeking last frame ..."));
@@ -861,8 +864,8 @@ void MainWindow::closeVideoFile(void)
     ui->frameNumberLineEdit->setText(QString());
     ui->frameTimeLineEdit->setText(QString());
     mFrameSlider->setValue(0);
-    mVideoWidget->setFrame(QImage(), Histogram());
-    mPreviewForm->pictureWidget()->setPicture(QImage());
+    mVideoWidget->setFrame(QImage(), Histogram(), -1);
+    mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     hidePictureWidget();
     clearMarks();
     ui->statusBar->showMessage(tr("File closed."), 5000);

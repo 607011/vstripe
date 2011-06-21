@@ -34,11 +34,12 @@ public:
     void setStripePos(int);
     void setStripeOrientation(bool vertical);
     void setHistogramRegion(const QRect&);
+    void setRunningStripePos(int);
 
 public slots:
     void setFrameSize(const QSize&);
     void setStripeWidth(int);
-    void setFrame(QImage, Histogram);
+    void setFrame(QImage, Histogram, int);
     void setHistogramEnabled(bool enabled = true);
 
 protected:
@@ -67,6 +68,7 @@ private:
     QRect mHistoRegion;
     QPoint mMousePos;
     QPoint mMousePosInFrame;
+    int mRunningStripePos;
 
     void calcDestRect(void);
     QPoint toPosInFrame(const QPoint&) const;

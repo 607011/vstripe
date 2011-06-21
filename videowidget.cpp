@@ -24,6 +24,7 @@ VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
     mDrawingHistogram = false;
     mVerticalStripe = true;
     mHistogramEnabled = true;
+    mRunningStripePos = -1;
 }
 
 
@@ -65,10 +66,18 @@ void VideoWidget::setHistogramEnabled(bool enabled)
 }
 
 
-void VideoWidget::setFrame(QImage img, Histogram histogram)
+void VideoWidget::setFrame(QImage img, Histogram histogram, int runningStripePos)
 {
     mImage = img;
     mHistogram = histogram;
+    mRunningStripePos = runningStripePos;
+    update();
+}
+
+
+void VideoWidget::setRunningStripePos(int runningStripePos)
+{
+    mRunningStripePos = runningStripePos;
     update();
 }
 
@@ -177,15 +186,29 @@ void VideoWidget::paintEvent(QPaintEvent*)
         painter.drawText(x0+6, y0+14, QString("%1").arg(mHistogram.totalBrightness()));
     }
     //
-    // draw stripe or direction marker
+    // draw running stripe
     //
     painter.setRenderHint(QPainter::NonCosmeticDefaultPen);
+    if (mRunningStripePos >= 0) {
+        painter.setPen(QColor(0xff, 0x00, 0x00, 0xcc));
+        if (mVerticalStripe) {
+            const QPoint sPos = toPosInWidget(QPoint(mRunningStripePos, 0));
+            painter.drawLine(sPos.x(), mDestRect.y(), sPos.x(), mDestRect.height());
+        }
+        else {
+            const QPoint sPos = toPosInWidget(QPoint(0, mRunningStripePos));
+            painter.drawLine(mDestRect.x(), sPos.y(), mDestRect.width(), sPos.y());
+        }
+    }
+    //
+    // draw stripe or direction marker
+    //
     painter.setPen(Qt::NoPen);
     const QPoint sPos = toPosInWidget(mStripePos);
     if (mVerticalStripe) {
         if (sPos.x() >= mDestRect.x() && sPos.x() < mDestRect.x() + mDestRect.width()) {
-            painter.setBrush(QColor(0xff, 0x00, 0x00, 0xcc));
-            painter.drawRect(sPos.x(), mDestRect.y(), mStripeWidth, mDestRect.height());
+            painter.setPen(QColor(0xff, 0x00, 0x00, 0xcc));
+            painter.drawLine(sPos.x(), mDestRect.y(), sPos.x(), mDestRect.height());
         }
         else {
             painter.setPen(QColor(0x00, 0x00, 0xff, 0x99));
@@ -200,8 +223,8 @@ void VideoWidget::paintEvent(QPaintEvent*)
     }
     else {
         if (sPos.y() >= mDestRect.y() && sPos.y() < mDestRect.y() + mDestRect.height()) {
-            painter.setBrush(QColor(0xff, 0x00, 0x00, 0xcc));
-            painter.drawRect(mDestRect.x(), sPos.y(), mDestRect.width(), mStripeWidth);
+            painter.setPen(QColor(0xff, 0x00, 0x00, 0xcc));
+            painter.drawLine(mDestRect.x(), sPos.y(), mDestRect.width(), sPos.y());
         }
         else {
             painter.setPen(QColor(0x00, 0x00, 0xff, 0x99));
