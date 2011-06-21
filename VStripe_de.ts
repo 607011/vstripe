@@ -546,11 +546,21 @@
         <source>correction amplification factor (logarithmic)</source>
         <translation>Korrekturverstärkungsfaktor (logarithmisch) einstellen</translation>
     </message>
+    <message>
+        <location filename="previewform.cpp" line="43"/>
+        <source>Reset RGB/L corrections?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="previewform.cpp" line="43"/>
+        <source>Really reset RGB/L corrections?</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="previewform.cpp" line="9"/>
+        <location filename="previewform.cpp" line="11"/>
         <source>VStripe - Picture Preview</source>
         <translation>VStripe - Generiertes Streifenbild</translation>
     </message>

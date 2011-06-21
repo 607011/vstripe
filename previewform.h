@@ -23,7 +23,7 @@ class PreviewForm : public QWidget
 public:
     PreviewForm(QWidget* parent = NULL);
     ~PreviewForm();
-    void setSizeConstraint(const QSize&, const QSize&);
+    void setSizeConstraint(const QSize& minimum, const QSize& maximum);
     PictureWidget* pictureWidget(void) { return mPictureWidget; }
     QSlider* brightnessSlider(void);
     QSlider* redSlider(void);
