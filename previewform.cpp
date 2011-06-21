@@ -3,10 +3,18 @@
  * $Id$
  */
 
+#include <QMessageBox>
+
 #include "previewform.h"
 #include "ui_previewform.h"
 
 const QString PreviewForm::WinTitle = QObject::tr("VStripe - Picture Preview");
+
+QSlider* PreviewForm::brightnessSlider(void) { return ui->exposureLSlider; }
+QSlider* PreviewForm::redSlider(void) { return ui->exposureRSlider; }
+QSlider* PreviewForm::greenSlider(void) { return ui->exposureGSlider; }
+QSlider* PreviewForm::blueSlider(void) { return ui->exposureBSlider; }
+QDial* PreviewForm::factorDial(void) { return ui->dialCorrectionFactor; }
 
 
 PreviewForm::PreviewForm(QWidget *parent) : QWidget(parent), ui(new Ui::PreviewForm)
@@ -30,21 +38,16 @@ PreviewForm::~PreviewForm()
 }
 
 
-QSlider* PreviewForm::brightnessSlider(void) { return ui->exposureLSlider; }
-QSlider* PreviewForm::redSlider(void) { return ui->exposureRSlider; }
-QSlider* PreviewForm::greenSlider(void) { return ui->exposureGSlider; }
-QSlider* PreviewForm::blueSlider(void) { return ui->exposureBSlider; }
-QDial* PreviewForm::factorDial(void) { return ui->dialCorrectionFactor; }
-
-
 void PreviewForm::resetRGBLCorrections(void)
 {
-    ui->exposureLSlider->setValue(0);
-    ui->exposureRSlider->setValue(0);
-    ui->exposureGSlider->setValue(0);
-    ui->exposureBSlider->setValue(0);
-    ui->dialCorrectionFactor->setValue(10);
-    emit correctionsChanged();
+    if (QMessageBox::warning(this, tr("Reset RGB/L corrections?"), tr("Really reset RGB/L corrections?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+        ui->exposureLSlider->setValue(0);
+        ui->exposureRSlider->setValue(0);
+        ui->exposureGSlider->setValue(0);
+        ui->exposureBSlider->setValue(0);
+        ui->dialCorrectionFactor->setValue(10);
+        emit correctionsChanged();
+    }
 }
 
 
