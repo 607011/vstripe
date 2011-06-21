@@ -3,11 +3,7 @@ FEHLER
 
 [ ] size constraints der PreviewForm funktionieren nicht ???
 
-
-TODO
-====
-
-[ ] Icon für Windows hübscher machen
+[ ] Nach der Größenänderung des PreviewForm friert das GUI ein, wenn man die Schieberegler bedient
 
 
 FEATURES
@@ -19,7 +15,7 @@ FEATURES
 
 [ ] Gerendertes Bild soll beliebig groß werden können -> Bild in Vorschaufenster skalierbar machen
 
-[ ] Anzahl der mit [A und B] markierten Frames anzeigen
+[ ] Anzahl der mit [A und B] markierten Frames nicht nur im Info-Feld anzeigen, sondern in Echtzeit
 
 [ ] Einlesen in Echtzeit von Webcam oder anderer angeschlossener Videokamera (OpenCV??)
 
@@ -27,16 +23,6 @@ FEATURES
 
 [ ] Mehr Informationen über das Video in infoPlainTextEdit ausgeben, z.B. Framerate, Codec-Kurzname, Format-Kurzname, ...
 
-[ ] Hilfe implementieren (actionHelp)
-
 [ ] fileDropped(argv[1]) darf in MainWindow erst aufgerufen werden, wenn das Fenster aufgebaut ist.
     
     NOTIZEN: Versuche mit dem Abfangen von showEvent() und changeEvent() führten ins Leere.
-
-
-NOTIZEN
-=======
-
-[ ] Icons für Windows: http://msdn.microsoft.com/de-de/library/ms997636.aspx
-
-[ ] Icons für Mac OS X: http://www.macinstruct.com/node/59 http://doc.qt.nokia.com/4.7/appicon.html

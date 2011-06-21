@@ -17,6 +17,8 @@
 #include <QUrl>
 #include <QtHelp/QHelpEngineCore>
 
+#include <math.h>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "histogram.h"
@@ -24,9 +26,9 @@
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.5 DEBUG";
+const QString MainWindow::AppVersion = "0.9.6 DEBUG";
 #else
-const QString MainWindow::AppVersion = "0.9.5";
+const QString MainWindow::AppVersion = "0.9.6";
 #endif
 
 
@@ -78,6 +80,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     connect(mPreviewForm->redSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
     connect(mPreviewForm->greenSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
     connect(mPreviewForm->blueSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
+    connect(mPreviewForm->factorDial(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
         recentVideoFileActs[i] = new QAction(this);
@@ -587,10 +590,11 @@ void MainWindow::deflicker(void)
 {
     setCursor(Qt::BusyCursor);
     mPreviewForm->setCursor(Qt::BusyCursor);
-    qreal lLevel = (qreal)mPreviewForm->brightnessSlider()->value()/100;
-    qreal rLevel = (qreal)mPreviewForm->redSlider()->value()/100;
-    qreal gLevel = (qreal)mPreviewForm->greenSlider()->value()/100;
-    qreal bLevel = (qreal)mPreviewForm->blueSlider()->value()/100;
+    qreal f = 1e-2 * log((qreal)mPreviewForm->factorDial()->value());
+    qreal lLevel = f * mPreviewForm->brightnessSlider()->value();
+    qreal rLevel = f * mPreviewForm->redSlider()->value();
+    qreal gLevel = f * mPreviewForm->greenSlider()->value();
+    qreal bLevel = f * mPreviewForm->blueSlider()->value();
     mProject.setBrightnessLevel(lLevel);
     mProject.setRedLevel(rLevel);
     mProject.setGreenLevel(gLevel);
