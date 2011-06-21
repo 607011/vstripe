@@ -9,6 +9,8 @@
 #include <QMainWindow>
 #include <QString>
 #include <QVector>
+#include <QTextBrowser>
+
 
 #include "videoreaderthread.h"
 #include "videowidget.h"
@@ -98,6 +100,7 @@ private: // variables
     int mDesiredFrameTime;
     int mPreRenderFrameNumber;
     QString mFileNameFromCmdLine;
+    QTextBrowser* mHelpBrowser;
 
     BrightnessData mFrameBrightness;
     BrightnessData mFrameRed;

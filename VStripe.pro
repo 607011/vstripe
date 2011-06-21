@@ -3,7 +3,7 @@
 
 QT += core gui xml
 
-CONFIG += warn_on thread qt
+CONFIG += warn_on thread qt help
 
 TARGET = VStripe
 TEMPLATE = app
@@ -78,4 +78,6 @@ RESOURCES += vstripe.qrc
 OTHER_FILES += \
     help.html \
     INSTALL.txt \
-    TODO.txt
+    TODO.txt \
+    doc.qhp \
+    doc/index.html

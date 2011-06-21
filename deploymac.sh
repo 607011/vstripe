@@ -24,8 +24,13 @@ make clean
 make 
 
 echo Making translations ..
+
 $QTDIR/bin/lrelease VStripe.pro
 cp $APP*.qm $APPBUNDLE/Contents/MacOS
+
+echo Generating help ..
+
+$QTDIR/bin/qcollectiongenerator doc.qhcp -o vstripe.qhc
 
 echo Bundling libs ..
 
