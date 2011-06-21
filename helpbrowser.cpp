@@ -32,7 +32,7 @@
  ** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
  ** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  ** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+ ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **
  ****************************************************************************/
 
@@ -55,7 +55,7 @@ HelpBrowser::HelpBrowser(QWidget* parent) : QTextBrowser(parent)
 }
 
 
-void HelpBrowser::showHelpForKeyword(const QString &id)
+void HelpBrowser::showHelpForKeyword(const QString& id)
 {
     if (mHelpEngine) {
         QMap<QString, QUrl> links = mHelpEngine->linksForIdentifier(id);
@@ -65,7 +65,7 @@ void HelpBrowser::showHelpForKeyword(const QString &id)
 }
 
 
-QVariant HelpBrowser::loadResource(int type, const QUrl &name)
+QVariant HelpBrowser::loadResource(int type, const QUrl& name)
 {
     QByteArray ba;
     if (type < 4 && mHelpEngine) {

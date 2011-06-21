@@ -17,3 +17,6 @@ VStripe*.qm
 object_script.VStripe.*
 debug/*
 release/*
+doc/*.qch
+doc/*.qhc
+deploy/*

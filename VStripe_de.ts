@@ -208,128 +208,128 @@
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="560"/>
+        <location filename="mainwindow.ui" line="559"/>
         <source>Extras</source>
         <translation>Extras</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="564"/>
+        <location filename="mainwindow.ui" line="563"/>
         <source>Use video camera</source>
         <translation>Von Videokamera lesen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="573"/>
+        <location filename="mainwindow.ui" line="572"/>
         <source>View</source>
         <translation>Ansicht</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="594"/>
+        <location filename="mainwindow.ui" line="593"/>
         <source>&amp;Open video file ...</source>
         <translation>Videodatei öffnen ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="597"/>
-        <location filename="mainwindow.cpp" line="828"/>
+        <location filename="mainwindow.ui" line="596"/>
+        <location filename="mainwindow.cpp" line="818"/>
         <source>Open video file</source>
         <translation>Videodatei öffnen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="600"/>
+        <location filename="mainwindow.ui" line="599"/>
         <source>Ctrl+O</source>
         <translation>Strg-O</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="605"/>
+        <location filename="mainwindow.ui" line="604"/>
         <source>E&amp;xit</source>
         <translation>Beenden</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="613"/>
+        <location filename="mainwindow.ui" line="612"/>
         <source>Close video file</source>
         <translation>Videodatei schließen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="616"/>
+        <location filename="mainwindow.ui" line="615"/>
         <source>Ctrl+W</source>
         <translation>Strg-W</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="627"/>
+        <location filename="mainwindow.ui" line="626"/>
         <source>Show preview</source>
         <translation>Vorschaubild anzeigen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="635"/>
+        <location filename="mainwindow.ui" line="634"/>
         <source>&amp;Save picture as ...</source>
         <translation>Bild speichern unter ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="638"/>
+        <location filename="mainwindow.ui" line="637"/>
         <source>Ctrl+S</source>
         <translation>Strg-S</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="649"/>
+        <location filename="mainwindow.ui" line="648"/>
         <source>Vertical stripes</source>
         <translation>Vertikale Streifen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="654"/>
+        <location filename="mainwindow.ui" line="653"/>
         <source>Help</source>
         <translation>Hilfe</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="659"/>
+        <location filename="mainwindow.ui" line="658"/>
         <source>About</source>
         <translation>Über</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="667"/>
+        <location filename="mainwindow.ui" line="666"/>
         <source>Clear marks</source>
         <translation>Markierungen entfernen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="675"/>
+        <location filename="mainwindow.ui" line="674"/>
         <source>Save project as ...</source>
         <translation>Projekt speichern unter ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="680"/>
+        <location filename="mainwindow.ui" line="679"/>
         <source>Open project ...</source>
         <translation>Projekt öffnen ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="688"/>
+        <location filename="mainwindow.ui" line="687"/>
         <source>Save project</source>
         <translation>Projekt speichern</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="696"/>
+        <location filename="mainwindow.ui" line="695"/>
         <source>Autofit preview</source>
         <translation>Größe des Vorschaufensters automatisch anpassen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="707"/>
+        <location filename="mainwindow.ui" line="706"/>
         <source>Histogram</source>
         <translation>Histogramm</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="710"/>
+        <location filename="mainwindow.ui" line="709"/>
         <source>Enable/disable histogram</source>
         <translation>Histogramm ein-/ausblenden</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="728"/>
+        <location filename="mainwindow.ui" line="727"/>
         <source>Reset RGB/L corrections</source>
         <translation>RGB/L-Korrekturen zurücksetzen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="715"/>
+        <location filename="mainwindow.ui" line="714"/>
         <source>Clear histogram region</source>
         <translation>Histogramm-Bereich entfernen</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="723"/>
+        <location filename="mainwindow.ui" line="722"/>
         <source>Copy to clipboard</source>
         <translation>In Zwischenablage kopieren</translation>
     </message>
@@ -340,7 +340,7 @@
     </message>
     <message>
         <location filename="mainwindow.cpp" line="117"/>
-        <location filename="mainwindow.cpp" line="868"/>
+        <location filename="mainwindow.cpp" line="858"/>
         <source>Ready.</source>
         <translation>Fertig.</translation>
     </message>
@@ -361,7 +361,7 @@
     </message>
     <message>
         <location filename="mainwindow.cpp" line="223"/>
-        <location filename="mainwindow.cpp" line="814"/>
+        <location filename="mainwindow.cpp" line="804"/>
         <source>&amp;%1 %2</source>
         <translation>&amp;%1 %2</translation>
     </message>
@@ -403,7 +403,7 @@
     <message>
         <location filename="mainwindow.cpp" line="394"/>
         <location filename="mainwindow.cpp" line="403"/>
-        <location filename="mainwindow.cpp" line="767"/>
+        <location filename="mainwindow.cpp" line="757"/>
         <source>%1 frames selected</source>
         <translation>%1 Frames ausgewählt</translation>
     </message>
@@ -413,12 +413,12 @@
         <translation>mittl. Helligkeitsabweichung: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="728"/>
+        <location filename="mainwindow.cpp" line="718"/>
         <source>About %1</source>
         <translation>Über %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="729"/>
+        <location filename="mainwindow.cpp" line="719"/>
         <source>&lt;p&gt;&lt;strong&gt;%1&lt;/strong&gt; &amp;ndash; Generate streak photos from footage.&lt;/p&gt;&lt;p&gt;Copyright (c) 2011 Oliver Lau &amp;lt;oliver@von-und-fuer-lau.de&amp;gt;&lt;/p&gt;&lt;p&gt;VideoDecoder Copyright (c) 2009-2010 by Daniel Roggen &amp;lt;droggen@gmail.com&amp;gt;&lt;/p&gt;&lt;p&gt;HelpBrowser Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).&lt;/p&gt;&lt;p&gt;All rights reserved.&lt;/p&gt;</source>
         <translation>&lt;p&gt;&lt;strong&gt;%1&lt;/strong&gt; &amp;ndash; Streifenfotos aus Videos erzeugen.&lt;/p&gt;&lt;p&gt;Copyright (c) 2011 Oliver Lau &amp;lt;oliver@von-und-fuer-lau.de&amp;gt;&lt;/p&gt;&lt;p&gt;VideoDecoder Copyright (c) 2009-2010 Daniel Roggen &amp;lt;droggen@gmail.com&amp;gt;&lt;/p&gt;&lt;p&gt;HelpBrowser Copyright (c) 2011 Nokia Corporation und/oder ihre Tochtergesellschaften.&lt;/p&gt;&lt;p&gt;Alle Rechte vorbehalten.&lt;/p&gt;</translation>
     </message>
@@ -435,43 +435,43 @@
         <translation type="obsolete">Noch nicht implementiert</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="778"/>
+        <location filename="mainwindow.cpp" line="768"/>
         <source>Open project file</source>
         <translation>Projektdatei öffnen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="792"/>
-        <location filename="mainwindow.cpp" line="804"/>
+        <location filename="mainwindow.cpp" line="782"/>
+        <location filename="mainwindow.cpp" line="794"/>
         <source>Project saved.</source>
         <translation>Projektdatei gespeichert.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="799"/>
+        <location filename="mainwindow.cpp" line="789"/>
         <source>Save project file as ...</source>
         <translation>Projekt speichern unter ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="854"/>
+        <location filename="mainwindow.cpp" line="844"/>
         <source>Seeking last frame ...</source>
         <translation>Ansteuern des letzten Frames ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="862"/>
+        <location filename="mainwindow.cpp" line="852"/>
         <source>Last frame # %1</source>
         <translation>Letzter Frame: #%1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="863"/>
+        <location filename="mainwindow.cpp" line="853"/>
         <source>Video length: %1</source>
         <translation>Länge des Videos: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="882"/>
+        <location filename="mainwindow.cpp" line="872"/>
         <source>File closed.</source>
         <translation>Datei geschlossen.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="888"/>
+        <location filename="mainwindow.cpp" line="878"/>
         <source>Save picture as ...</source>
         <translation>Bild speichern untern ...</translation>
     </message>
@@ -484,44 +484,54 @@
         <translation>Vorschau</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="30"/>
+        <location filename="previewform.ui" line="32"/>
         <source>G</source>
         <translation>G</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="46"/>
+        <location filename="previewform.ui" line="48"/>
         <source>stripes&apos; green level correction</source>
         <translation>Grünwert der Streifen korrigieren</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="83"/>
+        <location filename="previewform.ui" line="85"/>
         <source>stripes&apos; red level correction</source>
         <translation>Rotwert der Streifen korrigieren</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="117"/>
+        <location filename="previewform.ui" line="119"/>
         <source>R</source>
         <translation>R</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="130"/>
+        <location filename="previewform.ui" line="132"/>
         <source>B</source>
         <translation>B</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="146"/>
+        <location filename="previewform.ui" line="148"/>
         <source>stripes&apos; blue level correction</source>
         <translation>Blauwert der Streifen korrigieren</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="180"/>
+        <location filename="previewform.ui" line="182"/>
         <source>L</source>
         <translation>L</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="196"/>
+        <location filename="previewform.ui" line="198"/>
         <source>stripes&apos; brightness correction</source>
         <translation>Helligkeit der Streifen korrigieren</translation>
+    </message>
+    <message>
+        <location filename="previewform.ui" line="229"/>
+        <source>Display curves</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="previewform.ui" line="249"/>
+        <source>Reset RGB/L corrections</source>
+        <translation type="unfinished">RGB/L-Korrekturen zurücksetzen</translation>
     </message>
 </context>
 <context>
