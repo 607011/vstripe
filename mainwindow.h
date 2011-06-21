@@ -6,11 +6,9 @@
 #ifndef __MAINWINDOW_H_
 #define __MAINWINDOW_H_
 
-#include <QMainWindow>
-#include <QString>
-#include <QVector>
-#include <QTextBrowser>
-
+#include <QtGui/QMainWindow>
+#include <QtCore/QString>
+#include <QtCore/QVector>
 
 #include "videoreaderthread.h"
 #include "videowidget.h"
@@ -19,6 +17,8 @@
 #include "project.h"
 #include "previewform.h"
 #include "histogram.h"
+#include "helpbrowser.h"
+
 
 namespace Ui {
     class MainWindow;
@@ -100,7 +100,7 @@ private: // variables
     int mDesiredFrameTime;
     int mPreRenderFrameNumber;
     QString mFileNameFromCmdLine;
-    QTextBrowser* mHelpBrowser;
+    HelpBrowser* mHelpBrowser;
 
     BrightnessData mFrameBrightness;
     BrightnessData mFrameRed;
