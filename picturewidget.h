@@ -18,7 +18,7 @@ class PictureWidget : public QWidget
 public:
     PictureWidget(QWidget* parent = NULL);
     QSize sizeHint(void) const { return QSize(1920, 1080); }
-    void setPicture(const QImage&);
+    void setPicture(const QImage& img, int stripePos);
     void setBrightnessData(
             const BrightnessData* brightness,
             const BrightnessData* red,
@@ -56,6 +56,7 @@ private:
     qreal mMinRed;
     qreal mMinGreen;
     qreal mMinBlue;
+    int mStripePos;
 };
 
 #endif // __PICTUREWIDGET_H_

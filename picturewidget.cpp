@@ -24,7 +24,8 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mMinBrightness(-1),
         mMinRed(-1),
         mMinGreen(-1),
-        mMinBlue(-1)
+        mMinBlue(-1),
+        mStripePos(-1)
 {
     setStyleSheet("background: #444");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -52,9 +53,10 @@ void PictureWidget::keyPressEvent(QKeyEvent* e)
 }
 
 
-void PictureWidget::setPicture(const QImage& img)
+void PictureWidget::setPicture(const QImage& img, int stripePos)
 {
     mImage = img;
+    mStripePos = stripePos;
     update();
 }
 
@@ -93,12 +95,16 @@ void PictureWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
     painter.drawImage(QPoint(0, 0), mImage);
+    painter.setBrush(Qt::NoBrush);
+    if (mStripePos >= 0) {
+        painter.setPen(Qt::red);
+        painter.drawLine(mStripePos, 0, mStripePos, mImage.height());
+    }
     if (mShowHistograms && mBrightnessData && !mBrightnessData->isEmpty() && mMinBrightness >= 0) {
         const int y0l = mImage.height()     + mMinBrightness;
         const int y0r = mImage.height()*1/4 + mMinRed;
         const int y0g = mImage.height()*2/4 + mMinGreen;
         const int y0b = mImage.height()*3/4 + mMinBlue;
-        painter.setBrush(Qt::NoBrush);
         painter.setPen(QColor(0xcc, 0xcc, 0xcc, 0xa0));
         if (mAvgBrightness >= 0)
             painter.drawLine(QLineF(0, y0l-mAvgBrightness, mImage.width(), y0l-mAvgBrightness));

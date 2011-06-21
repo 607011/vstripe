@@ -74,3 +74,8 @@ FORMS    += mainwindow.ui \
     previewform.ui
 
 RESOURCES += vstripe.qrc
+
+OTHER_FILES += \
+    help.html \
+    INSTALL.txt \
+    TODO.txt
