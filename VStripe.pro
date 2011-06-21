@@ -57,7 +57,8 @@ SOURCES += main.cpp\
     markableslider.cpp \
     project.cpp \
     histogram.cpp \
-    previewform.cpp
+    previewform.cpp \
+    helpbrowser.cpp
 
 HEADERS  += mainwindow.h \
     videowidget.h \
@@ -68,16 +69,10 @@ HEADERS  += mainwindow.h \
     markableslider.h \
     project.h \
     histogram.h \
-    previewform.h
+    previewform.h \
+    helpbrowser.h
 
 FORMS    += mainwindow.ui \
     previewform.ui
 
 RESOURCES += vstripe.qrc
-
-OTHER_FILES += \
-    help.html \
-    INSTALL.txt \
-    TODO.txt \
-    doc.qhp \
-    doc/index.html

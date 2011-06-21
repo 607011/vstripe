@@ -127,6 +127,9 @@ MainWindow::~MainWindow()
     delete mVideoWidget;
     delete mPreviewForm;
     delete mFrameSlider;
+
+    if (mHelpBrowser)
+        delete mHelpBrowser;
 }
 
 
@@ -732,22 +735,10 @@ void MainWindow::about(void)
 
 void MainWindow::help(void)
 {
-    QHelpEngineCore helpEngine("vstripe.qhc");
-    helpEngine.setupData();
-
     if (mHelpBrowser == NULL)
-        mHelpBrowser = new QTextBrowser(this);
-
-    QMap<QString, QUrl> links = helpEngine.linksForIdentifier(QLatin1String("VStripe::install"));
-    for (QMap<QString, QUrl>::const_iterator i = links.constBegin(); i != links.constEnd(); ++i)
-        qDebug() << i.key() << "=" << i.value();
-//    if (links.count() > 0) {
-//        QByteArray helpData = helpEngine.fileData(links.constBegin().value());
-//        // show the documentation to the user
-//        if (!helpData.isEmpty())
-//            mHelpBrowser->setText();
-//    }
-
+        mHelpBrowser = new HelpBrowser;
+    mHelpBrowser->showHelpForKeyword("VStripe::index");
+    mHelpBrowser->show();
 }
 
 
