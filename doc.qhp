@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <QtHelpProject version="1.0">
+     <namespace>de.von-und-fuer-lau.vstripe.0.9.5</namespace>
+     <virtualFolder>doc</virtualFolder>
+     <customFilter name="VStripe 0.9.5">
+         <filterAttribute>vstripe</filterAttribute>
+         <filterAttribute>0.9.5</filterAttribute>
+     </customFilter>
+     <filterSection>
+         <filterAttribute>vstripe</filterAttribute>
+         <filterAttribute>0.9.5</filterAttribute>
+         <toc>
+             <section title="VStripe Manual" ref="index.html">
+                <section title="Bedienung" ref="index.html"/>
+                <section title="Installation" ref="install.html"/>
+             </section>
+         </toc>
+         <keywords>
+             <keyword name="index" id="VStripe::index" ref="index.html" />
+             <keyword name="installation" id="VStripe::install" ref="install.html" />
+         </keywords>
+         <files>
+             <file>doc/*.html</file>
+         </files>
+     </filterSection>
+ </QtHelpProject>

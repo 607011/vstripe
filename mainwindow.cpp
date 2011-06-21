@@ -13,6 +13,10 @@
 #include <QTextStream>
 #include <QFileInfo>
 
+#include <QMap>
+#include <QUrl>
+#include <QtHelp/QHelpEngineCore>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "histogram.h"
@@ -28,7 +32,8 @@ const QString MainWindow::AppVersion = "0.9.5";
 
 MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QMainWindow(parent),
-        ui(new Ui::MainWindow)
+        ui(new Ui::MainWindow),
+        mHelpBrowser(NULL)
 {
     ui->setupUi(this);
 
@@ -202,7 +207,7 @@ void MainWindow::fileDropped(const QString& fileName)
             clearMarks();
         }
     }
-    else QMessageBox::critical(this, tr("File does not exist"), tr("File '%1' does not exist").arg(fileName));
+    else QMessageBox::critical(this, tr("Invalid file"), tr("File '%1' does not exist or is not accessible").arg(fileName));
 }
 
 
@@ -727,8 +732,22 @@ void MainWindow::about(void)
 
 void MainWindow::help(void)
 {
-    QMessageBox::information(this, tr("Help on %1").arg(MainWindow::AppName),
-        tr("<p>Not implemented yet</p>"));
+    QHelpEngineCore helpEngine("vstripe.qhc");
+    helpEngine.setupData();
+
+    if (mHelpBrowser == NULL)
+        mHelpBrowser = new QTextBrowser(this);
+
+    QMap<QString, QUrl> links = helpEngine.linksForIdentifier(QLatin1String("VStripe::install"));
+    for (QMap<QString, QUrl>::const_iterator i = links.constBegin(); i != links.constEnd(); ++i)
+        qDebug() << i.key() << "=" << i.value();
+//    if (links.count() > 0) {
+//        QByteArray helpData = helpEngine.fileData(links.constBegin().value());
+//        // show the documentation to the user
+//        if (!helpData.isEmpty())
+//            mHelpBrowser->setText();
+//    }
+
 }
 
 

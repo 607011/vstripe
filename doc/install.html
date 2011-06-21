@@ -1,0 +1,90 @@
+<html>
+<body>
+<a name="#top"/>
+<h1>Installation</h1>
+<p>VStripe basiert auf Nokias plattformübergreifender Open-Source-Bibliothek Qt und läuft daher unter Windows, Mac OS X und Linux gleichermaßen gut. Linuxer bekommen Qt über die eingebaute Paketverwaltung, etwa via apt-get bei Ubuntu, Windows- und Mac-Nutzer sollten das Qt SDK von Nokias Entwickler-Webseite <a target="_blank" href="http://qt.nokia.com/">qt.nokia.com</a> installieren. Zum Dekodieren der Videos bedient sich VStripe der ebenfalls frei erhältlichen <a target="_blank" href="http://ffmpeg.org/">ffmpeg</a>-Bibliothek, die je nach Plattform nachzuinstallieren oder aus den Quellen zu kompilieren ist.</p>
+
+<a name="windows"/>
+<h2>Windows</h2>
+<p>Windows-Nutzer haben es am einfachsten. Sie müssen zunächst die ffmpeg-Bibliotheken und Include-Dateien von <a target="_blank" href="http://hawkeye.arrozcru.org/builds/win32/dev/">http://hawkeye.arrozcru.org/builds/win32/dev/</a> herunterladen und in das Verzeichnis ffmpeg-static neben dem Verzeichnis des VStripe-Projekts entpacken.</p>
+
+<p>ffmpeg (und damit auch VStripe) lässt sich nur in einer MinGW-Umgebung übersetzen — Visual-Studio-Anwender bleiben außen vor. Zum Glück bringt das Qt SDK eine MinGW-Umgebung mit. Zum Übersetzen öffnen Sie den Qt Command Prompt aus dem Startmenü und tippen den Qt-typischen Zweisatz ein:</p>
+
+<pre>
+qmake CONFIG+=release
+mingw32-make
+</pre>
+
+<p>Danach liegt das fertige Binary VStripe.exe im Unterverzeichnis release. Wenn sich das Unterverzeichnis bin der ffmpeg-Installation im Systempfad befindet, lässt sich VStripe.exe durch die Eingabe von release\VStripe.exe oder Doppelklick auf den Dateinamen starten.</p>
+
+<a name="linux"/>
+<h2>Linux</h2>
+
+<p>Unter Linux müssen Sie die erforderliche ffmpeg-Version aus den Quelltexten kompilieren, weil sie noch nicht in aktuellen Linux-Distributionen enthalten ist. Vor den folgenden Schritten ist sicherzustellen, dass die GNU Compiler Collection (C/C++-Compiler nebst Bibliotheken) und das Paket yasm installiert sind. Nun wechseln Sie in das oberhalb des VStripe-Projekts gelegene Verzeichnis (im folgenden Beispiel workspace) und ziehen sich den ffmpeg-Quellcode aus dem Git-Repository:</p>
+
+<pre>
+cd workspace
+git clone git://git.videolan.org/ffmpeg.git ffmpeg
+</pre>
+
+<p>Steuern Sie das angelegte Verzeichnis an und starten Sie den Linux-"Dreisatz":</p>
+
+<pre>
+cd ffmpeg
+./configure --prefix=../ffmpeg-static
+make
+make install
+</pre>
+
+<p>Nun sollten die Bibliotheken und Header-Dateien im Verzeichnis ffmpeg-static bereitliegen und der Quellcode lässt sich mit</p>
+
+<pre>
+qmake CONFIG+=release
+gmake
+</pre>
+
+<p>übersetzen.</p>
+
+<p>Das im Unterverzeichnis release befindliche Binary VStripe kann man durch Eingabe von release/VStripe oder Doppelklick auf die Datei starten.</p>
+
+
+<a name="macosx64"/>
+<h2>Mac&nbsp;OS&nbsp;X (64 Bit)</h2>
+<p>Auf dem Mac ist ffmpeg über das MacPorts-Utility zu installieren. Es steht unter <a href="http://distfiles.macports.org/MacPorts/" target="_blank">http://distfiles.macports.org/MacPorts/</a> in drei Ausgaben für Leopard und Snow Leopard zur Verfügung (MacPorts-1.9.2-10.5-Leopard.dmg, MacPorts-1.9.2-10.6-SnowLeopard.dmg).</p>
+
+<p>Nach der Installation aus dem richtigen Disk Image sollten Sie die lokale Liste verfügbarer Portierungen auf den neuesten Stand bringen:</p>
+
+<pre>
+sudo post -v selfupdate
+</pre>
+
+<p>Danach können Sie das ffmpeg-Paket einspielen:</p>
+
+<pre>
+port install ffmpeg
+</pre>
+
+<p>Dieser Befehl zieht einige langwierige Downloads und Kompilierungen nach sich.</p>
+
+<p>Alternativ können Sie wie unter Linux vorgehen, wonach sich die ffmpeg-Binaries und -Includes im Verzeichnis ffmpeg-static befinden und die Eingabe von</p>
+
+<pre>
+qmake CONFIG+=release
+make
+</pre>
+
+<p>den Quellcode von VStripe in ein Application Bundle übersetzt.</p>
+
+<p>Dieses Application Bundle ist nur auf der Maschine lauffähig, auf der es erzeugt wurde, weil das darin enthaltene Binary absolute Pfade auf benötigten Bibliotheken und Frameworks enthält.</p>
+
+<p>Zum Schnüren eines Bundle, das auch auf anderen Rechnern läuft, starten Sie das Skript</p>
+
+<pre>
+./deploymac.sh
+</pre>
+
+<p>Es kopiert alle benötigten Komponenten in das Anwendungspaket und passt die Referenzen in den Binaries daran an. Zum Abschluss generiert es ein komprimiertes Disk Image, das sich bequem weitergeben lässt.</p>
+
+<p>Sehr wahrscheinlich läuft VStripe auch unter einem 32-bittigem Mac&nbsp;OS&nbsp;X. Das habe ich aber noch nicht probiert.</p>
+
+<p>Mit Fragen und Anregungen wenden Sie sich bitte an den Autoren des Programms: Oliver Lau &gt;ola@ct.de&lt;</p>.
