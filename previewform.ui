@@ -253,6 +253,46 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QDial" name="dialCorrectionFactor">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>23</horstretch>
+           <verstretch>23</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>correction amplification factor (logarithmic)</string>
+         </property>
+         <property name="minimum">
+          <number>10</number>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="invertedAppearance">
+          <bool>false</bool>
+         </property>
+         <property name="invertedControls">
+          <bool>false</bool>
+         </property>
+         <property name="notchTarget">
+          <double>10.000000000000000</double>
+         </property>
+         <property name="notchesVisible">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>

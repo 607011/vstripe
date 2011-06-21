@@ -34,6 +34,7 @@ QSlider* PreviewForm::brightnessSlider(void) { return ui->exposureLSlider; }
 QSlider* PreviewForm::redSlider(void) { return ui->exposureRSlider; }
 QSlider* PreviewForm::greenSlider(void) { return ui->exposureGSlider; }
 QSlider* PreviewForm::blueSlider(void) { return ui->exposureBSlider; }
+QDial* PreviewForm::factorDial(void) { return ui->dialCorrectionFactor; }
 
 
 void PreviewForm::resetRGBLCorrections(void)
@@ -42,6 +43,7 @@ void PreviewForm::resetRGBLCorrections(void)
     ui->exposureRSlider->setValue(0);
     ui->exposureGSlider->setValue(0);
     ui->exposureBSlider->setValue(0);
+    ui->dialCorrectionFactor->setValue(10);
     emit correctionsChanged();
 }
 

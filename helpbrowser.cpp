@@ -52,6 +52,7 @@ HelpBrowser::HelpBrowser(QWidget* parent) : QTextBrowser(parent)
         delete mHelpEngine;
         mHelpEngine = NULL;
     }
+    setWindowTitle(tr("VStripe Help"));
 }
 
 

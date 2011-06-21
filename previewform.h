@@ -8,6 +8,7 @@
 
 #include <QWidget>
 #include <QSlider>
+#include <QDial>
 #include "picturewidget.h"
 
 
@@ -28,6 +29,7 @@ public:
     QSlider* redSlider(void);
     QSlider* greenSlider(void);
     QSlider* blueSlider(void);
+    QDial* factorDial(void);
 
 public slots:
     void resetRGBLCorrections(void);
