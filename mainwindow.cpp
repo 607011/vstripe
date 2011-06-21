@@ -71,13 +71,13 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     connect(ui->actionPreview_picture, SIGNAL(toggled(bool)), this, SLOT(togglePictureWidget(bool)));
     if (ui->actionPreview_picture->isChecked())
         mPreviewForm->show();
+    connect(mPreviewForm, SIGNAL(correctionsChanged()), this, SLOT(deflicker()));
     connect(mPreviewForm, SIGNAL(visibilityChanged(bool)), ui->actionPreview_picture, SLOT(setChecked(bool)));
     connect(mPreviewForm, SIGNAL(sizeChanged(const QSize&)), this, SLOT(setPictureSize(const QSize&)));
     connect(mPreviewForm->brightnessSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
     connect(mPreviewForm->redSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
     connect(mPreviewForm->greenSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
     connect(mPreviewForm->blueSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
-    connect(ui->actionReset_RGB_L_levels, SIGNAL(triggered()), this, SLOT(resetRGBL()));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
         recentVideoFileActs[i] = new QAction(this);
@@ -507,7 +507,7 @@ void MainWindow::frameReady(const QImage& src, const Histogram& histogram, int f
         for (int x = 0; x < src.width(); ++x)
             mCurrentFrame.setPixel(x, dstpos, src.pixel(x, srcpos));
     }
-    mPreviewForm->pictureWidget()->setPicture(mCurrentFrame, srcpos);
+    mPreviewForm->pictureWidget()->setPicture(mCurrentFrame, mProject.stripeIsFixed()? -1 : srcpos);
     mVideoWidget->setFrame(src, histogram, srcpos);
     mFrameSlider->blockSignals(true);
     mFrameSlider->setValue(mPreRenderFrameNumber + int(frameNumber * mFrameDelta));
@@ -637,16 +637,6 @@ void MainWindow::deflicker(void)
         mPreviewForm->pictureWidget()->setPicture(mCurrentFrame, -1);
     setCursor(Qt::ArrowCursor);
     mPreviewForm->setCursor(Qt::ArrowCursor);
-}
-
-
-void MainWindow::resetRGBL(void)
-{
-    mPreviewForm->redSlider()->setValue(0);
-    mPreviewForm->greenSlider()->setValue(0);
-    mPreviewForm->blueSlider()->setValue(0);
-    mPreviewForm->brightnessSlider()->setValue(0);
-    deflicker();
 }
 
 

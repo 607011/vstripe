@@ -36,6 +36,7 @@ public:
 
 public slots:
     void copyImageToClipboard(void);
+    void showCurves(bool);
 
 protected:
     void paintEvent(QPaintEvent*);
@@ -43,7 +44,7 @@ protected:
 
 private:
     QImage mImage;
-    bool mShowHistograms;
+    bool mShowCurves;
     const BrightnessData* mBrightnessData;
     const BrightnessData* mRedData;
     const BrightnessData* mGreenData;

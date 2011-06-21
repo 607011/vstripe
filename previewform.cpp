@@ -15,6 +15,11 @@ PreviewForm::PreviewForm(QWidget *parent) : QWidget(parent), ui(new Ui::PreviewF
 
     mPictureWidget = new PictureWidget;
     ui->horizontalLayout->insertWidget(0, mPictureWidget);
+
+    connect(ui->resetRGBLButton, SIGNAL(clicked()), this, SLOT(resetRGBLCorrections()));
+    connect(ui->checkBoxShowCurves, SIGNAL(toggled(bool)), mPictureWidget, SLOT(showCurves(bool)));
+
+    mPictureWidget->showCurves(ui->checkBoxShowCurves->isChecked());
 }
 
 
@@ -31,9 +36,13 @@ QSlider* PreviewForm::greenSlider(void) { return ui->exposureGSlider; }
 QSlider* PreviewForm::blueSlider(void) { return ui->exposureBSlider; }
 
 
-void PreviewForm::setVisible(bool visible)
+void PreviewForm::resetRGBLCorrections(void)
 {
-    QWidget::setVisible(visible);
+    ui->exposureLSlider->setValue(0);
+    ui->exposureRSlider->setValue(0);
+    ui->exposureGSlider->setValue(0);
+    ui->exposureBSlider->setValue(0);
+    emit correctionsChanged();
 }
 
 

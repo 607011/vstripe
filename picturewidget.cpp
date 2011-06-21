@@ -12,7 +12,7 @@
 
 PictureWidget::PictureWidget(QWidget* parent) :
         QWidget(parent),
-        mShowHistograms(true),
+        mShowCurves(true),
         mBrightnessData(NULL),
         mRedData(NULL),
         mGreenData(NULL),
@@ -41,15 +41,17 @@ void PictureWidget::copyImageToClipboard(void)
 }
 
 
+void PictureWidget::showCurves(bool enabled)
+{
+    mShowCurves = enabled;
+    update();
+}
+
+
 void PictureWidget::keyPressEvent(QKeyEvent* e)
 {
-    if (e->key() == Qt::Key_Space) {
-        mShowHistograms = !mShowHistograms;
-        update();
-    }
-    else if (e->key() == Qt::Key_C && (e->modifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
+    if (e->key() == Qt::Key_C && (e->modifiers() & Qt::ControlModifier) == Qt::ControlModifier)
         copyImageToClipboard();
-    }
 }
 
 
@@ -100,7 +102,7 @@ void PictureWidget::paintEvent(QPaintEvent*)
         painter.setPen(Qt::red);
         painter.drawLine(mStripePos, 0, mStripePos, mImage.height());
     }
-    if (mShowHistograms && mBrightnessData && !mBrightnessData->isEmpty() && mMinBrightness >= 0) {
+    if (mShowCurves && mBrightnessData && !mBrightnessData->isEmpty() && mMinBrightness >= 0) {
         const int y0l = mImage.height()     + mMinBrightness;
         const int y0r = mImage.height()*1/4 + mMinRed;
         const int y0g = mImage.height()*2/4 + mMinGreen;

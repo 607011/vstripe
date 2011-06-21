@@ -553,7 +553,6 @@
     </property>
     <addaction name="actionClear_marks"/>
     <addaction name="actionClear_histogram_region"/>
-    <addaction name="actionReset_RGB_L_levels"/>
    </widget>
    <widget class="QMenu" name="menuExtras">
     <property name="title">

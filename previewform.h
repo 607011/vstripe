@@ -19,11 +19,9 @@ class PreviewForm : public QWidget
 {
     Q_OBJECT
 
-
 public:
-    explicit PreviewForm(QWidget* parent = NULL);
+    PreviewForm(QWidget* parent = NULL);
     ~PreviewForm();
-    void setVisible(bool visible);
     void setSizeConstraint(const QSize&, const QSize&);
     PictureWidget* pictureWidget(void) { return mPictureWidget; }
     QSlider* brightnessSlider(void);
@@ -31,7 +29,11 @@ public:
     QSlider* greenSlider(void);
     QSlider* blueSlider(void);
 
+public slots:
+    void resetRGBLCorrections(void);
+
 signals:
+    void correctionsChanged(void);
     void visibilityChanged(bool);
     void sizeChanged(const QSize&);
 
