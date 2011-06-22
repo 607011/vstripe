@@ -23,7 +23,7 @@ PreviewForm::PreviewForm(QWidget *parent) : QWidget(parent), ui(new Ui::PreviewF
     ui->setupUi(this);
 
     mPictureWidget = new PictureWidget;
-    ui->horizontalLayout->insertWidget(0, mPictureWidget);
+    ui->scrollArea->setWidget(mPictureWidget);
 
     connect(ui->resetRGBLButton, SIGNAL(clicked()), this, SLOT(resetRGBLCorrections()));
     connect(ui->checkBoxShowCurves, SIGNAL(toggled(bool)), mPictureWidget, SLOT(showCurves(bool)));
