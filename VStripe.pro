@@ -14,9 +14,11 @@ CODECFORTR = UTF-8
 
 
 win32 {
+OPENCVDIR = C:/OpenCV2.1/include/opencv
 FFMPEGDIR = ../ffmpeg-static
 RC_FILE = VStripe.rc
 LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
+#    -L$${OPENCVDIR}/lib -lcv210 -lcvaux210 -lcxcore210 -lhighgui210
 }
 
 unix:!macx {

@@ -32,6 +32,7 @@ PreviewForm::PreviewForm(QWidget *parent) : QWidget(parent), ui(new Ui::PreviewF
 
     mPictureWidget->showCurves(ui->checkBoxShowCurves->isChecked());
 
+    ui->dialCorrectionFactor->setValue(10);
     amplificationChanged();
 }
 
@@ -50,7 +51,7 @@ void PreviewForm::resetRGBLCorrections(void)
         ui->exposureRSlider->setValue(0);
         ui->exposureGSlider->setValue(0);
         ui->exposureBSlider->setValue(0);
-        ui->dialCorrectionFactor->setValue(1);
+        ui->dialCorrectionFactor->setValue(10);
         emit correctionsChanged();
     }
 }
@@ -58,13 +59,14 @@ void PreviewForm::resetRGBLCorrections(void)
 
 void PreviewForm::amplificationChanged(void)
 {
-    ui->lineEditAmplification->setText(QString("x%L1").arg(amplificationCorrection(), 0, 'g', 3));
+    ui->lineEditAmplification->setText(QString("x%L1").arg(11*amplificationCorrection(), 0, 'g', 3));
 }
 
 
 qreal PreviewForm::amplificationCorrection(void) const
 {
-    return ui->dialCorrectionFactor->value()/1000.0;
+    return (qreal)(ui->dialCorrectionFactor->value() - ui->dialCorrectionFactor->minimum())
+            / (qreal)(ui->dialCorrectionFactor->maximum() - ui->dialCorrectionFactor->minimum());
 }
 
 
