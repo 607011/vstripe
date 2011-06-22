@@ -510,7 +510,7 @@ void MainWindow::frameReady(const QImage& src, const Histogram& histogram, int f
         for (int x = 0; x < src.width(); ++x)
             mCurrentFrame.setPixel(x, dstpos, src.pixel(x, srcpos));
     }
-    mPreviewForm->pictureWidget()->setPicture(mCurrentFrame, mProject.stripeIsFixed()? -1 : srcpos);
+    mPreviewForm->pictureWidget()->setPicture(mCurrentFrame, dstpos, mProject.stripeIsVertical());
     mVideoWidget->setFrame(src, histogram, srcpos);
     mFrameSlider->blockSignals(true);
     mFrameSlider->setValue(mPreRenderFrameNumber + int(frameNumber * mFrameDelta));
@@ -590,7 +590,7 @@ void MainWindow::deflicker(void)
 {
     setCursor(Qt::BusyCursor);
     mPreviewForm->setCursor(Qt::BusyCursor);
-    qreal f = 1e-2 * log((qreal)mPreviewForm->factorDial()->value());
+    qreal f = 1e-2 * mPreviewForm->amplificationCorrection();
     qreal lLevel = f * mPreviewForm->brightnessSlider()->value();
     qreal rLevel = f * mPreviewForm->redSlider()->value();
     qreal gLevel = f * mPreviewForm->greenSlider()->value();

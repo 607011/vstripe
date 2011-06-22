@@ -1,6 +1,8 @@
 FEHLER
 ======
 
+[ ] Die ausgeschnittenen müssen in umgekehrter Richtung zusammengesetzt werden, damit bewegte Objekte nicht spiegelverkehrt abgebildet werden.
+
 [ ] size constraints der PreviewForm funktionieren nicht ???
 
 [ ] Nach der Größenänderung des PreviewForm friert das GUI ein, wenn man die Schieberegler bedient

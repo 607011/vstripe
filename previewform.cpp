@@ -4,6 +4,7 @@
  */
 
 #include <QMessageBox>
+#include <qmath.h>
 
 #include "previewform.h"
 #include "ui_previewform.h"
@@ -27,7 +28,11 @@ PreviewForm::PreviewForm(QWidget *parent) : QWidget(parent), ui(new Ui::PreviewF
     connect(ui->resetRGBLButton, SIGNAL(clicked()), this, SLOT(resetRGBLCorrections()));
     connect(ui->checkBoxShowCurves, SIGNAL(toggled(bool)), mPictureWidget, SLOT(showCurves(bool)));
 
+    connect(ui->dialCorrectionFactor, SIGNAL(valueChanged(int)), this, SLOT(amplificationChanged()));
+
     mPictureWidget->showCurves(ui->checkBoxShowCurves->isChecked());
+
+    amplificationChanged();
 }
 
 
@@ -45,10 +50,23 @@ void PreviewForm::resetRGBLCorrections(void)
         ui->exposureRSlider->setValue(0);
         ui->exposureGSlider->setValue(0);
         ui->exposureBSlider->setValue(0);
-        ui->dialCorrectionFactor->setValue(10);
+        ui->dialCorrectionFactor->setValue(1);
         emit correctionsChanged();
     }
 }
+
+
+void PreviewForm::amplificationChanged(void)
+{
+    ui->lineEditAmplification->setText(QString("x%L1").arg(amplificationCorrection(), 0, 'g', 3));
+}
+
+
+qreal PreviewForm::amplificationCorrection(void) const
+{
+    return ui->dialCorrectionFactor->value()/1000.0;
+}
+
 
 
 void PreviewForm::setSizeConstraint(const QSize& minimum, const QSize& maximum)

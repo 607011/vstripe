@@ -30,9 +30,11 @@ public:
     QSlider* greenSlider(void);
     QSlider* blueSlider(void);
     QDial* factorDial(void);
+    qreal amplificationCorrection(void) const;
 
 public slots:
     void resetRGBLCorrections(void);
+    void amplificationChanged(void);
 
 signals:
     void correctionsChanged(void);
