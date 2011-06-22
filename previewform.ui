@@ -305,16 +305,16 @@
           <string>correction amplification factor (logarithmic)</string>
          </property>
          <property name="minimum">
-          <number>1000</number>
+          <number>0</number>
          </property>
          <property name="maximum">
-          <number>3000</number>
+          <number>110</number>
          </property>
          <property name="pageStep">
-          <number>100</number>
+          <number>1</number>
          </property>
          <property name="value">
-          <number>1000</number>
+          <number>10</number>
          </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -329,7 +329,7 @@
           <double>10.000000000000000</double>
          </property>
          <property name="notchesVisible">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
         </widget>
        </item>

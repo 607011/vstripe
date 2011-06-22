@@ -590,7 +590,8 @@ void MainWindow::deflicker(void)
 {
     setCursor(Qt::BusyCursor);
     mPreviewForm->setCursor(Qt::BusyCursor);
-    qreal f = 1e-2 * mPreviewForm->amplificationCorrection();
+    qreal f = 1e-2 * 14 * mPreviewForm->amplificationCorrection();
+    qDebug() << "f =" << f;
     qreal lLevel = f * mPreviewForm->brightnessSlider()->value();
     qreal rLevel = f * mPreviewForm->redSlider()->value();
     qreal gLevel = f * mPreviewForm->greenSlider()->value();
