@@ -25,7 +25,8 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mMinRed(-1),
         mMinGreen(-1),
         mMinBlue(-1),
-        mStripePos(-1)
+        mStripePos(-1),
+        mStripeVertical(true)
 {
     setStyleSheet("background: #444");
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -55,10 +56,11 @@ void PictureWidget::keyPressEvent(QKeyEvent* e)
 }
 
 
-void PictureWidget::setPicture(const QImage& img, int stripePos)
+void PictureWidget::setPicture(const QImage& img, int stripePos, bool stripeVertical)
 {
     mImage = img;
     mStripePos = stripePos;
+    mStripeVertical = stripeVertical;
     update();
 }
 
@@ -100,7 +102,10 @@ void PictureWidget::paintEvent(QPaintEvent*)
     painter.setBrush(Qt::NoBrush);
     if (mStripePos >= 0) {
         painter.setPen(Qt::red);
-        painter.drawLine(mStripePos, 0, mStripePos, mImage.height());
+        if (mStripeVertical)
+            painter.drawLine(mStripePos, 0, mStripePos, mImage.height());
+        else
+            painter.drawLine(0, mStripePos, mImage.width(), mStripePos);
     }
     if (mShowCurves && mBrightnessData && !mBrightnessData->isEmpty() && mMinBrightness >= 0) {
         const int y0l = mImage.height()     + mMinBrightness;

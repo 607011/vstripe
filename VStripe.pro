@@ -12,12 +12,11 @@ TRANSLATIONS = VStripe_de.ts
 
 CODECFORTR = UTF-8
 
-# QMAKE_CXXFLAGS += -msse -msse2 -msse3 -msse4.1 -msse4.2
 
 win32 {
 FFMPEGDIR = ../ffmpeg-static
 RC_FILE = VStripe.rc
-LIBS += -L$${FFMPEGDIR}/lib -lavcodec.dll -lavformat.dll -lavutil.dll -lswscale.dll
+LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
 }
 
 unix:!macx {
@@ -30,11 +29,7 @@ FFMPEGDIR = /opt/local
 OPENCVDIR = /opt/local
 ICON = VStripe.icns
 QMAKE_INFO_PLIST = VStripe.plist
-LIBS += -L$${FFMPEGDIR}/lib \
-    -lavformat \
-    -lavcodec \
-    -lavutil \
-    -lswscale
+LIBS += -L$${FFMPEGDIR}/lib -lavformat -lavcodec -lavutil -lswscale
 }
 
 INCLUDEPATH += $${FFMPEGDIR}/include \
@@ -58,7 +53,8 @@ SOURCES += main.cpp\
     project.cpp \
     histogram.cpp \
     previewform.cpp \
-    helpbrowser.cpp
+    helpbrowser.cpp \
+    webcam.cpp
 
 HEADERS  += mainwindow.h \
     videowidget.h \
@@ -70,7 +66,9 @@ HEADERS  += mainwindow.h \
     project.h \
     histogram.h \
     previewform.h \
-    helpbrowser.h
+    helpbrowser.h \
+    abstractvideodecoder.h \
+    webcam.h
 
 FORMS    += mainwindow.ui \
     previewform.ui

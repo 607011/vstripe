@@ -542,7 +542,7 @@
         <translation>RGB/L-Korrekturen zurücksetzen</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="271"/>
+        <location filename="previewform.ui" line="290"/>
         <source>correction amplification factor (logarithmic)</source>
         <translation>Korrekturverstärkungsfaktor (logarithmisch) einstellen</translation>
     </message>

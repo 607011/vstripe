@@ -193,11 +193,11 @@ void VideoWidget::paintEvent(QPaintEvent*)
         painter.setPen(QColor(0xff, 0x00, 0x00, 0xcc));
         if (mVerticalStripe) {
             const QPoint sPos = toPosInWidget(QPoint(mRunningStripePos, 0));
-            painter.drawLine(sPos.x(), mDestRect.y(), sPos.x(), mDestRect.height());
+            painter.drawLine(sPos.x(), mDestRect.y(), sPos.x(), mDestRect.y() + mDestRect.height());
         }
         else {
             const QPoint sPos = toPosInWidget(QPoint(0, mRunningStripePos));
-            painter.drawLine(mDestRect.x(), sPos.y(), mDestRect.width(), sPos.y());
+            painter.drawLine(mDestRect.x(), sPos.y(), mDestRect.x() + mDestRect.width(), sPos.y());
         }
     }
     //
@@ -208,7 +208,7 @@ void VideoWidget::paintEvent(QPaintEvent*)
     if (mVerticalStripe) {
         if (sPos.x() >= mDestRect.x() && sPos.x() < mDestRect.x() + mDestRect.width()) {
             painter.setPen(QColor(0xff, 0x00, 0x00, 0xcc));
-            painter.drawLine(sPos.x(), mDestRect.y(), sPos.x(), mDestRect.height());
+            painter.drawLine(sPos.x(), mDestRect.y(), sPos.x(), mDestRect.y() + mDestRect.height());
         }
         else {
             painter.setPen(QColor(0x00, 0x00, 0xff, 0x99));
@@ -224,7 +224,7 @@ void VideoWidget::paintEvent(QPaintEvent*)
     else {
         if (sPos.y() >= mDestRect.y() && sPos.y() < mDestRect.y() + mDestRect.height()) {
             painter.setPen(QColor(0xff, 0x00, 0x00, 0xcc));
-            painter.drawLine(mDestRect.x(), sPos.y(), mDestRect.width(), sPos.y());
+            painter.drawLine(mDestRect.x(), sPos.y(), mDestRect.x() + mDestRect.width(), sPos.y());
         }
         else {
             painter.setPen(QColor(0x00, 0x00, 0xff, 0x99));
