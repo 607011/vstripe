@@ -42,6 +42,8 @@ public:
     virtual bool seekMs(int);
     virtual bool seekFrame(qint64);
 
+    virtual QString codecInfo(void) const;
+
 
 private: // variables
     // Basic FFmpeg stuff

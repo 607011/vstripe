@@ -25,7 +25,7 @@
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.6.1 DEBUG ($Date$)";
+const QString MainWindow::AppVersion = "0.9.6.1 DEBUG $Date$";
 #else
 const QString MainWindow::AppVersion = "0.9.6.1";
 #endif
@@ -853,7 +853,7 @@ void MainWindow::loadVideoFile(void)
     mFrameSlider->setMaximum(mLastFrameNumber);
     mFrameSlider->setValue(0);
     ui->infoPlainTextEdit->clear();
-    ui->infoPlainTextEdit->appendPlainText(QString("%1 (%2)").arg(mVideoReaderThread->decoder()->formatCtx()->iformat->long_name).arg(mVideoReaderThread->decoder()->codec()->long_name));
+    ui->infoPlainTextEdit->appendPlainText(mVideoReaderThread->decoder()->codecInfo());
     ui->infoPlainTextEdit->appendPlainText(tr("Last frame # %1").arg(mLastFrameNumber));
     ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mVideoReaderThread->decoder()->getVideoLengthMs(), false)));
     ui->actionSave_project->setEnabled(true);

@@ -8,8 +8,13 @@
 #include "videoreaderthread.h"
 #include "project.h"
 
+#include "videodecoder.h"
+#include "webcam.h"
+
+
 VideoReaderThread::VideoReaderThread(QObject* parent) :
         QThread(parent),
+        mDecoder(NULL),
         mHistogramEnabled(true)
 {
     /* ... */
@@ -19,6 +24,8 @@ VideoReaderThread::VideoReaderThread(QObject* parent) :
 VideoReaderThread::~VideoReaderThread()
 {
     stopReading();
+    if (mDecoder)
+        delete mDecoder;
 }
 
 
@@ -27,7 +34,13 @@ bool VideoReaderThread::setSource(const QString& videoFileName)
     Q_ASSERT(!videoFileName.isNull());
     Q_ASSERT(!isRunning());
 
-    bool ok = mDecoder.open(videoFileName.toLatin1().constData());
+    if (mDecoder) {
+        delete mDecoder;
+        mDecoder = NULL;
+    }
+    if (mDecoder == NULL)
+        mDecoder = new VideoDecoder;
+    bool ok = mDecoder->open(videoFileName.toLatin1().constData());
     return ok;
 }
 
@@ -37,7 +50,13 @@ bool VideoReaderThread::setSource(int deviceId)
     Q_ASSERT(deviceId >= 0);
     Q_ASSERT(!isRunning());
 
-    bool ok = mDecoder.open(deviceId);
+    if (mDecoder) {
+        delete mDecoder;
+        mDecoder = NULL;
+    }
+    if (mDecoder == NULL)
+        mDecoder = new Webcam;
+    bool ok = mDecoder->open(deviceId);
     return ok;
 }
 
@@ -99,14 +118,14 @@ void VideoReaderThread::run(void)
     int frameCount = 0;
     int percent = 0, prevPercent = 0;
     int effFrameNum, effFrameTime;
-    mDecoder.seekFrame(mFrameNumber);
+    mDecoder->seekFrame(mFrameNumber);
     while (!mAbort && frameCount < mMaxFrameCount) {
         int skip = int(mFrameNumber) - int(prevFrameNumber);
         if (skip > 0) {
-            mDecoder.seekNextFrame(skip);
+            mDecoder->seekNextFrame(skip);
             prevFrameNumber = mFrameNumber;
         }
-        mDecoder.getFrame(mCurrentFrame, &effFrameNum, &effFrameTime);
+        mDecoder->getFrame(mCurrentFrame, &effFrameNum, &effFrameTime);
         if (skip > 0 && mHistogramEnabled)
             calcHistogram(mCurrentFrame);
         emit frameReady(mCurrentFrame, mHistogram, frameCount, effFrameNum, effFrameTime);
