@@ -18,7 +18,7 @@ OPENCVDIR = C:/OpenCV-2.2.0-MinGW
 FFMPEGDIR = ../ffmpeg-static
 RC_FILE = VStripe.rc
 LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
-# LIBS += -L$${OPENCVDIR}/lib -lopencv_core220.dll -lopencv_highgui220.dll
+LIBS += -L$${OPENCVDIR}/lib -lopencv_core220.dll -lopencv_highgui220.dll
 }
 
 unix:!macx {
