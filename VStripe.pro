@@ -18,12 +18,13 @@ OPENCVDIR = C:/OpenCV-2.2.0-MinGW
 FFMPEGDIR = ../ffmpeg-static
 RC_FILE = VStripe.rc
 LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
-LIBS += -L$${OPENCVDIR}/lib -lopencv_core220.dll -lopencv_highgui220.dll
+# LIBS += -L$${OPENCVDIR}/lib -lopencv_core220.dll -lopencv_highgui220.dll
 }
 
 unix:!macx {
 FFMPEGDIR = ../ffmpeg-static
 LIBS += -L$${FFMPEGDIR}/lib -lavformat -lavcodec -lavutil -lswscale
+LIBS += -L$${OPENCVDIR}/lib -lopencv_core -lopencv_highgui
 }
 
 macx {
@@ -32,6 +33,7 @@ OPENCVDIR = /opt/local
 ICON = VStripe.icns
 QMAKE_INFO_PLIST = VStripe.plist
 LIBS += -L$${FFMPEGDIR}/lib -lavformat -lavcodec -lavutil -lswscale
+LIBS += -L$${OPENCVDIR}/lib -lopencv_core -lopencv_highgui
 }
 
 INCLUDEPATH += $${FFMPEGDIR}/include \
@@ -58,10 +60,10 @@ SOURCES += main.cpp\
     project.cpp \
     histogram.cpp \
     previewform.cpp \
-    helpbrowser.cpp \
-    webcam.cpp
+    helpbrowser.cpp
+#    webcam.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS += mainwindow.h \
     videowidget.h \
     videoreaderthread.h \
     picturewidget.h \
@@ -72,10 +74,10 @@ HEADERS  += mainwindow.h \
     histogram.h \
     previewform.h \
     helpbrowser.h \
-    abstractvideodecoder.h \
-    webcam.h
+    abstractvideodecoder.h
+#    webcam.h
 
-FORMS    += mainwindow.ui \
+FORMS += mainwindow.ui \
     previewform.ui
 
 RESOURCES += vstripe.qrc

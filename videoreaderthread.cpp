@@ -8,8 +8,9 @@
 #include "videoreaderthread.h"
 #include "project.h"
 
-VideoReaderThread::VideoReaderThread(QObject* parent)
-    : QThread(parent), mHistogramEnabled(true)
+VideoReaderThread::VideoReaderThread(QObject* parent) :
+        QThread(parent),
+        mHistogramEnabled(true)
 {
     /* ... */
 }
@@ -21,12 +22,22 @@ VideoReaderThread::~VideoReaderThread()
 }
 
 
-bool VideoReaderThread::setFile(QString videoFileName)
+bool VideoReaderThread::setSource(const QString& videoFileName)
 {
     Q_ASSERT(!videoFileName.isNull());
     Q_ASSERT(!isRunning());
 
     bool ok = mDecoder.open(videoFileName.toLatin1().constData());
+    return ok;
+}
+
+
+bool VideoReaderThread::setSource(int deviceId)
+{
+    Q_ASSERT(deviceId >= 0);
+    Q_ASSERT(!isRunning());
+
+    bool ok = mDecoder.open(deviceId);
     return ok;
 }
 

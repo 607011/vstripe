@@ -17,18 +17,17 @@
 #include <QUrl>
 #include <QtHelp/QHelpEngineCore>
 
-#include <math.h>
-
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "histogram.h"
+#include "webcam.h"
 
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.6 DEBUG";
+const QString MainWindow::AppVersion = "0.9.6.1 DEBUG ($Date$)";
 #else
-const QString MainWindow::AppVersion = "0.9.6";
+const QString MainWindow::AppVersion = "0.9.6.1";
 #endif
 
 
@@ -121,6 +120,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     if (argc > 1)
         mFileNameFromCmdLine = argv[1];
+
 }
 
 
@@ -831,7 +831,7 @@ void MainWindow::openVideoFile(void)
 
 void MainWindow::loadVideoFile(void)
 {
-    bool ok = mVideoReaderThread->setFile(mProject.videoFileName());
+    bool ok = mVideoReaderThread->setSource(mProject.videoFileName());
     if (!ok)
         return; // TODO: display alert dialog
     mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
