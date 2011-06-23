@@ -34,28 +34,29 @@ bool Webcam::open(const char*)
 
 bool Webcam::open(int deviceId)
 {
-//    mCamera = cvCaptureFromCAM(deviceId);
-//    mFrameSize = QSize((int)cvGetCaptureProperty(mCamera, CV_CAP_PROP_FRAME_WIDTH), (int)cvGetCaptureProperty(mCamera, CV_CAP_PROP_FRAME_HEIGHT));
-//    qDebug() << "CV_CAP_PROP_POS_FRAMES =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_POS_FRAMES);
-//    qDebug() << "CV_CAP_PROP_FRAME_WIDTH =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_FRAME_WIDTH);
-//    qDebug() << "CV_CAP_PROP_FRAME_HEIGHT  =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_FRAME_HEIGHT);
-//    qDebug() << "CV_CAP_PROP_FPS =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_FPS);
-//    qDebug() << "CV_CAP_PROP_BRIGHTNESS =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_BRIGHTNESS);
-//    qDebug() << "CV_CAP_PROP_CONTRAST =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_CONTRAST);
-//    qDebug() << "CV_CAP_PROP_SATURATION =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_SATURATION);
-//    qDebug() << "CV_CAP_PROP_HUE =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_HUE);
-//    IplImage* img = cvQueryFrame(mCamera);
-//    qDebug() << "dataOrder =" << img->dataOrder;
-//    qDebug() << "nChannels =" << img->nChannels;
-//    qDebug() << "depth =" << img->depth;
+    mCamera = cvCaptureFromCAM(deviceId);
+    mFrameSize = QSize((int)cvGetCaptureProperty(mCamera, CV_CAP_PROP_FRAME_WIDTH), (int)cvGetCaptureProperty(mCamera, CV_CAP_PROP_FRAME_HEIGHT));
+    qDebug() << "CV_CAP_PROP_POS_FRAMES =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_POS_FRAMES);
+    qDebug() << "CV_CAP_PROP_FRAME_WIDTH =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_FRAME_WIDTH);
+    qDebug() << "CV_CAP_PROP_FRAME_HEIGHT  =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_FRAME_HEIGHT);
+    qDebug() << "CV_CAP_PROP_FPS =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_FPS);
+    qDebug() << "CV_CAP_PROP_BRIGHTNESS =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_BRIGHTNESS);
+    qDebug() << "CV_CAP_PROP_CONTRAST =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_CONTRAST);
+    qDebug() << "CV_CAP_PROP_SATURATION =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_SATURATION);
+    qDebug() << "CV_CAP_PROP_HUE =" << cvGetCaptureProperty(mCamera, CV_CAP_PROP_HUE);
+    IplImage* img = cvQueryFrame(mCamera);
+    qDebug() << "dataOrder =" << img->dataOrder;
+    qDebug() << "nChannels =" << img->nChannels;
+    qDebug() << "depth =" << img->depth;
+    cvReleaseImage(&img);
     return mCamera != NULL;
 }
 
 
 void Webcam::close(void)
 {
-//    if (mCamera)
-//        cvReleaseCapture(&mCamera);
+    if (mCamera)
+        cvReleaseCapture(&mCamera);
 }
 
 
@@ -94,11 +95,11 @@ bool Webcam::seekNextFrame(int)
 {
     Q_ASSERT(mCamera != NULL);
 
-    IplImage* img = 0; // cvQueryFrame(mCamera);
+    IplImage* img = cvQueryFrame(mCamera);
     const int w = img->width;
     const int h = img->height;
     mLastFrame = QImage(w, h, QImage::Format_RGB888);
-    switch (img->depth) {
+    switch (img->depth) { // http://snipplr.com/view/40277/iplimage-to-qimage--qimage-to-iplimage/
     case IPL_DEPTH_8U:
         {
             const quint8* src = reinterpret_cast<const quint8*>(img->imageData);
