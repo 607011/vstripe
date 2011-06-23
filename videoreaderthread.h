@@ -29,7 +29,6 @@ public:
 
     VideoDecoder* decoder(void) { return &mDecoder; }
     const Histogram& histogram(void) const { return mHistogram; }
-    enum VideoSource { NOTAVAILABLE = 0, WEBCAM, FILE };
     void calcHistogram(const QImage& img);
 
 public slots:
@@ -48,7 +47,6 @@ private:
     int mMaxFrameCount;
     qreal mFrameNumber;
     qreal mFrameDelta;
-    VideoSource videoSource;
     bool mHistogramEnabled;
     Histogram mHistogram;
     QRect mHistogramRegion;
