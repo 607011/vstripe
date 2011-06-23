@@ -14,11 +14,11 @@ CODECFORTR = UTF-8
 
 
 win32 {
-OPENCVDIR = C:/OpenCV2.1/include/opencv
+OPENCVDIR = C:/OpenCV-2.2.0-MinGW
 FFMPEGDIR = ../ffmpeg-static
 RC_FILE = VStripe.rc
 LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
-#    -L$${OPENCVDIR}/lib -lcv210 -lcvaux210 -lcxcore210 -lhighgui210
+LIBS += -L$${OPENCVDIR}/lib -lopencv_core220.dll -lopencv_highgui220.dll
 }
 
 unix:!macx {
@@ -40,7 +40,10 @@ INCLUDEPATH += $${FFMPEGDIR}/include \
     $${FFMPEGDIR}/include/libavutil \
     $${FFMPEGDIR}/include/libavdevice \
     $${FFMPEGDIR}/include/libavfilter \
-    $${FFMPEGDIR}/include/libswscale
+    $${FFMPEGDIR}/include/libswscale \
+    $${OPENCVDIR}/include \
+    $${OPENCVDIR}/include/opencv \
+    $${OPENCVDIR}/include/opencv2
 
 
 DEFINES += __STDC_CONSTANT_MACROS

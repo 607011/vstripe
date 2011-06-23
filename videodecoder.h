@@ -10,13 +10,13 @@ THIS SOFTWARE IS PROVIDED BY COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESS OR IMPL
 #include <QFile>
 #include <QImage>
 
-// #include "abstractvideodecoder.h"
+#include "abstractvideodecoder.h"
 
 #include "ffmpeg.h"
 
 
 
-class VideoDecoder : public QObject
+class VideoDecoder : public IAbstractVideoDecoder
 {
     Q_OBJECT
 
@@ -24,12 +24,6 @@ public:
     explicit VideoDecoder(void);
     explicit VideoDecoder(QString file);
     ~VideoDecoder();
-    bool openFile(const char* file);
-    void closeFile(void);
-    bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0) const;
-    bool seekNextFrame(int skip = 0);
-    bool seekMs(int);
-    bool seekFrame(qint64);
     int getVideoLengthMs(void);
     int getDefaultSkip(void) const { return mDefaultSkip; }
     inline bool isOk(void) const { return mOk; }
@@ -38,6 +32,16 @@ public:
     ffmpeg::AVCodecContext* codecCtx(void) const { return mCodecCtx; }
     ffmpeg::AVCodec* codec(void) const { return mCodec; }
     bool decodeOk(void) const { return mFormatCtx != NULL && mCodecCtx != NULL && mCodec != NULL; }
+
+    virtual int attributes(void) { return SEEK_FRAME | SEEK_NEXT_FRAME | SEEK_TO_MS | OPEN_CLOSE; }
+    virtual bool open(const char* file);
+    virtual bool open(int deviceId);
+    virtual void close(void);
+    virtual bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0) const;
+    virtual bool seekNextFrame(int skip = 0);
+    virtual bool seekMs(int);
+    virtual bool seekFrame(qint64);
+
 
 private: // variables
     // Basic FFmpeg stuff

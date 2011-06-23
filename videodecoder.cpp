@@ -34,12 +34,12 @@ VideoDecoder::VideoDecoder(QString file)
 {
     initVars();
     initCodec();
-    mOk = openFile(file.toLatin1().constData());
+    mOk = open(file.toLatin1().constData());
 }
 
 VideoDecoder::~VideoDecoder()
 {
-    closeFile();
+    close();
 }
 
 
@@ -56,7 +56,7 @@ void VideoDecoder::initVars()
 }
 
 
-void VideoDecoder::closeFile()
+void VideoDecoder::close()
 {
     if (!isOk())
         return;
@@ -85,9 +85,16 @@ bool VideoDecoder::initCodec()
     return true;
 }
 
-bool VideoDecoder::openFile(const char* filename)
+
+bool VideoDecoder::open(int)
 {
-    closeFile();
+    return false;
+}
+
+
+bool VideoDecoder::open(const char* filename)
+{
+    close();
     mLastLastFrameTime = INT_MIN; // Last last must be small to handle the seek well
     mLastFrameTime = 0;
     mLastLastFrameNumber = INT_MIN;
@@ -100,7 +107,7 @@ bool VideoDecoder::openFile(const char* filename)
     if (ffmpeg::av_find_stream_info(mFormatCtx)<0)
         return false; // Couldn't find stream information
     mVideoStream = -1;
-    for (unsigned i = 0; i < mFormatCtx->nb_streams; ++i) {
+    for (unsigned int i = 0; i < mFormatCtx->nb_streams; ++i) {
         if (mFormatCtx->streams[i]->codec->codec_type == ffmpeg::AVMEDIA_TYPE_VIDEO) {
             mVideoStream = i;
             break;
