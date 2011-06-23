@@ -23,7 +23,8 @@ public:
     explicit VideoReaderThread(QObject* parent = NULL);
     ~VideoReaderThread();
 
-    bool setFile(QString videoFileName);
+    bool setSource(const QString& videoFileName);
+    bool setSource(int deviceId);
     void startReading(int firstFrameNumber, int numFrames, qreal frameDelta = 1);
     void stopReading(void);
 

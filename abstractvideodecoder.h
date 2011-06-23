@@ -22,7 +22,7 @@ public:
 
 protected:
     IAbstractVideoDecoder(QObject* parent = NULL) : QObject(parent) { /* ... */ }
-    enum Attributes { NONE = 0, SEEK_FRAME = 0x0001, SEEK_NEXT_FRAME = 0x0002, SEEK_TO_MS = 0x0004, OPEN_CLOSE = 0x0010 };
+    enum Attributes { NONE = 0, SEEK_FRAME = 0x0001, SEEK_NEXT_FRAME = 0x0002, SEEK_TO_MS = 0x0004 };
 
 };
 
