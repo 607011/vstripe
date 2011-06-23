@@ -259,6 +259,12 @@ bool VideoDecoder::seekFrame(qint64 frame)
 }
 
 
+QString VideoDecoder::codecInfo(void) const
+{
+    return QString("%1 (%2)").arg(mFormatCtx->iformat->long_name).arg(mCodec->long_name);
+}
+
+
 bool VideoDecoder::getFrame(QImage& img, int* effectiveframenumber, int* effectiveframetime, int* desiredframenumber, int* desiredframetime) const
 {
     img = mLastFrame;

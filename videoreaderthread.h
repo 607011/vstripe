@@ -13,8 +13,11 @@
 #include <QVector>
 
 #include "videowidget.h"
-#include "videodecoder.h"
 #include "histogram.h"
+
+
+class IAbstractVideoDecoder;
+
 
 class VideoReaderThread : public QThread
 {
@@ -28,9 +31,12 @@ public:
     void startReading(int firstFrameNumber, int numFrames, qreal frameDelta = 1);
     void stopReading(void);
 
-    VideoDecoder* decoder(void) { return &mDecoder; }
+    IAbstractVideoDecoder* decoder(void) { return mDecoder; }
     const Histogram& histogram(void) const { return mHistogram; }
     void calcHistogram(const QImage& img);
+
+    void setDecoder(IAbstractVideoDecoder*);
+
 
 public slots:
     void setHistogramRegion(const QRect&);
@@ -43,7 +49,7 @@ protected:
     void run(void);
 
 private:
-    VideoDecoder mDecoder;
+    IAbstractVideoDecoder* mDecoder;
     volatile bool mAbort;
     int mMaxFrameCount;
     qreal mFrameNumber;
