@@ -265,7 +265,7 @@ QString VideoDecoder::codecInfo(void) const
 }
 
 
-bool VideoDecoder::getFrame(QImage& img, int* effectiveframenumber, int* effectiveframetime, int* desiredframenumber, int* desiredframetime) const
+bool VideoDecoder::getFrame(QImage& img, int* effectiveframenumber, int* effectiveframetime, int* desiredframenumber, int* desiredframetime)
 {
     img = mLastFrame;
     if (effectiveframenumber)

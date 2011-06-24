@@ -61,7 +61,8 @@ SOURCES += main.cpp\
     histogram.cpp \
     previewform.cpp \
     helpbrowser.cpp \
-    webcam.cpp
+    webcam.cpp \
+    webcamthread.cpp
 
 HEADERS += mainwindow.h \
     videowidget.h \
@@ -75,7 +76,8 @@ HEADERS += mainwindow.h \
     previewform.h \
     helpbrowser.h \
     abstractvideodecoder.h \
-    webcam.h
+    webcam.h \
+    webcamthread.h
 
 FORMS += mainwindow.ui \
     previewform.ui

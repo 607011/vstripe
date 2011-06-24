@@ -4,7 +4,6 @@
  */
 
 #include <QDebug>
-#include <QMutexLocker>
 #include "videoreaderthread.h"
 #include "project.h"
 
@@ -23,9 +22,16 @@ VideoReaderThread::VideoReaderThread(QObject* parent) :
 
 VideoReaderThread::~VideoReaderThread()
 {
+    close();
+}
+
+
+void VideoReaderThread::close(void)
+{
     stopReading();
     if (mDecoder)
         delete mDecoder;
+    mDecoder = NULL;
 }
 
 
@@ -34,14 +40,9 @@ bool VideoReaderThread::setSource(const QString& videoFileName)
     Q_ASSERT(!videoFileName.isNull());
     Q_ASSERT(!isRunning());
 
-    if (mDecoder) {
-        delete mDecoder;
-        mDecoder = NULL;
-    }
-    if (mDecoder == NULL)
-        mDecoder = new VideoDecoder;
-    bool ok = mDecoder->open(videoFileName.toLatin1().constData());
-    return ok;
+    close();
+    mDecoder = new VideoDecoder;
+    return mDecoder->open(videoFileName.toLatin1().constData());
 }
 
 
@@ -50,14 +51,9 @@ bool VideoReaderThread::setSource(int deviceId)
     Q_ASSERT(deviceId >= 0);
     Q_ASSERT(!isRunning());
 
-    if (mDecoder) {
-        delete mDecoder;
-        mDecoder = NULL;
-    }
-    if (mDecoder == NULL)
-        mDecoder = new Webcam;
-    bool ok = mDecoder->open(deviceId);
-    return ok;
+    close();
+    mDecoder = new Webcam;
+    return mDecoder->open(deviceId);
 }
 
 
@@ -65,7 +61,7 @@ void VideoReaderThread::startReading(int firstFrameNumber, int nFrames, qreal fr
 {
     Q_ASSERT(firstFrameNumber != Project::INVALID_FRAME);
     Q_ASSERT(nFrames > 0);
-    Q_ASSERT(frameDelta > 0);
+//    Q_ASSERT(frameDelta > 0);
 
     stopReading();
     mFrameNumber = qreal(firstFrameNumber);
