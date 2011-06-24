@@ -4,6 +4,11 @@
 #include <QTimer>
 #include "abstractvideodecoder.h"
 
+
+namespace cv {
+    class VideoCapture;
+}
+
 struct CvCapture;
 
 class Webcam : public IAbstractVideoDecoder
@@ -29,7 +34,8 @@ signals:
 public slots:
 
 private: // variables
-    CvCapture* mCamera;
+    // CvCapture* mCamera;
+    cv::VideoCapture* mCamera;
     QImage mLastFrame;
     QSize mFrameSize;
     int mFrameNumber;
