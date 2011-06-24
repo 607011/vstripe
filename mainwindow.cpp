@@ -22,6 +22,7 @@
 #include "histogram.h"
 #include "webcam.h"
 
+
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
@@ -121,6 +122,9 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     if (argc > 1)
         mFileNameFromCmdLine = argv[1];
 
+    // int ncams = cvcamGetCamerasCount();
+    Webcam cam;
+    cam.open(0);
 }
 
 
