@@ -9,6 +9,7 @@
 #include <QImage>
 #include <QMessageBox>
 #include <QTime>
+#include <QTimer>
 #include <QSettings>
 #include <QTextStream>
 #include <QFileInfo>
@@ -21,6 +22,7 @@
 #include "ui_mainwindow.h"
 #include "histogram.h"
 #include "webcam.h"
+#include "webcamthread.h"
 
 
 const QString MainWindow::Company = "von-und-fuer-lau.de";
@@ -35,7 +37,8 @@ const QString MainWindow::AppVersion = "0.9.6.1";
 MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
-        mHelpBrowser(NULL)
+        mHelpBrowser(NULL),
+        mWebcamThread(NULL)
 {
     ui->setupUi(this);
 
@@ -45,76 +48,76 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     mVideoWidget = new VideoWidget;
     ui->verticalLayout->insertWidget(0, mVideoWidget);
-    connect(mVideoWidget, SIGNAL(fileDropped(QString)), this, SLOT(fileDropped(QString)));
-    connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), this, SLOT(setStripeOrientation(bool)));
-    connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), &mProject, SLOT(setStripeOrientation(bool)));
-    connect(mVideoWidget, SIGNAL(stripePosChanged(int)), &mProject, SLOT(setStripePos(int)));
+    QObject::connect(mVideoWidget, SIGNAL(fileDropped(QString)), this, SLOT(fileDropped(QString)));
+    QObject::connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), this, SLOT(setStripeOrientation(bool)));
+    QObject::connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), &mProject, SLOT(setStripeOrientation(bool)));
+    QObject::connect(mVideoWidget, SIGNAL(stripePosChanged(int)), &mProject, SLOT(setStripePos(int)));
 
-    connect(ui->action_OpenVideoFile, SIGNAL(triggered()), this, SLOT(openVideoFile()));
-    connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
-    connect(ui->actionAutofitPreview, SIGNAL(triggered()), this, SLOT(autoFitPreview()));
-    connect(ui->actionHistogram, SIGNAL(toggled(bool)), mVideoWidget, SLOT(setHistogramEnabled(bool)));
-    connect(ui->actionClear_histogram_region, SIGNAL(triggered()), this, SLOT(clearHistogramRegion()));
+    QObject::connect(ui->action_OpenVideoFile, SIGNAL(triggered()), this, SLOT(openVideoFile()));
+    QObject::connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
+    QObject::connect(ui->actionAutofitPreview, SIGNAL(triggered()), this, SLOT(autoFitPreview()));
+    QObject::connect(ui->actionHistogram, SIGNAL(toggled(bool)), mVideoWidget, SLOT(setHistogramEnabled(bool)));
+    QObject::connect(ui->actionClear_histogram_region, SIGNAL(triggered()), this, SLOT(clearHistogramRegion()));
 
     mFrameSlider = new MarkableSlider(&mProject);
     mFrameSlider->setEnabled(false);
     ui->sliderLayout->insertWidget(0, mFrameSlider);
-    connect(mFrameSlider, SIGNAL(valueChanged(int)), this, SLOT(seekToFrame(int)));
+    QObject::connect(mFrameSlider, SIGNAL(valueChanged(int)), this, SLOT(seekToFrame(int)));
 
     mVideoReaderThread = new VideoReaderThread;
-    connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
-    connect(mVideoReaderThread, SIGNAL(percentReady(int)), this, SLOT(showPercentReady(int)));
-    connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), this, SLOT(frameReady(QImage,Histogram,int,int,int)));
-    // connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), mVideoWidget, SLOT(setFrame(QImage,Histogram)));
-    connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), mVideoReaderThread, SLOT(setHistogramRegion(QRect)));
-    connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), &mProject, SLOT(setHistogramRegion(QRect)));
+    QObject::connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
+    QObject::connect(mVideoReaderThread, SIGNAL(percentReady(int)), this, SLOT(showPercentReady(int)));
+    QObject::connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), this, SLOT(frameReady(QImage,Histogram,int,int,int)));
+    // QObject::connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), mVideoWidget, SLOT(setFrame(QImage,Histogram)));
+    QObject::connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), mVideoReaderThread, SLOT(setHistogramRegion(QRect)));
+    QObject::connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), &mProject, SLOT(setHistogramRegion(QRect)));
 
     mPreviewForm = new PreviewForm;
-    connect(ui->actionPreview_picture, SIGNAL(toggled(bool)), this, SLOT(togglePictureWidget(bool)));
+    QObject::connect(ui->actionPreview_picture, SIGNAL(toggled(bool)), this, SLOT(togglePictureWidget(bool)));
     if (ui->actionPreview_picture->isChecked())
         mPreviewForm->show();
-    connect(mPreviewForm, SIGNAL(correctionsChanged()), this, SLOT(deflicker()));
-    connect(mPreviewForm, SIGNAL(visibilityChanged(bool)), ui->actionPreview_picture, SLOT(setChecked(bool)));
-    connect(mPreviewForm, SIGNAL(sizeChanged(const QSize&)), this, SLOT(setPictureSize(const QSize&)));
-    connect(mPreviewForm->brightnessSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
-    connect(mPreviewForm->redSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
-    connect(mPreviewForm->greenSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
-    connect(mPreviewForm->blueSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
-    connect(mPreviewForm->factorDial(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
+    QObject::connect(mPreviewForm, SIGNAL(correctionsChanged()), this, SLOT(deflicker()));
+    QObject::connect(mPreviewForm, SIGNAL(visibilityChanged(bool)), ui->actionPreview_picture, SLOT(setChecked(bool)));
+    QObject::connect(mPreviewForm, SIGNAL(sizeChanged(const QSize&)), this, SLOT(setPictureSize(const QSize&)));
+    QObject::connect(mPreviewForm->brightnessSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
+    QObject::connect(mPreviewForm->redSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
+    QObject::connect(mPreviewForm->greenSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
+    QObject::connect(mPreviewForm->blueSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
+    QObject::connect(mPreviewForm->factorDial(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
         recentVideoFileActs[i] = new QAction(this);
         recentVideoFileActs[i]->setVisible(false);
-        connect(recentVideoFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentVideoFile()));
+        QObject::connect(recentVideoFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentVideoFile()));
         recentProjectFileActs[i] = new QAction(this);
         recentProjectFileActs[i]->setVisible(false);
-        connect(recentProjectFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentProjectFile()));
+        QObject::connect(recentProjectFileActs[i], SIGNAL(triggered()), this, SLOT(openRecentProjectFile()));
     }
 
-    connect(ui->forwardButton, SIGNAL(clicked()), this, SLOT(forward()));
-    connect(ui->backwardButton, SIGNAL(clicked()), this, SLOT(backward()));
-    connect(ui->fastForwardButton, SIGNAL(clicked()), this, SLOT(fastForward()));
-    connect(ui->fastBackwardButton, SIGNAL(clicked()), this, SLOT(fastBackward()));
-    connect(ui->setParamsButton, SIGNAL(clicked()), this, SLOT(setParamsButtonClicked()));
-    connect(ui->renderButton, SIGNAL(clicked()), this, SLOT(renderButtonClicked()));
-    connect(ui->action_Save_picture, SIGNAL(triggered()), this, SLOT(savePicture()));
-    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
-    connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(help()));
-    connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(openProject()));
-    connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(saveProject()));
-    connect(ui->actionSave_project_as, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
-    connect(ui->actionCopy_to_clipboard, SIGNAL(triggered()), mPreviewForm->pictureWidget(), SLOT(copyImageToClipboard()));
+    QObject::connect(ui->forwardButton, SIGNAL(clicked()), this, SLOT(forward()));
+    QObject::connect(ui->backwardButton, SIGNAL(clicked()), this, SLOT(backward()));
+    QObject::connect(ui->fastForwardButton, SIGNAL(clicked()), this, SLOT(fastForward()));
+    QObject::connect(ui->fastBackwardButton, SIGNAL(clicked()), this, SLOT(fastBackward()));
+    QObject::connect(ui->setParamsButton, SIGNAL(clicked()), this, SLOT(setParamsButtonClicked()));
+    QObject::connect(ui->renderButton, SIGNAL(clicked()), this, SLOT(renderButtonClicked()));
+    QObject::connect(ui->action_Save_picture, SIGNAL(triggered()), this, SLOT(savePicture()));
+    QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+    QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(help()));
+    QObject::connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(openProject()));
+    QObject::connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(saveProject()));
+    QObject::connect(ui->actionSave_project_as, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
+    QObject::connect(ui->actionCopy_to_clipboard, SIGNAL(triggered()), mPreviewForm->pictureWidget(), SLOT(copyImageToClipboard()));
 
     mEffectiveFrameNumber = Project::INVALID_FRAME;
     mEffectiveFrameTime = -1;
     mPreRenderFrameNumber = 0;
     mProject.setCurrentFrame(0);
-    connect(ui->AButton, SIGNAL(clicked()), this, SLOT(setMarkA()));
-    connect(ui->BButton, SIGNAL(clicked()), this, SLOT(setMarkB()));
-    connect(ui->markButton, SIGNAL(clicked()), this, SLOT(setMark()));
-    connect(ui->actionClear_marks, SIGNAL(triggered()), this, SLOT(clearMarks()));
-    connect(ui->prevMarkButton, SIGNAL(clicked()), this, SLOT(jumpToPrevMark()));
-    connect(ui->nextMarkButton, SIGNAL(clicked()), this, SLOT(jumpToNextMark()));
+    QObject::connect(ui->AButton, SIGNAL(clicked()), this, SLOT(setMarkA()));
+    QObject::connect(ui->BButton, SIGNAL(clicked()), this, SLOT(setMarkB()));
+    QObject::connect(ui->markButton, SIGNAL(clicked()), this, SLOT(setMark()));
+    QObject::connect(ui->actionClear_marks, SIGNAL(triggered()), this, SLOT(clearMarks()));
+    QObject::connect(ui->prevMarkButton, SIGNAL(clicked()), this, SLOT(jumpToPrevMark()));
+    QObject::connect(ui->nextMarkButton, SIGNAL(clicked()), this, SLOT(jumpToNextMark()));
 
     restoreAppSettings();
     ui->statusBar->showMessage(tr("Ready."), 3000);
@@ -122,9 +125,16 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     if (argc > 1)
         mFileNameFromCmdLine = argv[1];
 
-    // int ncams = cvcamGetCamerasCount();
-    Webcam cam;
-    cam.open(0);
+    for (int i = 0; /* */; ++i) {
+        Webcam cam;
+        if (cam.open(i)) {
+            QAction* cam = new QAction(tr("Webcam %1").arg(i+1), ui->menuUse_video_camera);
+            cam->setData(i);
+            ui->menuUse_video_camera->addAction(cam);
+            QObject::connect(cam, SIGNAL(triggered()), this, SLOT(openWebcam()));
+        }
+        else break;
+    }
 }
 
 
@@ -347,6 +357,11 @@ void MainWindow::startRendering(void)
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);
+    if (mWebcamThread) {
+        QObject::disconnect(mWebcamThread, SIGNAL(frameReady(QImage)), this, SLOT(webcamFrameReady(QImage)));
+        delete mWebcamThread;
+        mWebcamThread = NULL;
+    }
     mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameDelta);
 }
 
@@ -483,6 +498,12 @@ void MainWindow::showPictureWidget(void)
 void MainWindow::hidePictureWidget(void)
 {
     ui->actionPreview_picture->setChecked(false);
+}
+
+
+void MainWindow::webcamFrameReady(QImage src)
+{
+    mVideoWidget->setFrame(src.mirrored(true, false));
 }
 
 
@@ -819,6 +840,47 @@ void MainWindow::updateRecentProjectFileActions(void)
         recentProjectFileActs[j]->setVisible(false);
     if (numRecentFiles > 0)
         ui->menuOpen_recent_project->setEnabled(true);
+}
+
+
+void MainWindow::timerEvent(QTimerEvent* event)
+{
+    /* ... */
+}
+
+
+void MainWindow::openWebcam(void)
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    int camId = action->data().toInt();
+    bool ok = mVideoReaderThread->setSource(camId);
+    if (!ok)
+        return; // TODO: display alert dialog
+    mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
+    mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
+    mCurrentFrame.fill(qRgb(116, 214, 252));
+    mPreviewForm->pictureWidget()->resize(mVideoReaderThread->decoder()->frameSize());
+    if (mProject.stripeIsVertical())
+        mPreviewForm->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
+    else
+        mPreviewForm->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
+    mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
+    showPictureWidget();
+    QImage img;
+    mVideoReaderThread->decoder()->getFrame(img, &mLastFrameNumber);
+    mFrameSlider->setEnabled(false);
+    ui->infoPlainTextEdit->clear();
+    ui->actionSave_project->setEnabled(true);
+    ui->actionSave_project_as->setEnabled(true);
+    enableGuiButtons();
+    mEffectiveFrameNumber = 0;
+
+//    mWebcamThread = new WebcamThread;
+//    mWebcamThread->setDecoder(qobject_cast<Webcam*>(mVideoReaderThread->decoder()));
+//    QObject::connect(mWebcamThread, SIGNAL(frameReady(QImage)), this, SLOT(webcamFrameReady(QImage)));
+//    mWebcamThread->startReading();
+
+    ui->statusBar->showMessage(tr("Webcam running ..."), 2000);
 }
 
 

@@ -48,7 +48,10 @@ signals:
 protected:
     void run(void);
 
-private:
+private: // methods
+    void close(void);
+
+private: // variables
     IAbstractVideoDecoder* mDecoder;
     volatile bool mAbort;
     int mMaxFrameCount;

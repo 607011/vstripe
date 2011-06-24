@@ -37,7 +37,7 @@ public:
     virtual bool open(const char* file);
     virtual bool open(int deviceId);
     virtual void close(void);
-    virtual bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0) const;
+    virtual bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0);
     virtual bool seekNextFrame(int skip = 0);
     virtual bool seekMs(int);
     virtual bool seekFrame(qint64);

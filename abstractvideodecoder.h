@@ -20,7 +20,7 @@ public: // virtual methods
     virtual bool seekMs(int) = 0;
     virtual bool seekFrame(qint64 frame) = 0;
     virtual bool seekNextFrame(int skip) = 0;
-    virtual bool getFrame(QImage& img, int* effectiveframenumber, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0) const = 0;
+    virtual bool getFrame(QImage& img, int* effectiveframenumber, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0) = 0;
     virtual int attributes(void) = 0;
     virtual QSize frameSize(void) const = 0;
     virtual int getVideoLengthMs(void) = 0;

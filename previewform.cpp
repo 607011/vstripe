@@ -25,10 +25,10 @@ PreviewForm::PreviewForm(QWidget *parent) : QWidget(parent), ui(new Ui::PreviewF
     mPictureWidget = new PictureWidget;
     ui->scrollArea->setWidget(mPictureWidget);
 
-    connect(ui->resetRGBLButton, SIGNAL(clicked()), this, SLOT(resetRGBLCorrections()));
-    connect(ui->checkBoxShowCurves, SIGNAL(toggled(bool)), mPictureWidget, SLOT(showCurves(bool)));
+    QObject::connect(ui->resetRGBLButton, SIGNAL(clicked()), this, SLOT(resetRGBLCorrections()));
+    QObject::connect(ui->checkBoxShowCurves, SIGNAL(toggled(bool)), mPictureWidget, SLOT(showCurves(bool)));
 
-    connect(ui->dialCorrectionFactor, SIGNAL(valueChanged(int)), this, SLOT(amplificationChanged()));
+    QObject::connect(ui->dialCorrectionFactor, SIGNAL(valueChanged(int)), this, SLOT(amplificationChanged()));
 
     mPictureWidget->showCurves(ui->checkBoxShowCurves->isChecked());
 

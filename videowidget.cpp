@@ -75,6 +75,13 @@ void VideoWidget::setFrame(QImage img, Histogram histogram, int runningStripePos
 }
 
 
+void VideoWidget::setFrame(QImage img)
+{
+    mImage = img;
+    update();
+}
+
+
 void VideoWidget::setRunningStripePos(int runningStripePos)
 {
     mRunningStripePos = runningStripePos;

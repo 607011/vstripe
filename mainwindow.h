@@ -9,6 +9,7 @@
 #include <QtGui/QMainWindow>
 #include <QtCore/QString>
 #include <QtCore/QVector>
+#include <QtCore/QTimerEvent>
 
 #include "videoreaderthread.h"
 #include "videowidget.h"
@@ -23,6 +24,9 @@
 namespace Ui {
     class MainWindow;
 }
+
+
+class WebcamThread;
 
 
 class MainWindow : public QMainWindow
@@ -43,6 +47,7 @@ public:
 
 public slots:
     void openVideoFile(void);
+    void openWebcam(void);
     void closeVideoFile(void);
     void openRecentVideoFile(void);
     void openRecentProjectFile(void);
@@ -66,6 +71,7 @@ public slots:
     void savePicture(void);
     void showPercentReady(int);
     void frameReady(const QImage&, const Histogram&, int, int, int);
+    void webcamFrameReady(QImage);
     void renderButtonClicked(void);
     void setParamsButtonClicked(void);
     void about(void);
@@ -82,6 +88,7 @@ public slots:
 
 protected:
     void closeEvent(QCloseEvent*);
+    void timerEvent(QTimerEvent*);
 
 private: // variables
     Ui::MainWindow* ui;
@@ -119,6 +126,7 @@ private: // variables
     static const int MaxRecentFiles = 16;
     QAction* recentVideoFileActs[MaxRecentFiles];
     QAction* recentProjectFileActs[MaxRecentFiles];
+    WebcamThread* mWebcamThread;
 
 
 private: // methods
