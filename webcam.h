@@ -28,7 +28,7 @@ public:
     virtual QSize frameSize() const;
     virtual int getVideoLengthMs(void);
     virtual QString codecInfo(void) const;
-
+    virtual const QString typeName(void) const { return "Webcam"; }
     inline bool seekNextFrame(void) { return seekNextFrame(0); }
 
 signals:

@@ -43,6 +43,7 @@ public:
     virtual bool seekFrame(qint64);
 
     virtual QString codecInfo(void) const;
+    virtual const QString typeName(void) const { return "VideoFile"; }
 
 
 private: // variables

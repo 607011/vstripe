@@ -119,22 +119,24 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     QObject::connect(ui->prevMarkButton, SIGNAL(clicked()), this, SLOT(jumpToPrevMark()));
     QObject::connect(ui->nextMarkButton, SIGNAL(clicked()), this, SLOT(jumpToNextMark()));
 
-    restoreAppSettings();
-    ui->statusBar->showMessage(tr("Ready."), 3000);
-
-    if (argc > 1)
-        mFileNameFromCmdLine = argv[1];
-
-    for (int i = 0; /* */; ++i) {
+    // generate menu item for each attached webcam
+    for (int i = 1; /* */; ++i) {
         Webcam cam;
-        if (cam.open(i)) {
-            QAction* cam = new QAction(tr("Webcam %1").arg(i+1), ui->menuUse_video_camera);
+        if (cam.open(i-1)) {
+            QAction* cam = new QAction(tr("Webcam %1").arg(i), ui->menuUse_video_camera);
             cam->setData(i);
             ui->menuUse_video_camera->addAction(cam);
             QObject::connect(cam, SIGNAL(triggered()), this, SLOT(openWebcam()));
         }
         else break;
     }
+
+    restoreAppSettings();
+
+    if (argc > 1)
+        mFileNameFromCmdLine = argv[1];
+
+    ui->statusBar->showMessage(tr("Ready."), 3000);
 }
 
 
@@ -292,7 +294,6 @@ void MainWindow::seekToFrame(int n)
     ui->statusBar->showMessage(tr("Seeking to frame #%1 ...").arg(n), 3000);
     mVideoReaderThread->decoder()->seekFrame(n);
     mVideoReaderThread->decoder()->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime, &mDesiredFrameNumber, &mDesiredFrameTime);
-    // qDebug() << QString("effective: %1 (%2 ms), desired: %3 (%4 ms)").arg(mEffectiveFrameNumber).arg(mEffectiveFrameTime).arg(mDesiredFrameNumber).arg(mDesiredFrameTime);
     if (ui->actionHistogram->isChecked())
         mVideoReaderThread->calcHistogram(img);
     mVideoWidget->setFrame(img, mVideoReaderThread->histogram(), -1);
@@ -353,7 +354,7 @@ void MainWindow::startRendering(void)
         firstFrame = mEffectiveFrameNumber;
         lastFrame = mLastFrameNumber;
     }
-    mFrameDelta = qreal(lastFrame - firstFrame) / mFrameCount;
+    mFrameDelta = (mVideoReaderThread->decoder()->typeName() == "VideoFile")? qreal(lastFrame - firstFrame) / mFrameCount : 1;
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);

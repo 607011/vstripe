@@ -34,7 +34,7 @@ bool Webcam::open(int deviceId)
         cv::Mat frame;
         *mCamera >> frame;
         mFrameSize = QSize((int)mCamera->get(CV_CAP_PROP_FRAME_WIDTH), (int)mCamera->get(CV_CAP_PROP_FRAME_HEIGHT));
-        return true;
+        return !mFrameSize.isNull();
     }
     return false;
 }
