@@ -154,9 +154,9 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="373"/>
-        <location filename="mainwindow.cpp" line="352"/>
-        <location filename="mainwindow.cpp" line="361"/>
-        <location filename="mainwindow.cpp" line="534"/>
+        <location filename="mainwindow.cpp" line="372"/>
+        <location filename="mainwindow.cpp" line="381"/>
+        <location filename="mainwindow.cpp" line="560"/>
         <source>Start rendering</source>
         <translation>Generieren starten</translation>
     </message>
@@ -237,7 +237,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="596"/>
-        <location filename="mainwindow.cpp" line="822"/>
+        <location filename="mainwindow.cpp" line="890"/>
         <source>Open video file</source>
         <translation>Videodatei öffnen</translation>
     </message>
@@ -342,91 +342,96 @@
         <translation>In Zwischenablage kopieren</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="42"/>
+        <location filename="mainwindow.cpp" line="45"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="120"/>
-        <location filename="mainwindow.cpp" line="862"/>
+        <location filename="mainwindow.cpp" line="139"/>
+        <location filename="mainwindow.cpp" line="930"/>
         <source>Ready.</source>
         <translation>Fertig.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="174"/>
+        <location filename="mainwindow.cpp" line="190"/>
         <source>%1 %2 - %3</source>
         <translation>%1 %2 - %3</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="256"/>
+        <location filename="mainwindow.cpp" line="272"/>
         <source>File does not exist</source>
         <translation>Datei existiert nicht</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="256"/>
+        <location filename="mainwindow.cpp" line="272"/>
         <source>File &apos;%1&apos; does not exist</source>
         <translation>Datei &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="226"/>
-        <location filename="mainwindow.cpp" line="808"/>
+        <location filename="mainwindow.cpp" line="242"/>
+        <location filename="mainwindow.cpp" line="835"/>
         <source>&amp;%1 %2</source>
         <translation>&amp;%1 %2</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="216"/>
+        <location filename="mainwindow.cpp" line="126"/>
+        <source>Webcam %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="232"/>
         <source>Invalid file</source>
         <translation>Ungültige Datei</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="216"/>
+        <location filename="mainwindow.cpp" line="232"/>
         <source>File &apos;%1&apos; does not exist or is not accessible</source>
         <translation>Datei &apos;%1&apos; existiert nicht oder Zugriff darauf ist nicht gestattet</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="278"/>
+        <location filename="mainwindow.cpp" line="294"/>
         <source>Seeking to frame #%1 ...</source>
         <translation>Ansteuern von Frame #%1 ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="294"/>
+        <location filename="mainwindow.cpp" line="309"/>
         <source>Loading %1 frames ... %2%</source>
         <translation>Laden von %1 Frrames ... %2%</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="320"/>
+        <location filename="mainwindow.cpp" line="335"/>
         <source>Stop rendering</source>
         <translation>Generieren anhalten</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="343"/>
+        <location filename="mainwindow.cpp" line="358"/>
         <source>Loading %1 frames ...</source>
         <translation>Laden von %1 Frames ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="351"/>
+        <location filename="mainwindow.cpp" line="371"/>
         <source>Rendering stopped.</source>
         <translation>Generieren angehalten.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="397"/>
-        <location filename="mainwindow.cpp" line="406"/>
-        <location filename="mainwindow.cpp" line="761"/>
+        <location filename="mainwindow.cpp" line="417"/>
+        <location filename="mainwindow.cpp" line="426"/>
+        <location filename="mainwindow.cpp" line="788"/>
         <source>%1 frames selected</source>
         <translation>%1 Frames ausgewählt</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="553"/>
+        <location filename="mainwindow.cpp" line="579"/>
         <source>avg. luminance error: %1</source>
         <translation>mittl. Helligkeitsabweichung: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="722"/>
+        <location filename="mainwindow.cpp" line="749"/>
         <source>About %1</source>
         <translation>Über %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="723"/>
+        <location filename="mainwindow.cpp" line="750"/>
         <source>&lt;p&gt;&lt;strong&gt;%1&lt;/strong&gt; &amp;ndash; Generate streak photos from footage.&lt;/p&gt;&lt;p&gt;Copyright (c) 2011 Oliver Lau &amp;lt;oliver@von-und-fuer-lau.de&amp;gt;&lt;/p&gt;&lt;p&gt;VideoDecoder Copyright (c) 2009-2010 by Daniel Roggen &amp;lt;droggen@gmail.com&amp;gt;&lt;/p&gt;&lt;p&gt;HelpBrowser Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).&lt;/p&gt;&lt;p&gt;All rights reserved.&lt;/p&gt;</source>
         <translation>&lt;p&gt;&lt;strong&gt;%1&lt;/strong&gt; &amp;ndash; Streifenfotos aus Videos erzeugen.&lt;/p&gt;&lt;p&gt;Copyright (c) 2011 Oliver Lau &amp;lt;oliver@von-und-fuer-lau.de&amp;gt;&lt;/p&gt;&lt;p&gt;VideoDecoder Copyright (c) 2009-2010 Daniel Roggen &amp;lt;droggen@gmail.com&amp;gt;&lt;/p&gt;&lt;p&gt;HelpBrowser Copyright (c) 2011 Nokia Corporation und/oder ihre Tochtergesellschaften.&lt;/p&gt;&lt;p&gt;Alle Rechte vorbehalten.&lt;/p&gt;</translation>
     </message>
@@ -443,43 +448,48 @@
         <translation type="obsolete">Noch nicht implementiert</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="772"/>
+        <location filename="mainwindow.cpp" line="799"/>
         <source>Open project file</source>
         <translation>Projektdatei öffnen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="786"/>
-        <location filename="mainwindow.cpp" line="798"/>
+        <location filename="mainwindow.cpp" line="813"/>
+        <location filename="mainwindow.cpp" line="825"/>
         <source>Project saved.</source>
         <translation>Projektdatei gespeichert.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="793"/>
+        <location filename="mainwindow.cpp" line="820"/>
         <source>Save project file as ...</source>
         <translation>Projekt speichern unter ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="848"/>
+        <location filename="mainwindow.cpp" line="884"/>
+        <source>Webcam running ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="916"/>
         <source>Seeking last frame ...</source>
         <translation>Ansteuern des letzten Frames ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="856"/>
+        <location filename="mainwindow.cpp" line="924"/>
         <source>Last frame # %1</source>
         <translation>Letzter Frame: #%1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="857"/>
+        <location filename="mainwindow.cpp" line="925"/>
         <source>Video length: %1</source>
         <translation>Länge des Videos: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="876"/>
+        <location filename="mainwindow.cpp" line="944"/>
         <source>File closed.</source>
         <translation>Datei geschlossen.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="882"/>
+        <location filename="mainwindow.cpp" line="950"/>
         <source>Save picture as ...</source>
         <translation>Bild speichern untern ...</translation>
     </message>
@@ -492,67 +502,72 @@
         <translation>Vorschau</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="32"/>
+        <location filename="previewform.ui" line="49"/>
         <source>G</source>
         <translation>G</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="48"/>
+        <location filename="previewform.ui" line="65"/>
         <source>stripes&apos; green level correction</source>
         <translation>Grünwert der Streifen korrigieren</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="85"/>
+        <location filename="previewform.ui" line="102"/>
         <source>stripes&apos; red level correction</source>
         <translation>Rotwert der Streifen korrigieren</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="119"/>
+        <location filename="previewform.ui" line="136"/>
         <source>R</source>
         <translation>R</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="132"/>
+        <location filename="previewform.ui" line="149"/>
         <source>B</source>
         <translation>B</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="148"/>
+        <location filename="previewform.ui" line="165"/>
         <source>stripes&apos; blue level correction</source>
         <translation>Blauwert der Streifen korrigieren</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="182"/>
+        <location filename="previewform.ui" line="199"/>
         <source>L</source>
         <translation>L</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="198"/>
+        <location filename="previewform.ui" line="215"/>
         <source>stripes&apos; brightness correction</source>
         <translation>Helligkeit der Streifen korrigieren</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="229"/>
+        <location filename="previewform.ui" line="246"/>
         <source>Display curves</source>
         <translation>Kurven anzeigen</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="252"/>
+        <location filename="previewform.ui" line="269"/>
         <source>Reset RGB/L corrections</source>
         <translation>RGB/L-Korrekturen zurücksetzen</translation>
     </message>
     <message>
-        <location filename="previewform.ui" line="290"/>
+        <location filename="previewform.ui" line="297"/>
+        <source>amplification factor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="previewform.ui" line="322"/>
         <source>correction amplification factor (logarithmic)</source>
         <translation>Korrekturverstärkungsfaktor (logarithmisch) einstellen</translation>
     </message>
     <message>
-        <location filename="previewform.cpp" line="43"/>
+        <location filename="previewform.cpp" line="49"/>
         <source>Reset RGB/L corrections?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="previewform.cpp" line="43"/>
+        <location filename="previewform.cpp" line="49"/>
         <source>Really reset RGB/L corrections?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -560,7 +575,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="previewform.cpp" line="11"/>
+        <location filename="previewform.cpp" line="12"/>
         <source>VStripe - Picture Preview</source>
         <translation>VStripe - Generiertes Streifenbild</translation>
     </message>
@@ -570,7 +585,7 @@
         <translation>Diese Datei ist keine VStripe-Projektdatei.</translation>
     </message>
     <message>
-        <location filename="videodecoder.cpp" line="198"/>
+        <location filename="videodecoder.cpp" line="205"/>
         <source>Cannot initialize the conversion context!</source>
         <translation>Initialisierung des Conversion Context fehlgeschlagen!</translation>
     </message>

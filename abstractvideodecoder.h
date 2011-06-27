@@ -25,6 +25,7 @@ public: // virtual methods
     virtual QSize frameSize(void) const = 0;
     virtual int getVideoLengthMs(void) = 0;
     virtual QString codecInfo(void) const = 0;
+    virtual const QString typeName(void) const = 0;
 
 public: // method impl
     int getDefaultSkip(void) const { return mDefaultSkip; }

@@ -28,7 +28,7 @@ public:
 
     bool setSource(const QString& videoFileName);
     bool setSource(int deviceId);
-    void startReading(int firstFrameNumber, int numFrames, qreal frameDelta = 1);
+    void startReading(int firstFrameNumber, int numFrames, qreal frameDelta);
     void stopReading(void);
 
     IAbstractVideoDecoder* decoder(void) { return mDecoder; }
