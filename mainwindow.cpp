@@ -297,9 +297,9 @@ void MainWindow::seekToFrame(int n)
     setCursor(Qt::WaitCursor);
     mPreviewForm->setCursor(Qt::WaitCursor);
     mProject.setCurrentFrame(n);
-    QImage img;
     ui->statusBar->showMessage(tr("Seeking to frame #%1 ...").arg(n), 3000);
     mDecoder->seekFrame(n);
+    QImage img;
     mDecoder->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime, &mDesiredFrameNumber, &mDesiredFrameTime);
     if (ui->actionHistogram->isChecked())
         mVideoReaderThread->calcHistogram(img);
@@ -857,11 +857,15 @@ void MainWindow::timerEvent(QTimerEvent* event)
 }
 
 
-IAbstractVideoDecoder* MainWindow::setDecoder(IAbstractVideoDecoder* decoder)
+IAbstractVideoDecoder* MainWindow::useDecoder(IAbstractVideoDecoder* decoder)
 {
+    Q_ASSERT(mVideoReaderThread != NULL);
+    Q_ASSERT(decoder != NULL);
+
     if (mDecoder)
         delete mDecoder;
     mDecoder = decoder;
+    mVideoReaderThread->setSource(mDecoder);
     return mDecoder;
 }
 
@@ -870,7 +874,7 @@ void MainWindow::openWebcam(void)
 {
     QAction* action = qobject_cast<QAction*>(sender());
     int camId = action->data().toInt();
-    setDecoder(new Webcam(this))->open(camId);
+    useDecoder(new Webcam(this))->open(camId);
     mVideoReaderThread->setSource(mDecoder);
     mVideoWidget->setFrameSize(mDecoder->frameSize());
     mCurrentFrame = QImage(mDecoder->frameSize(), QImage::Format_RGB888);
@@ -890,11 +894,11 @@ void MainWindow::openWebcam(void)
     ui->actionSave_project_as->setEnabled(true);
     enableGuiButtons();
     mEffectiveFrameNumber = 0;
-
     mWebcamThread = new WebcamThread(qobject_cast<Webcam*>(mDecoder), this);
     QObject::connect(mWebcamThread, SIGNAL(frameReady(QImage)), mVideoWidget, SLOT(setFrame(const QImage&)));
     mWebcamThread->startReading();
-    ui->statusBar->showMessage(tr("Webcam running ..."), 3000);
+    ui->statusBar->showMessage(tr("Webcam is running ..."));
+    clearMarks();
 }
 
 
@@ -913,11 +917,11 @@ void MainWindow::loadVideoFile(void)
 {
     if (mWebcamThread)
         mWebcamThread->stopReading();
-
-    setDecoder(new VideoDecoder)->open(mProject.videoFileName().toLatin1().constData());
-
-    Q_ASSERT(mDecoder != NULL);
-
+    bool ok = useDecoder(new VideoDecoder)->open(mProject.videoFileName().toLatin1().constData());
+    if (!ok) {
+        QMessageBox::warning(this, tr("Video nicht lesbar"), tr("Die ausgewählte Datei kann nicht gelesen werden"), QMessageBox::Ok);
+        return;
+    }
     mVideoWidget->setFrameSize(mDecoder->frameSize());
     ui->action_CloseVideoFile->setEnabled(true);
     mCurrentFrame = QImage(mDecoder->frameSize(), QImage::Format_RGB888);
@@ -929,22 +933,25 @@ void MainWindow::loadVideoFile(void)
         mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
     mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     showPictureWidget();
-    QImage img;
     ui->statusBar->showMessage(tr("Seeking last frame ..."));
     mDecoder->seekMs(mDecoder->getVideoLengthMs());
+    QImage img;
     mDecoder->getFrame(img, &mLastFrameNumber);
-    Q_ASSERT(mLastFrameNumber > 0);
-    mFrameSlider->setMaximum(mLastFrameNumber);
-    mFrameSlider->setValue(0);
-    ui->infoPlainTextEdit->clear();
-    ui->infoPlainTextEdit->appendPlainText(mDecoder->codecInfo());
-    ui->infoPlainTextEdit->appendPlainText(tr("Last frame # %1").arg(mLastFrameNumber));
-    ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mDecoder->getVideoLengthMs(), false)));
-    ui->actionSave_project->setEnabled(true);
-    ui->actionSave_project_as->setEnabled(true);
-    seekToFrame(0);
-    enableGuiButtons();
-    ui->statusBar->showMessage(tr("Ready."), 2000);
+    qDebug() << "mLastFrameNumber =" << mLastFrameNumber << " img.size() =" << img.size();
+    if (mLastFrameNumber > 0) {
+        mFrameSlider->setMaximum(mLastFrameNumber);
+        mFrameSlider->setValue(0);
+        ui->infoPlainTextEdit->clear();
+        ui->infoPlainTextEdit->appendPlainText(mDecoder->codecInfo());
+        ui->infoPlainTextEdit->appendPlainText(tr("Last frame # %1").arg(mLastFrameNumber));
+        ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mDecoder->getVideoLengthMs(), false)));
+        ui->actionSave_project->setEnabled(true);
+        ui->actionSave_project_as->setEnabled(true);
+        seekToFrame(0);
+        enableGuiButtons();
+        ui->statusBar->showMessage(tr("Video is ready."));
+    }
+    else QMessageBox::warning(this, tr("Video nicht lesbar"), tr("Das ausgewählte Video kann nicht gelesen werden. Bitte konvertieren Sie es in eine H.264-kodierte AVI-Datei."), QMessageBox::Ok);
 }
 
 

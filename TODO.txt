@@ -13,6 +13,8 @@ FEHLER
 FEATURES
 ========
 
+[ ] Webcam-Aufzeichnung soll sich als Video speichern lassen können
+
 [ ] Anzeige der Frames/Sekunde im Statusbar
 
 [ ] Einlesen eines Frames in MainWindow::seekToFrame() mit QFuture/QtConcurrent::run() implementieren ???

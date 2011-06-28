@@ -145,7 +145,7 @@ private: // methods
     void updateRecentProjectFileActions(void);
     void setCurrentVideoFile(const QString&);
     void setCurrentProjectFile(const QString&);
-    IAbstractVideoDecoder* setDecoder(IAbstractVideoDecoder*);
+    IAbstractVideoDecoder* useDecoder(IAbstractVideoDecoder*);
 
     static QString ms2hmsz(int ms, bool withMs = true);
     static QString strippedName(const QString& fullFileName);

@@ -29,9 +29,6 @@ VideoReaderThread::~VideoReaderThread()
 void VideoReaderThread::close(void)
 {
     stopReading();
-    if (mDecoder)
-        delete mDecoder;
-    mDecoder = NULL;
 }
 
 
@@ -52,7 +49,7 @@ void VideoReaderThread::startReading(int firstFrameNumber, int nFrames, qreal fr
     Q_ASSERT(frameDelta > 0);
 
     stopReading();
-    mFrameNumber = qreal(firstFrameNumber);
+    mFrameNumber = (qreal)firstFrameNumber;
     mMaxFrameCount = nFrames;
     mFrameDelta = frameDelta;
     mAbort = false;

@@ -7,6 +7,7 @@
 #include <QPainterPath>
 #include <QDebug>
 #include <QtGlobal>
+#include <QDateTime>
 
 #include "videowidget.h"
 #include "project.h"
@@ -71,6 +72,7 @@ void VideoWidget::setFrame(const QImage& img, Histogram histogram, int runningSt
     mImage = img;
     mHistogram = histogram;
     mRunningStripePos = runningStripePos;
+    img.save(QString("%1.png").arg(QDateTime::currentDateTime().toString("yyyyMMddhhmmss")));
     update();
 }
 

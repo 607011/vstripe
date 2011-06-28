@@ -49,5 +49,5 @@ void WebcamThread::run(void)
         mWebcam->getFrame(frame, &framenumber);
         emit frameReady(frame);
     }
-    qDebug() << "STOPPING WebcamThread::run() ...";
+    qDebug() << "WebcamThread::run() is ending ...";
 }
