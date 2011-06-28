@@ -15,12 +15,11 @@ class WebcamThread : public QThread
 {
     Q_OBJECT
 public:
-    WebcamThread(QObject* parent = NULL);
+    WebcamThread(Webcam* webcam = NULL, QObject* parent = NULL);
     ~WebcamThread();
 
     void startReading(void);
     void stopReading(void);
-    void setDecoder(Webcam*);
 
 signals:
     void frameReady(QImage);

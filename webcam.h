@@ -9,7 +9,6 @@ namespace cv {
     class VideoCapture;
 }
 
-struct CvCapture;
 
 class Webcam : public IAbstractVideoDecoder
 {
@@ -17,29 +16,25 @@ class Webcam : public IAbstractVideoDecoder
 public:
     Webcam(QObject* parent = NULL);
     virtual ~Webcam();
-    virtual bool open(const char*);
+
+    // IAbstractVideoDecoder methods
+    virtual inline bool open(const char*) { return false; }
     virtual bool open(int deviceId);
     virtual void close(void);
-    virtual bool seekFrame(qint64);
     virtual bool seekNextFrame(int);
-    virtual bool seekMs(int);
     virtual bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0);
-    virtual int attributes(void) { return SEEK_NEXT_FRAME; }
-    virtual QSize frameSize() const;
-    virtual int getVideoLengthMs(void);
-    virtual QString codecInfo(void) const;
-    virtual const QString typeName(void) const { return "Webcam"; }
+    virtual inline bool seekFrame(qint64) { return false; }
+    virtual inline bool seekMs(int) { return false; }
+    virtual inline int attributes(void) { return SEEK_NEXT_FRAME; }
+    virtual inline QSize frameSize() const { return mFrameSize; }
+    virtual inline int getVideoLengthMs(void) { return -1; }
+    virtual inline QString codecInfo(void) const { return QString(); }
+    virtual inline const QString typeName(void) const { return "Webcam"; }
 
-    inline bool seekNextFrame(void) { return seekNextFrame(0); }
-
+    // other methods
     void setSize(const QSize&);
 
-signals:
-
-public slots:
-
 private: // variables
-    // CvCapture* mCamera;
     cv::VideoCapture* mCamera;
     QImage mLastFrame;
     QSize mFrameSize;

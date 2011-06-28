@@ -35,25 +35,13 @@ void VideoReaderThread::close(void)
 }
 
 
-bool VideoReaderThread::setSource(const QString& videoFileName)
+void VideoReaderThread::setSource(IAbstractVideoDecoder* decoder)
 {
-    Q_ASSERT(!videoFileName.isNull());
+    Q_ASSERT(decoder != NULL);
     Q_ASSERT(!isRunning());
 
     close();
-    mDecoder = new VideoDecoder;
-    return mDecoder->open(videoFileName.toLatin1().constData());
-}
-
-
-bool VideoReaderThread::setSource(int deviceId)
-{
-    Q_ASSERT(deviceId >= 0);
-    Q_ASSERT(!isRunning());
-
-    close();
-    mDecoder = new Webcam;
-    return mDecoder->open(deviceId);
+    mDecoder = decoder;
 }
 
 
@@ -132,4 +120,5 @@ void VideoReaderThread::run(void)
             emit percentReady(percent);
         prevPercent = percent;
     }
+    qDebug() << "STOPPING VideoReaderThread::run() ...";
 }

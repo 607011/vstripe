@@ -71,7 +71,6 @@ public slots:
     void savePicture(void);
     void showPercentReady(int);
     void frameReady(const QImage&, const Histogram&, int, int, int);
-    void webcamFrameReady(QImage);
     void renderButtonClicked(void);
     void setParamsButtonClicked(void);
     void about(void);
@@ -127,6 +126,7 @@ private: // variables
     QAction* recentVideoFileActs[MaxRecentFiles];
     QAction* recentProjectFileActs[MaxRecentFiles];
     WebcamThread* mWebcamThread;
+    IAbstractVideoDecoder* mDecoder;
 
 
 private: // methods
@@ -145,6 +145,7 @@ private: // methods
     void updateRecentProjectFileActions(void);
     void setCurrentVideoFile(const QString&);
     void setCurrentProjectFile(const QString&);
+    IAbstractVideoDecoder* setDecoder(IAbstractVideoDecoder*);
 
     static QString ms2hmsz(int ms, bool withMs = true);
     static QString strippedName(const QString& fullFileName);

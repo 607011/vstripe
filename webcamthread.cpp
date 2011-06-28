@@ -8,8 +8,8 @@
 #include "webcamthread.h"
 #include "webcam.h"
 
-WebcamThread::WebcamThread(QObject* parent) :
-    QThread(parent), mWebcam(NULL), mAbort(false)
+WebcamThread::WebcamThread(Webcam* webcam, QObject* parent) :
+    QThread(parent), mWebcam(webcam), mAbort(false)
 {
 }
 
@@ -20,14 +20,10 @@ WebcamThread::~WebcamThread()
 }
 
 
-void WebcamThread::setDecoder(Webcam* webcam)
-{
-    mWebcam = webcam;
-}
-
-
 void WebcamThread::startReading(void)
 {
+    Q_ASSERT(mWebcam != NULL);
+
     stopReading();
     mAbort = false;
     start();
@@ -45,9 +41,13 @@ void WebcamThread::stopReading(void)
 
 void WebcamThread::run(void)
 {
+    Q_ASSERT(mWebcam != NULL);
+
     QImage frame;
+    int framenumber = 0;
     while (!mAbort) {
-        mWebcam->getFrame(frame);
+        mWebcam->getFrame(frame, &framenumber);
         emit frameReady(frame);
     }
+    qDebug() << "STOPPING WebcamThread::run() ...";
 }

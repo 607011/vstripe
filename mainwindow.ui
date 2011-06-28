@@ -525,7 +525,14 @@
      </property>
      <addaction name="separator"/>
     </widget>
+    <widget class="QMenu" name="menuUse_video_camera">
+     <property name="title">
+      <string>Open webcam</string>
+     </property>
+     <addaction name="separator"/>
+    </widget>
     <addaction name="action_OpenVideoFile"/>
+    <addaction name="menuUse_video_camera"/>
     <addaction name="actionOpen_project"/>
     <addaction name="menuOpen_recent_video"/>
     <addaction name="menuOpen_recent_project"/>
@@ -553,18 +560,6 @@
     </property>
     <addaction name="actionClear_marks"/>
     <addaction name="actionClear_histogram_region"/>
-   </widget>
-   <widget class="QMenu" name="menuExtras">
-    <property name="title">
-     <string>Extras</string>
-    </property>
-    <widget class="QMenu" name="menuUse_video_camera">
-     <property name="title">
-      <string>Use video camera</string>
-     </property>
-     <addaction name="separator"/>
-    </widget>
-    <addaction name="menuUse_video_camera"/>
     <addaction name="actionCopy_to_clipboard"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -575,7 +570,6 @@
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuExtras"/>
    <addaction name="menuView"/>
    <addaction name="menuWindow"/>
   </widget>
@@ -609,7 +603,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Close video file</string>
+    <string>Close video input</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
@@ -719,7 +713,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Copy to clipboard</string>
+    <string>Copy stripe image to clipboard</string>
    </property>
   </action>
   <action name="actionReset_RGB_L_levels">

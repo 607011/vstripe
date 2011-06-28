@@ -40,47 +40,11 @@ bool Webcam::open(int deviceId)
 }
 
 
-bool Webcam::open(const char*)
-{
-    return false;
-}
-
-
 void Webcam::close(void)
 {
     if (mCamera)
         delete mCamera;
     mCamera = NULL;
-}
-
-
-QSize Webcam::frameSize(void) const
-{
-    return mFrameSize;
-}
-
-
-int Webcam::getVideoLengthMs(void)
-{
-    return -1;
-}
-
-
-QString Webcam::codecInfo(void) const
-{
-    return QString();
-}
-
-
-bool Webcam::seekFrame(qint64)
-{
-    return false;
-}
-
-
-bool Webcam::seekMs(int)
-{
-    return false;
 }
 
 
@@ -95,7 +59,7 @@ bool Webcam::seekNextFrame(int)
     mLastFrame = QImage(w, h, QImage::Format_RGB888);
     for (int y = 0; y < h; ++y)
         memcpy(mLastFrame.scanLine(y), frame.ptr(y), 3*w);
-    mLastFrame = mLastFrame.rgbSwapped();
+    mLastFrame = mLastFrame.rgbSwapped().mirrored(true, false);
     ++mFrameNumber;
     ++mFrameTime; // XXX
     return true;
@@ -104,7 +68,7 @@ bool Webcam::seekNextFrame(int)
 
 bool Webcam::getFrame(QImage& img, int* effectiveframenumber, int* effectiveframetime, int*, int*)
 {
-    seekNextFrame();
+    seekNextFrame(0);
     img = mLastFrame;
     if (effectiveframenumber)
         *effectiveframenumber = mFrameNumber;

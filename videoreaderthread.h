@@ -26,12 +26,10 @@ public:
     explicit VideoReaderThread(QObject* parent = NULL);
     ~VideoReaderThread();
 
-    bool setSource(const QString& videoFileName);
-    bool setSource(int deviceId);
+    void setSource(IAbstractVideoDecoder*);
     void startReading(int firstFrameNumber, int numFrames, qreal frameDelta);
     void stopReading(void);
 
-    IAbstractVideoDecoder* decoder(void) { return mDecoder; }
     const Histogram& histogram(void) const { return mHistogram; }
     void calcHistogram(const QImage& img);
 
