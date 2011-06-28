@@ -3,6 +3,8 @@
  * $Id$
  */
 
+#include <omp.h>
+
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QtDebug>
@@ -621,10 +623,13 @@ int MainWindow::lighter(int v, int factor)
 
 void MainWindow::deflicker(void)
 {
+#ifndef NODEBUG
+    QTime t;
+    t.start();
+#endif
     setCursor(Qt::BusyCursor);
     mPreviewForm->setCursor(Qt::BusyCursor);
     qreal f = 1e-2 * 14 * mPreviewForm->amplificationCorrection();
-    qDebug() << "f =" << f;
     qreal lLevel = f * mPreviewForm->brightnessSlider()->value();
     qreal rLevel = f * mPreviewForm->redSlider()->value();
     qreal gLevel = f * mPreviewForm->greenSlider()->value();
@@ -638,6 +643,7 @@ void MainWindow::deflicker(void)
         if (mVideoWidget->stripeIsVertical()) {
             if (img.width() != mFrameBrightness.count())
                 return;
+#pragma omp parallel for
             for (int x = 0; x < mFrameBrightness.count(); ++x) {
                 int dl = (int) ((mFrameBrightness[x] - mAvgBrightness) * lLevel);
                 int dr = (int) ((mFrameRed[x] - mAvgRed) * rLevel);
@@ -655,6 +661,7 @@ void MainWindow::deflicker(void)
         else {
             if (img.height() != mFrameBrightness.count())
                 return;
+#pragma omp parallel for
             for (int y = 0; y < mFrameBrightness.count(); ++y) {
                 int dl = (int) ((mFrameBrightness[y] - mAvgBrightness) * lLevel);
                 int dr = (int) ((mFrameRed[y] - mAvgRed) * rLevel);
@@ -675,6 +682,9 @@ void MainWindow::deflicker(void)
         mPreviewForm->pictureWidget()->setPicture(mCurrentFrame, -1);
     setCursor(Qt::ArrowCursor);
     mPreviewForm->setCursor(Qt::ArrowCursor);
+#ifndef NODEBUG
+    qDebug() << "deflicker() took " << t.elapsed() << "ms";
+#endif
 }
 
 

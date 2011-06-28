@@ -154,9 +154,9 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="373"/>
-        <location filename="mainwindow.cpp" line="372"/>
-        <location filename="mainwindow.cpp" line="381"/>
-        <location filename="mainwindow.cpp" line="560"/>
+        <location filename="mainwindow.cpp" line="377"/>
+        <location filename="mainwindow.cpp" line="388"/>
+        <location filename="mainwindow.cpp" line="567"/>
         <source>Start rendering</source>
         <translation>Generieren starten</translation>
     </message>
@@ -237,7 +237,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="596"/>
-        <location filename="mainwindow.cpp" line="890"/>
+        <location filename="mainwindow.cpp" line="907"/>
         <source>Open video file</source>
         <translation>Videodatei öffnen</translation>
     </message>
@@ -342,96 +342,96 @@
         <translation>In Zwischenablage kopieren</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="45"/>
+        <location filename="mainwindow.cpp" line="47"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="139"/>
-        <location filename="mainwindow.cpp" line="930"/>
+        <location filename="mainwindow.cpp" line="144"/>
+        <location filename="mainwindow.cpp" line="947"/>
         <source>Ready.</source>
         <translation>Fertig.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="190"/>
+        <location filename="mainwindow.cpp" line="195"/>
         <source>%1 %2 - %3</source>
         <translation>%1 %2 - %3</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="272"/>
+        <location filename="mainwindow.cpp" line="277"/>
         <source>File does not exist</source>
         <translation>Datei existiert nicht</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="272"/>
+        <location filename="mainwindow.cpp" line="277"/>
         <source>File &apos;%1&apos; does not exist</source>
         <translation>Datei &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="242"/>
-        <location filename="mainwindow.cpp" line="835"/>
+        <location filename="mainwindow.cpp" line="247"/>
+        <location filename="mainwindow.cpp" line="852"/>
         <source>&amp;%1 %2</source>
         <translation>&amp;%1 %2</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="126"/>
+        <location filename="mainwindow.cpp" line="133"/>
         <source>Webcam %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="232"/>
+        <location filename="mainwindow.cpp" line="237"/>
         <source>Invalid file</source>
         <translation>Ungültige Datei</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="232"/>
+        <location filename="mainwindow.cpp" line="237"/>
         <source>File &apos;%1&apos; does not exist or is not accessible</source>
         <translation>Datei &apos;%1&apos; existiert nicht oder Zugriff darauf ist nicht gestattet</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="294"/>
+        <location filename="mainwindow.cpp" line="299"/>
         <source>Seeking to frame #%1 ...</source>
         <translation>Ansteuern von Frame #%1 ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="309"/>
+        <location filename="mainwindow.cpp" line="314"/>
         <source>Loading %1 frames ... %2%</source>
         <translation>Laden von %1 Frrames ... %2%</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="335"/>
+        <location filename="mainwindow.cpp" line="340"/>
         <source>Stop rendering</source>
         <translation>Generieren anhalten</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="358"/>
+        <location filename="mainwindow.cpp" line="363"/>
         <source>Loading %1 frames ...</source>
         <translation>Laden von %1 Frames ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="371"/>
+        <location filename="mainwindow.cpp" line="376"/>
         <source>Rendering stopped.</source>
         <translation>Generieren angehalten.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="417"/>
-        <location filename="mainwindow.cpp" line="426"/>
-        <location filename="mainwindow.cpp" line="788"/>
+        <location filename="mainwindow.cpp" line="424"/>
+        <location filename="mainwindow.cpp" line="433"/>
+        <location filename="mainwindow.cpp" line="805"/>
         <source>%1 frames selected</source>
         <translation>%1 Frames ausgewählt</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="579"/>
+        <location filename="mainwindow.cpp" line="588"/>
         <source>avg. luminance error: %1</source>
         <translation>mittl. Helligkeitsabweichung: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="749"/>
+        <location filename="mainwindow.cpp" line="766"/>
         <source>About %1</source>
         <translation>Über %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="750"/>
+        <location filename="mainwindow.cpp" line="767"/>
         <source>&lt;p&gt;&lt;strong&gt;%1&lt;/strong&gt; &amp;ndash; Generate streak photos from footage.&lt;/p&gt;&lt;p&gt;Copyright (c) 2011 Oliver Lau &amp;lt;oliver@von-und-fuer-lau.de&amp;gt;&lt;/p&gt;&lt;p&gt;VideoDecoder Copyright (c) 2009-2010 by Daniel Roggen &amp;lt;droggen@gmail.com&amp;gt;&lt;/p&gt;&lt;p&gt;HelpBrowser Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).&lt;/p&gt;&lt;p&gt;All rights reserved.&lt;/p&gt;</source>
         <translation>&lt;p&gt;&lt;strong&gt;%1&lt;/strong&gt; &amp;ndash; Streifenfotos aus Videos erzeugen.&lt;/p&gt;&lt;p&gt;Copyright (c) 2011 Oliver Lau &amp;lt;oliver@von-und-fuer-lau.de&amp;gt;&lt;/p&gt;&lt;p&gt;VideoDecoder Copyright (c) 2009-2010 Daniel Roggen &amp;lt;droggen@gmail.com&amp;gt;&lt;/p&gt;&lt;p&gt;HelpBrowser Copyright (c) 2011 Nokia Corporation und/oder ihre Tochtergesellschaften.&lt;/p&gt;&lt;p&gt;Alle Rechte vorbehalten.&lt;/p&gt;</translation>
     </message>
@@ -448,48 +448,48 @@
         <translation type="obsolete">Noch nicht implementiert</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="799"/>
+        <location filename="mainwindow.cpp" line="816"/>
         <source>Open project file</source>
         <translation>Projektdatei öffnen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="813"/>
-        <location filename="mainwindow.cpp" line="825"/>
+        <location filename="mainwindow.cpp" line="830"/>
+        <location filename="mainwindow.cpp" line="842"/>
         <source>Project saved.</source>
         <translation>Projektdatei gespeichert.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="820"/>
+        <location filename="mainwindow.cpp" line="837"/>
         <source>Save project file as ...</source>
         <translation>Projekt speichern unter ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="884"/>
+        <location filename="mainwindow.cpp" line="901"/>
         <source>Webcam running ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="916"/>
+        <location filename="mainwindow.cpp" line="933"/>
         <source>Seeking last frame ...</source>
         <translation>Ansteuern des letzten Frames ...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="924"/>
+        <location filename="mainwindow.cpp" line="941"/>
         <source>Last frame # %1</source>
         <translation>Letzter Frame: #%1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="925"/>
+        <location filename="mainwindow.cpp" line="942"/>
         <source>Video length: %1</source>
         <translation>Länge des Videos: %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="944"/>
+        <location filename="mainwindow.cpp" line="961"/>
         <source>File closed.</source>
         <translation>Datei geschlossen.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="950"/>
+        <location filename="mainwindow.cpp" line="967"/>
         <source>Save picture as ...</source>
         <translation>Bild speichern untern ...</translation>
     </message>

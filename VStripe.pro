@@ -12,6 +12,7 @@ TRANSLATIONS = VStripe_de.ts
 
 CODECFORTR = UTF-8
 
+QMAKE_CXXFLAGS += -fopenmp
 
 win32 {
 OPENCVDIR = C:/OpenCV-2.2.0-MinGW
@@ -19,6 +20,9 @@ FFMPEGDIR = ../ffmpeg-static
 RC_FILE = VStripe.rc
 LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
 LIBS += -L$${OPENCVDIR}/lib -lopencv_core220.dll -lopencv_highgui220.dll
+LIBS += -lgomp
+# LIBS += -LC:/Qt/2010.05/mingw/lib/gcc/mingw32/4.4.0 -lgomp -lpthread
+# INCLUDEPATH += C:/Qt/2010.05/mingw/lib/gcc/mingw32/4.4.0/include
 }
 
 unix:!macx {
