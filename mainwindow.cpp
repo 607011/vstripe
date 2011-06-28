@@ -120,15 +120,18 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     QObject::connect(ui->nextMarkButton, SIGNAL(clicked()), this, SLOT(jumpToNextMark()));
 
     // generate menu item for each attached webcam
-    for (int i = 1; /* */; ++i) {
+    for (int i = 0; /* */; ++i) {
         Webcam cam;
-        if (cam.open(i-1)) {
-            QAction* cam = new QAction(tr("Webcam %1").arg(i), ui->menuUse_video_camera);
-            cam->setData(i);
-            ui->menuUse_video_camera->addAction(cam);
-            QObject::connect(cam, SIGNAL(triggered()), this, SLOT(openWebcam()));
-        }
-        else break;
+        if (!cam.open(i))
+            break;
+        QImage img;
+        cam.getFrame(img);
+        if (img.isNull())
+            break;
+        QAction* camMenu = new QAction(tr("Webcam %1").arg(i), ui->menuUse_video_camera);
+        camMenu->setData(i);
+        ui->menuUse_video_camera->addAction(camMenu);
+        QObject::connect(camMenu, SIGNAL(triggered()), this, SLOT(openWebcam()));
     }
 
     restoreAppSettings();
@@ -371,6 +374,8 @@ void MainWindow::stopRendering(void) {
     ui->statusBar->showMessage(tr("Rendering stopped."), 5000);
     ui->renderButton->setText(tr("Start rendering"));
     mVideoReaderThread->stopReading();
+    if (mVideoReaderThread->decoder()->typeName() == "Webcam")
+        mVideoReaderThread->decoder()->close();
     setCursor(Qt::ArrowCursor);
     mPreviewForm->setCursor(Qt::ArrowCursor);
 }
@@ -558,6 +563,8 @@ void MainWindow::decodingFinished()
 {
     ui->action_Save_picture->setEnabled(true);
     ui->renderButton->setText(tr("Start rendering"));
+    if (mVideoReaderThread->decoder()->typeName() == "Webcam")
+        mVideoReaderThread->decoder()->close();
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);
     mAvgBrightness = averageBrightnessData(mFrameBrightness);

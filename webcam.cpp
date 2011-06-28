@@ -112,3 +112,13 @@ bool Webcam::getFrame(QImage& img, int* effectiveframenumber, int* effectivefram
         *effectiveframetime = mFrameTime;
     return true;
 }
+
+
+void Webcam::setSize(const QSize& sz)
+{
+    Q_ASSERT(sz.isValid());
+    Q_ASSERT(mCamera != NULL);
+
+    mCamera->set(CV_CAP_PROP_FRAME_WIDTH, sz.width());
+    mCamera->set(CV_CAP_PROP_FRAME_HEIGHT, sz.height());
+}

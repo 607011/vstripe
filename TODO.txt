@@ -1,6 +1,8 @@
 FEHLER
 ======
 
+[ ] Fehlerbehandlung, wenn das Video nicht eingelesen werden konnte (z.B. Anzahl Frames = 0)
+
 [ ] Die ausgeschnittenen müssen in umgekehrter Richtung zusammengesetzt werden, damit bewegte Objekte nicht spiegelverkehrt abgebildet werden.
 
 [ ] size constraints der PreviewForm funktionieren nicht ???
