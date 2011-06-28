@@ -33,9 +33,6 @@ public:
     const Histogram& histogram(void) const { return mHistogram; }
     void calcHistogram(const QImage& img);
 
-    void setDecoder(IAbstractVideoDecoder*);
-
-
 public slots:
     void setHistogramRegion(const QRect&);
 
