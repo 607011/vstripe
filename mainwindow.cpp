@@ -24,6 +24,7 @@
 #include "ui_mainwindow.h"
 #include "histogram.h"
 #include "webcam.h"
+#include "videodecoder.h"
 #include "webcamthread.h"
 
 
@@ -40,7 +41,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
         mHelpBrowser(NULL),
-        mWebcamThread(NULL)
+        mWebcamThread(NULL),
+        mDecoder(NULL)
 {
     ui->setupUi(this);
 
@@ -66,11 +68,10 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     ui->sliderLayout->insertWidget(0, mFrameSlider);
     QObject::connect(mFrameSlider, SIGNAL(valueChanged(int)), this, SLOT(seekToFrame(int)));
 
-    mVideoReaderThread = new VideoReaderThread;
+    mVideoReaderThread = new VideoReaderThread(this);
     QObject::connect(mVideoReaderThread, SIGNAL(finished()), this, SLOT(decodingFinished()));
     QObject::connect(mVideoReaderThread, SIGNAL(percentReady(int)), this, SLOT(showPercentReady(int)));
     QObject::connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), this, SLOT(frameReady(QImage,Histogram,int,int,int)));
-    // QObject::connect(mVideoReaderThread, SIGNAL(frameReady(QImage,Histogram,int,int,int)), mVideoWidget, SLOT(setFrame(QImage,Histogram)));
     QObject::connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), mVideoReaderThread, SLOT(setHistogramRegion(QRect)));
     QObject::connect(mVideoWidget, SIGNAL(histogramRegionChanged(QRect)), &mProject, SLOT(setHistogramRegion(QRect)));
 
@@ -130,7 +131,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         cam.getFrame(img);
         if (img.isNull())
             break;
-        QAction* camMenu = new QAction(tr("Webcam %1").arg(i), ui->menuUse_video_camera);
+        QAction* camMenu = new QAction(tr("Cam #%1 (%2x%3)").arg(i).arg(cam.frameSize().width()).arg(cam.frameSize().height()), ui->menuUse_video_camera);
         camMenu->setData(i);
         ui->menuUse_video_camera->addAction(camMenu);
         QObject::connect(camMenu, SIGNAL(triggered()), this, SLOT(openWebcam()));
@@ -147,13 +148,14 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
 MainWindow::~MainWindow()
 {
+    if (mDecoder)
+        delete mDecoder;
+    if (mHelpBrowser)
+        delete mHelpBrowser;
     delete ui;
     delete mVideoWidget;
     delete mPreviewForm;
     delete mFrameSlider;
-
-    if (mHelpBrowser)
-        delete mHelpBrowser;
 }
 
 
@@ -297,8 +299,8 @@ void MainWindow::seekToFrame(int n)
     mProject.setCurrentFrame(n);
     QImage img;
     ui->statusBar->showMessage(tr("Seeking to frame #%1 ...").arg(n), 3000);
-    mVideoReaderThread->decoder()->seekFrame(n);
-    mVideoReaderThread->decoder()->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime, &mDesiredFrameNumber, &mDesiredFrameTime);
+    mDecoder->seekFrame(n);
+    mDecoder->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime, &mDesiredFrameNumber, &mDesiredFrameTime);
     if (ui->actionHistogram->isChecked())
         mVideoReaderThread->calcHistogram(img);
     mVideoWidget->setFrame(img, mVideoReaderThread->histogram(), -1);
@@ -320,10 +322,10 @@ void MainWindow::setStripeOrientation(bool vertical)
     if (mCurrentFrame.isNull())
         return;
     if (vertical)
-        mPreviewForm->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
+        mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
     else
-        mPreviewForm->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
-    mPreviewForm->resize(mVideoReaderThread->decoder()->frameSize());
+        mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
+    mPreviewForm->resize(mDecoder->frameSize());
 }
 
 
@@ -359,15 +361,12 @@ void MainWindow::startRendering(void)
         firstFrame = mEffectiveFrameNumber;
         lastFrame = mLastFrameNumber;
     }
-    mFrameDelta = (mVideoReaderThread->decoder()->typeName() == "VideoFile")? qreal(lastFrame - firstFrame) / mFrameCount : 1;
+    mFrameDelta = (mDecoder->typeName() == "VideoFile")? qreal(lastFrame - firstFrame) / mFrameCount : 1;
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);
-    if (mWebcamThread) {
-        QObject::disconnect(mWebcamThread, SIGNAL(frameReady(QImage)), this, SLOT(webcamFrameReady(QImage)));
-        delete mWebcamThread;
-        mWebcamThread = NULL;
-    }
+    if (mWebcamThread)
+        mWebcamThread->stopReading();
     mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameDelta);
 }
 
@@ -376,8 +375,6 @@ void MainWindow::stopRendering(void) {
     ui->statusBar->showMessage(tr("Rendering stopped."), 5000);
     ui->renderButton->setText(tr("Start rendering"));
     mVideoReaderThread->stopReading();
-    if (mVideoReaderThread->decoder()->typeName() == "Webcam")
-        mVideoReaderThread->decoder()->close();
     setCursor(Qt::ArrowCursor);
     mPreviewForm->setCursor(Qt::ArrowCursor);
 }
@@ -394,13 +391,13 @@ void MainWindow::renderButtonClicked(void)
 
 void MainWindow::forward(int nFrames)
 {
-    mFrameSlider->setValue(mFrameSlider->value() + nFrames * mVideoReaderThread->decoder()->getDefaultSkip());
+    mFrameSlider->setValue(mFrameSlider->value() + nFrames * mDecoder->getDefaultSkip());
 }
 
 
 void MainWindow::backward(int nFrames)
 {
-    mFrameSlider->setValue(mFrameSlider->value() - nFrames * mVideoReaderThread->decoder()->getDefaultSkip());
+    mFrameSlider->setValue(mFrameSlider->value() - nFrames * mDecoder->getDefaultSkip());
 }
 
 
@@ -509,11 +506,6 @@ void MainWindow::hidePictureWidget(void)
 }
 
 
-void MainWindow::webcamFrameReady(QImage src)
-{
-    mVideoWidget->setFrame(src.mirrored(true, false));
-}
-
 
 void MainWindow::frameReady(const QImage& src, const Histogram& histogram, int frameNumber, int effectiveFrameNumber, int effectiveFrameTime)
 {
@@ -565,8 +557,6 @@ void MainWindow::decodingFinished()
 {
     ui->action_Save_picture->setEnabled(true);
     ui->renderButton->setText(tr("Start rendering"));
-    if (mVideoReaderThread->decoder()->typeName() == "Webcam")
-        mVideoReaderThread->decoder()->close();
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);
     mAvgBrightness = averageBrightnessData(mFrameBrightness);
@@ -867,25 +857,33 @@ void MainWindow::timerEvent(QTimerEvent* event)
 }
 
 
+IAbstractVideoDecoder* MainWindow::setDecoder(IAbstractVideoDecoder* decoder)
+{
+    if (mDecoder)
+        delete mDecoder;
+    mDecoder = decoder;
+    return mDecoder;
+}
+
+
 void MainWindow::openWebcam(void)
 {
     QAction* action = qobject_cast<QAction*>(sender());
     int camId = action->data().toInt();
-    bool ok = mVideoReaderThread->setSource(camId);
-    if (!ok)
-        return; // TODO: display alert dialog
-    mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
-    mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
+    setDecoder(new Webcam(this))->open(camId);
+    mVideoReaderThread->setSource(mDecoder);
+    mVideoWidget->setFrameSize(mDecoder->frameSize());
+    mCurrentFrame = QImage(mDecoder->frameSize(), QImage::Format_RGB888);
     mCurrentFrame.fill(qRgb(116, 214, 252));
-    mPreviewForm->pictureWidget()->resize(mVideoReaderThread->decoder()->frameSize());
+    mPreviewForm->pictureWidget()->resize(mDecoder->frameSize());
     if (mProject.stripeIsVertical())
-        mPreviewForm->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
+        mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
     else
-        mPreviewForm->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
+        mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
     mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     showPictureWidget();
     QImage img;
-    mVideoReaderThread->decoder()->getFrame(img, &mLastFrameNumber);
+    mDecoder->getFrame(img, &mLastFrameNumber);
     mFrameSlider->setEnabled(false);
     ui->infoPlainTextEdit->clear();
     ui->actionSave_project->setEnabled(true);
@@ -893,12 +891,10 @@ void MainWindow::openWebcam(void)
     enableGuiButtons();
     mEffectiveFrameNumber = 0;
 
-//    mWebcamThread = new WebcamThread;
-//    mWebcamThread->setDecoder(qobject_cast<Webcam*>(mVideoReaderThread->decoder()));
-//    QObject::connect(mWebcamThread, SIGNAL(frameReady(QImage)), this, SLOT(webcamFrameReady(QImage)));
-//    mWebcamThread->startReading();
-
-    ui->statusBar->showMessage(tr("Webcam running ..."), 2000);
+    mWebcamThread = new WebcamThread(qobject_cast<Webcam*>(mDecoder), this);
+    QObject::connect(mWebcamThread, SIGNAL(frameReady(QImage)), mVideoWidget, SLOT(setFrame(const QImage&)));
+    mWebcamThread->startReading();
+    ui->statusBar->showMessage(tr("Webcam running ..."), 3000);
 }
 
 
@@ -915,31 +911,35 @@ void MainWindow::openVideoFile(void)
 
 void MainWindow::loadVideoFile(void)
 {
-    bool ok = mVideoReaderThread->setSource(mProject.videoFileName());
-    if (!ok)
-        return; // TODO: display alert dialog
-    mVideoWidget->setFrameSize(mVideoReaderThread->decoder()->frameSize());
+    if (mWebcamThread)
+        mWebcamThread->stopReading();
+
+    setDecoder(new VideoDecoder)->open(mProject.videoFileName().toLatin1().constData());
+
+    Q_ASSERT(mDecoder != NULL);
+
+    mVideoWidget->setFrameSize(mDecoder->frameSize());
     ui->action_CloseVideoFile->setEnabled(true);
-    mCurrentFrame = QImage(mVideoReaderThread->decoder()->frameSize(), QImage::Format_RGB888);
+    mCurrentFrame = QImage(mDecoder->frameSize(), QImage::Format_RGB888);
     mCurrentFrame.fill(qRgb(116, 214, 252));
-    mPreviewForm->pictureWidget()->resize(mVideoReaderThread->decoder()->frameSize());
+    mPreviewForm->pictureWidget()->resize(mDecoder->frameSize());
     if (mProject.stripeIsVertical())
-        mPreviewForm->setSizeConstraint(QSize(0, mVideoReaderThread->decoder()->frameSize().height()), QSize(QWIDGETSIZE_MAX, mVideoReaderThread->decoder()->frameSize().height()));
+        mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
     else
-        mPreviewForm->setSizeConstraint(QSize(mVideoReaderThread->decoder()->frameSize().width(), 0), QSize(mVideoReaderThread->decoder()->frameSize().width(), QWIDGETSIZE_MAX));
+        mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
     mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     showPictureWidget();
     QImage img;
     ui->statusBar->showMessage(tr("Seeking last frame ..."));
-    mVideoReaderThread->decoder()->seekMs(mVideoReaderThread->decoder()->getVideoLengthMs());
-    mVideoReaderThread->decoder()->getFrame(img, &mLastFrameNumber);
+    mDecoder->seekMs(mDecoder->getVideoLengthMs());
+    mDecoder->getFrame(img, &mLastFrameNumber);
     Q_ASSERT(mLastFrameNumber > 0);
     mFrameSlider->setMaximum(mLastFrameNumber);
     mFrameSlider->setValue(0);
     ui->infoPlainTextEdit->clear();
-    ui->infoPlainTextEdit->appendPlainText(mVideoReaderThread->decoder()->codecInfo());
+    ui->infoPlainTextEdit->appendPlainText(mDecoder->codecInfo());
     ui->infoPlainTextEdit->appendPlainText(tr("Last frame # %1").arg(mLastFrameNumber));
-    ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mVideoReaderThread->decoder()->getVideoLengthMs(), false)));
+    ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mDecoder->getVideoLengthMs(), false)));
     ui->actionSave_project->setEnabled(true);
     ui->actionSave_project_as->setEnabled(true);
     seekToFrame(0);
@@ -971,5 +971,5 @@ void MainWindow::savePicture(void)
 
 void MainWindow::autoFitPreview(void)
 {
-    mPreviewForm->resize(mVideoReaderThread->decoder()->frameSize()); // XXX
+    mPreviewForm->resize(mDecoder->frameSize()); // XXX
 }

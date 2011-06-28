@@ -23,7 +23,7 @@ VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
     mMouseButtonDown = false;
     mDrawingHistogram = false;
     mVerticalStripe = true;
-    mHistogramEnabled = true;
+    mHistogramEnabled = false;
     mRunningStripePos = -1;
 }
 
@@ -66,7 +66,7 @@ void VideoWidget::setHistogramEnabled(bool enabled)
 }
 
 
-void VideoWidget::setFrame(QImage img, Histogram histogram, int runningStripePos)
+void VideoWidget::setFrame(const QImage& img, Histogram histogram, int runningStripePos)
 {
     mImage = img;
     mHistogram = histogram;
@@ -75,7 +75,7 @@ void VideoWidget::setFrame(QImage img, Histogram histogram, int runningStripePos
 }
 
 
-void VideoWidget::setFrame(QImage img)
+void VideoWidget::setFrame(const QImage& img)
 {
     mImage = img;
     update();

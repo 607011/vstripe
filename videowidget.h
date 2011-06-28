@@ -39,8 +39,8 @@ public:
 public slots:
     void setFrameSize(const QSize&);
     void setStripeWidth(int);
-    void setFrame(QImage, Histogram, int);
-    void setFrame(QImage);
+    void setFrame(const QImage&, Histogram, int);
+    void setFrame(const QImage&);
     void setHistogramEnabled(bool enabled = true);
 
 protected:
