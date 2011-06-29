@@ -123,6 +123,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     QObject::connect(ui->nextMarkButton, SIGNAL(clicked()), this, SLOT(jumpToNextMark()));
 
     // generate menu item for each attached webcam
+    QMenu* webcamMenu = NULL;
     for (int i = 0; /* */; ++i) {
         Webcam cam;
         if (!cam.open(i))
@@ -131,11 +132,15 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         cam.getFrame(img);
         if (img.isNull())
             break;
-        QAction* camMenu = new QAction(tr("Cam #%1 (%2x%3)").arg(i).arg(cam.frameSize().width()).arg(cam.frameSize().height()), ui->menuUse_video_camera);
+        if (webcamMenu == NULL)
+            webcamMenu = new QMenu(tr("Open webcam"), ui->menu_File);
+        QAction* camMenu = new QAction(QString("#%1 (%2x%3)").arg(i).arg(cam.frameSize().width()).arg(cam.frameSize().height()), webcamMenu);
         camMenu->setData(i);
-        ui->menuUse_video_camera->addAction(camMenu);
+        webcamMenu->addAction(camMenu);
         QObject::connect(camMenu, SIGNAL(triggered()), this, SLOT(openWebcam()));
     }
+    if (webcamMenu)
+        ui->menu_File->insertMenu(ui->action_OpenVideoFile, webcamMenu);
 
     restoreAppSettings();
 
@@ -923,22 +928,22 @@ void MainWindow::loadVideoFile(void)
         return;
     }
     mVideoWidget->setFrameSize(mDecoder->frameSize());
-    ui->action_CloseVideoFile->setEnabled(true);
     mCurrentFrame = QImage(mDecoder->frameSize(), QImage::Format_RGB888);
     mCurrentFrame.fill(qRgb(116, 214, 252));
-    mPreviewForm->pictureWidget()->resize(mDecoder->frameSize());
-    if (mProject.stripeIsVertical())
-        mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
-    else
-        mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
-    mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
-    showPictureWidget();
     ui->statusBar->showMessage(tr("Seeking last frame ..."));
     mDecoder->seekMs(mDecoder->getVideoLengthMs());
     QImage img;
     mDecoder->getFrame(img, &mLastFrameNumber);
     qDebug() << "mLastFrameNumber =" << mLastFrameNumber << " img.size() =" << img.size();
-    if (mLastFrameNumber > 0) {
+    if (mLastFrameNumber > 0 && !img.isNull()) {
+        mPreviewForm->pictureWidget()->resize(mDecoder->frameSize());
+        if (mProject.stripeIsVertical())
+            mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
+        else
+            mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
+        mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
+        showPictureWidget();
+        ui->action_CloseVideoFile->setEnabled(true);
         mFrameSlider->setMaximum(mLastFrameNumber);
         mFrameSlider->setValue(0);
         ui->infoPlainTextEdit->clear();

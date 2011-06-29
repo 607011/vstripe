@@ -525,14 +525,7 @@
      </property>
      <addaction name="separator"/>
     </widget>
-    <widget class="QMenu" name="menuUse_video_camera">
-     <property name="title">
-      <string>Open webcam</string>
-     </property>
-     <addaction name="separator"/>
-    </widget>
     <addaction name="action_OpenVideoFile"/>
-    <addaction name="menuUse_video_camera"/>
     <addaction name="actionOpen_project"/>
     <addaction name="menuOpen_recent_video"/>
     <addaction name="menuOpen_recent_project"/>
