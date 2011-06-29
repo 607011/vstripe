@@ -153,6 +153,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
 MainWindow::~MainWindow()
 {
+    if (mWebcamThread)
+        delete mWebcamThread;
     if (mDecoder)
         delete mDecoder;
     if (mHelpBrowser)
@@ -241,7 +243,8 @@ void MainWindow::fileDropped(const QString& fileName)
             clearMarks();
         }
     }
-    else QMessageBox::critical(this, tr("Invalid file"), tr("File '%1' does not exist or is not accessible").arg(fileName));
+    else
+        QMessageBox::warning(this, tr("Invalid file"), tr("File '%1' does not exist or is not accessible").arg(fileName), QMessageBox::Ok);
 }
 
 
@@ -281,7 +284,7 @@ void MainWindow::openRecentVideoFile(void)
             clearMarks();
         }
         else
-            QMessageBox::critical(this, tr("File does not exist"), tr("File '%1' does not exist").arg(fileName));
+            QMessageBox::critical(this, tr("File does not exist"), tr("File '%1' does not exist").arg(fileName), QMessageBox::Ok);
     }
 }
 
@@ -324,7 +327,7 @@ void MainWindow::showPercentReady(int percent)
 
 void MainWindow::setStripeOrientation(bool vertical)
 {
-    if (mCurrentFrame.isNull())
+    if (mStripeImage.isNull())
         return;
     if (vertical)
         mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
@@ -338,7 +341,7 @@ void MainWindow::setPictureSize(const QSize& size)
 {
     if (mVideoReaderThread->isRunning())
         stopRendering();
-    mCurrentFrame = QImage(size, QImage::Format_RGB888);
+    mStripeImage = QImage(size, QImage::Format_RGB888);
 }
 
 
@@ -356,7 +359,7 @@ void MainWindow::startRendering(void)
     mMinTotalBlue = INT_MAX;
     mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness, &mFrameRed, &mFrameGreen, &mFrameBlue);
     int firstFrame, lastFrame;
-    mFrameCount = mVideoWidget->stripeIsVertical()? qreal(mCurrentFrame.width()) : qreal(mCurrentFrame.height());
+    mFrameCount = mVideoWidget->stripeIsVertical()? qreal(mStripeImage.width()) : qreal(mStripeImage.height());
     if (mProject.markA() != Project::INVALID_FRAME && mProject.markB() != Project::INVALID_FRAME && mProject.markB() > mProject.markA()) {
         mFrameSlider->setValue(mProject.markA());
         firstFrame = mProject.markA();
@@ -514,8 +517,9 @@ void MainWindow::hidePictureWidget(void)
 
 void MainWindow::frameReady(const QImage& src, const Histogram& histogram, int frameNumber, int effectiveFrameNumber, int effectiveFrameTime)
 {
-    Q_ASSERT(!mCurrentFrame.isNull());
+    Q_ASSERT(!mStripeImage.isNull());
     Q_ASSERT(!src.isNull());
+
     mFrameBrightness.append(histogram.totalBrightness());
     mFrameRed.append(histogram.totalRed());
     mFrameGreen.append(histogram.totalGreen());
@@ -534,13 +538,13 @@ void MainWindow::frameReady(const QImage& src, const Histogram& histogram, int f
                        (frameNumber % (mProject.stripeIsVertical()? src.width() : src.height()));
     if (mProject.stripeIsVertical()) {
         for (int y = 0; y < src.height(); ++y)
-            mCurrentFrame.setPixel(dstpos, y, src.pixel(srcpos, y));
+            mStripeImage.setPixel(dstpos, y, src.pixel(srcpos, y));
     }
     else {
         for (int x = 0; x < src.width(); ++x)
-            mCurrentFrame.setPixel(x, dstpos, src.pixel(x, srcpos));
+            mStripeImage.setPixel(x, dstpos, src.pixel(x, srcpos));
     }
-    mPreviewForm->pictureWidget()->setPicture(mCurrentFrame, dstpos, mProject.stripeIsVertical());
+    mPreviewForm->pictureWidget()->setPicture(mStripeImage, dstpos, mProject.stripeIsVertical());
     mVideoWidget->setFrame(src, histogram, srcpos);
     mFrameSlider->blockSignals(true);
     mFrameSlider->setValue(mPreRenderFrameNumber + int(frameNumber * mFrameDelta));
@@ -634,7 +638,7 @@ void MainWindow::deflicker(void)
     mProject.setGreenLevel(gLevel);
     mProject.setBlueLevel(bLevel);
     if (lLevel > 0 || rLevel != 0 || gLevel != 0 || bLevel != 0) {
-        QImage img(mCurrentFrame.size(), mCurrentFrame.format());
+        QImage img(mStripeImage.size(), mStripeImage.format());
         if (mVideoWidget->stripeIsVertical()) {
             if (img.width() != mFrameBrightness.count())
                 return;
@@ -645,7 +649,7 @@ void MainWindow::deflicker(void)
                 int dg = (int) ((mFrameGreen[x] - mAvgGreen) * gLevel);
                 int db = (int) ((mFrameBlue[x] - mAvgBlue) * bLevel);
                 for (int y = 0; y < img.height(); ++y) {
-                    QRgb rgb = mCurrentFrame.pixel(x, y);
+                    QRgb rgb = mStripeImage.pixel(x, y);
                     int r = lighter(qRed(rgb), 100+dr);
                     int g = lighter(qGreen(rgb), 100+dg);
                     int b = lighter(qBlue(rgb), 100+db);
@@ -663,7 +667,7 @@ void MainWindow::deflicker(void)
                 int dg = (int) ((mFrameGreen[y] - mAvgGreen) * gLevel);
                 int db = (int) ((mFrameBlue[y] - mAvgBlue) * bLevel);
                 for (int x = 0; x < img.width(); ++x) {
-                    QRgb rgb = mCurrentFrame.pixel(x, y);
+                    QRgb rgb = mStripeImage.pixel(x, y);
                     int r = lighter(qRed(rgb), 100+dr);
                     int g = lighter(qGreen(rgb), 100+dg);
                     int b = lighter(qBlue(rgb), 100+db);
@@ -674,7 +678,7 @@ void MainWindow::deflicker(void)
         mPreviewForm->pictureWidget()->setPicture(img, -1);
     }
     else
-        mPreviewForm->pictureWidget()->setPicture(mCurrentFrame, -1);
+        mPreviewForm->pictureWidget()->setPicture(mStripeImage, -1);
     setCursor(Qt::ArrowCursor);
     mPreviewForm->setCursor(Qt::ArrowCursor);
 #ifndef NODEBUG
@@ -882,8 +886,8 @@ void MainWindow::openWebcam(void)
     useDecoder(new Webcam(this))->open(camId);
     mVideoReaderThread->setSource(mDecoder);
     mVideoWidget->setFrameSize(mDecoder->frameSize());
-    mCurrentFrame = QImage(mDecoder->frameSize(), QImage::Format_RGB888);
-    mCurrentFrame.fill(qRgb(116, 214, 252));
+    mStripeImage = QImage(mDecoder->frameSize(), QImage::Format_RGB888);
+    mStripeImage.fill(qRgb(116, 214, 252));
     mPreviewForm->pictureWidget()->resize(mDecoder->frameSize());
     if (mProject.stripeIsVertical())
         mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
@@ -913,50 +917,56 @@ void MainWindow::openVideoFile(void)
     if (fileName.isNull())
         return;
     setCurrentVideoFile(fileName);
-    loadVideoFile();
-    clearMarks();
+    bool ok = loadVideoFile();
+    if (ok)
+        clearMarks();
 }
 
 
-void MainWindow::loadVideoFile(void)
+bool MainWindow::loadVideoFile(void)
 {
     if (mWebcamThread)
         mWebcamThread->stopReading();
     bool ok = useDecoder(new VideoDecoder)->open(mProject.videoFileName().toLatin1().constData());
     if (!ok) {
+        mVideoWidget->setFrame(QImage());
         QMessageBox::warning(this, tr("Video nicht lesbar"), tr("Die ausgewählte Datei kann nicht gelesen werden"), QMessageBox::Ok);
-        return;
+        ui->statusBar->showMessage(tr("Opening video failed."), 5000);
+        return false;
     }
     mVideoWidget->setFrameSize(mDecoder->frameSize());
-    mCurrentFrame = QImage(mDecoder->frameSize(), QImage::Format_RGB888);
-    mCurrentFrame.fill(qRgb(116, 214, 252));
     ui->statusBar->showMessage(tr("Seeking last frame ..."));
     mDecoder->seekMs(mDecoder->getVideoLengthMs());
     QImage img;
     mDecoder->getFrame(img, &mLastFrameNumber);
-    qDebug() << "mLastFrameNumber =" << mLastFrameNumber << " img.size() =" << img.size();
-    if (mLastFrameNumber > 0 && !img.isNull()) {
-        mPreviewForm->pictureWidget()->resize(mDecoder->frameSize());
-        if (mProject.stripeIsVertical())
-            mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
-        else
-            mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
-        mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
-        showPictureWidget();
-        ui->action_CloseVideoFile->setEnabled(true);
-        mFrameSlider->setMaximum(mLastFrameNumber);
-        mFrameSlider->setValue(0);
-        ui->infoPlainTextEdit->clear();
-        ui->infoPlainTextEdit->appendPlainText(mDecoder->codecInfo());
-        ui->infoPlainTextEdit->appendPlainText(tr("Last frame # %1").arg(mLastFrameNumber));
-        ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mDecoder->getVideoLengthMs(), false)));
-        ui->actionSave_project->setEnabled(true);
-        ui->actionSave_project_as->setEnabled(true);
-        seekToFrame(0);
-        enableGuiButtons();
-        ui->statusBar->showMessage(tr("Video is ready."));
+    if (mLastFrameNumber == 0) {
+        mVideoWidget->setFrame(QImage());
+        QMessageBox::warning(this, tr("Video nicht lesbar"), tr("Das ausgewählte Video kann nicht gelesen werden. Bitte konvertieren Sie es in eine H.264-kodierte AVI-Datei."), QMessageBox::Ok);
+        ui->statusBar->showMessage(tr("Opening video failed."), 5000);
+        return false;
     }
-    else QMessageBox::warning(this, tr("Video nicht lesbar"), tr("Das ausgewählte Video kann nicht gelesen werden. Bitte konvertieren Sie es in eine H.264-kodierte AVI-Datei."), QMessageBox::Ok);
+    mStripeImage = QImage(mDecoder->frameSize(), QImage::Format_RGB888);
+    mStripeImage.fill(qRgb(116, 214, 252));
+    mPreviewForm->pictureWidget()->resize(mDecoder->frameSize());
+    if (mProject.stripeIsVertical())
+        mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
+    else
+        mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
+    mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
+    showPictureWidget();
+    ui->action_CloseVideoFile->setEnabled(true);
+    mFrameSlider->setMaximum(mLastFrameNumber);
+    mFrameSlider->setValue(0);
+    ui->infoPlainTextEdit->clear();
+    ui->infoPlainTextEdit->appendPlainText(mDecoder->codecInfo());
+    ui->infoPlainTextEdit->appendPlainText(tr("Last frame # %1").arg(mLastFrameNumber));
+    ui->infoPlainTextEdit->appendPlainText(tr("Video length: %1").arg(ms2hmsz(mDecoder->getVideoLengthMs(), false)));
+    ui->actionSave_project->setEnabled(true);
+    ui->actionSave_project_as->setEnabled(true);
+    seekToFrame(0);
+    enableGuiButtons();
+    ui->statusBar->showMessage(tr("Video is ready."));
+    return true;
 }
 
 
@@ -977,7 +987,7 @@ void MainWindow::closeVideoFile(void)
 void MainWindow::savePicture(void)
 {
     QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save picture as ..."), QString(), "*.png, *.jpg");
-    mPreviewForm->pictureWidget()->picture().save(saveFileName);
+    mPreviewForm->pictureWidget()->picture().save(saveFileName, 0, 80);
 }
 
 

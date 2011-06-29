@@ -67,17 +67,16 @@ void VideoWidget::setHistogramEnabled(bool enabled)
 }
 
 
-void VideoWidget::setFrame(const QImage& img, Histogram histogram, int runningStripePos)
+void VideoWidget::setFrame(QImage img, Histogram histogram, int runningStripePos)
 {
     mImage = img;
     mHistogram = histogram;
     mRunningStripePos = runningStripePos;
-    img.save(QString("%1.png").arg(QDateTime::currentDateTime().toString("yyyyMMddhhmmss")));
     update();
 }
 
 
-void VideoWidget::setFrame(const QImage& img)
+void VideoWidget::setFrame(QImage img)
 {
     mImage = img;
     update();
@@ -115,8 +114,7 @@ void VideoWidget::paintEvent(QPaintEvent*)
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(30, 30, 30));
     painter.drawRect(0, 0, width(), height());
-    if (!mImage.isNull())
-        painter.drawImage(mDestRect, mImage);
+    painter.drawImage(mDestRect, mImage.convertToFormat(QImage::Format_ARGB32_Premultiplied));
     painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
     //
     // draw marked histogram region
@@ -139,7 +137,6 @@ void VideoWidget::paintEvent(QPaintEvent*)
     // draw histogram
     //
     if (mHistogramEnabled) {
-
         const int hh = 128, x0 = 8, y0 = 8;
         const qreal scale = (qreal)hh / qMax(qMax(qMax(mHistogram.maxRed(), mHistogram.maxGreen()), mHistogram.maxBlue()), mHistogram.maxBrightness());
 

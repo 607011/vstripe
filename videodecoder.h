@@ -33,7 +33,6 @@ public:
     ffmpeg::AVCodec* codec(void) const { return mCodec; }
     bool decodeOk(void) const { return mFormatCtx != NULL && mCodecCtx != NULL && mCodec != NULL; }
 
-    virtual int attributes(void) { return SEEK_FRAME | SEEK_NEXT_FRAME | SEEK_TO_MS; }
     virtual bool open(const char* file);
     virtual bool open(int deviceId);
     virtual void close(void);
