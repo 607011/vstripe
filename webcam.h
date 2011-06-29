@@ -25,7 +25,6 @@ public:
     virtual bool getFrame(QImage& img, int* effectiveframenumber = 0, int* effectiveframetime = 0, int* desiredframenumber = 0, int* desiredframetime = 0);
     virtual inline bool seekFrame(qint64) { return false; }
     virtual inline bool seekMs(int) { return false; }
-    virtual inline int attributes(void) { return SEEK_NEXT_FRAME; }
     virtual inline QSize frameSize() const { return mFrameSize; }
     virtual inline int getVideoLengthMs(void) { return -1; }
     virtual inline QString codecInfo(void) const { return QString(); }

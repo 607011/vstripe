@@ -51,7 +51,6 @@ void Webcam::close(void)
 bool Webcam::seekNextFrame(int)
 {
     Q_ASSERT(mCamera != NULL);
-
     cv::Mat frame;
     *mCamera >> frame;
     const int w = frame.cols;

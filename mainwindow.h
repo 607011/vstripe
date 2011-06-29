@@ -51,7 +51,7 @@ public slots:
     void closeVideoFile(void);
     void openRecentVideoFile(void);
     void openRecentProjectFile(void);
-    void loadVideoFile(void);
+    bool loadVideoFile(void);
     void decodingFinished(void);
     void togglePictureWidget(bool);
     void seekToFrame(int);
@@ -97,7 +97,7 @@ private: // variables
     VideoReaderThread* mVideoReaderThread;
     qreal mFrameDelta;
     int mFrameCount;
-    QImage mCurrentFrame;
+    QImage mStripeImage;
     int mLastFrameNumber;
     int mEffectiveFrameNumber;
     int mEffectiveFrameTime;
