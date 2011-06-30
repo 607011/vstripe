@@ -117,5 +117,4 @@ void VideoReaderThread::run(void)
             emit percentReady(percent);
         prevPercent = percent;
     }
-    qDebug() << "STOPPING VideoReaderThread::run() ...";
 }

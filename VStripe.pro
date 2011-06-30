@@ -66,7 +66,8 @@ SOURCES += main.cpp\
     previewform.cpp \
     helpbrowser.cpp \
     webcam.cpp \
-    webcamthread.cpp
+    webcamthread.cpp \
+    picturesizedialog.cpp
 
 HEADERS += mainwindow.h \
     videowidget.h \
@@ -81,9 +82,11 @@ HEADERS += mainwindow.h \
     helpbrowser.h \
     abstractvideodecoder.h \
     webcam.h \
-    webcamthread.h
+    webcamthread.h \
+    picturesizedialog.h
 
 FORMS += mainwindow.ui \
-    previewform.ui
+    previewform.ui \
+    picturesizedialog.ui
 
 RESOURCES += vstripe.qrc

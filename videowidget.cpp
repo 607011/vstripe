@@ -114,7 +114,7 @@ void VideoWidget::paintEvent(QPaintEvent*)
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(30, 30, 30));
     painter.drawRect(0, 0, width(), height());
-    painter.drawImage(mDestRect, mImage.convertToFormat(QImage::Format_ARGB32_Premultiplied));
+    painter.drawImage(mDestRect, mImage);
     painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
     //
     // draw marked histogram region

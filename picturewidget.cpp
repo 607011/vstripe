@@ -28,10 +28,7 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mStripePos(-1),
         mStripeVertical(true)
 {
-    setStyleSheet("background: #444");
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setFocus(Qt::PopupFocusReason);
-    setFocusPolicy(Qt::StrongFocus);
+    // ...
 }
 
 
@@ -61,6 +58,7 @@ void PictureWidget::setPicture(const QImage& img, int stripePos, bool stripeVert
     mImage = img;
     mStripePos = stripePos;
     mStripeVertical = stripeVertical;
+    resize(img.size());
     update();
 }
 

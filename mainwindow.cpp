@@ -15,6 +15,7 @@
 #include <QSettings>
 #include <QTextStream>
 #include <QFileInfo>
+#include <QPainter>
 
 #include <QMap>
 #include <QUrl>
@@ -31,9 +32,9 @@
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.6.1 DEBUG $Date$";
+const QString MainWindow::AppVersion = "0.9.7 DEBUG $Date$";
 #else
-const QString MainWindow::AppVersion = "0.9.6.1";
+const QString MainWindow::AppVersion = "0.9.7";
 #endif
 
 
@@ -81,7 +82,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         mPreviewForm->show();
     QObject::connect(mPreviewForm, SIGNAL(correctionsChanged()), this, SLOT(deflicker()));
     QObject::connect(mPreviewForm, SIGNAL(visibilityChanged(bool)), ui->actionPreview_picture, SLOT(setChecked(bool)));
-    QObject::connect(mPreviewForm, SIGNAL(sizeChanged(const QSize&)), this, SLOT(setPictureSize(const QSize&)));
+    QObject::connect(mPreviewForm, SIGNAL(pictureSizeChanged(QSize)), this, SLOT(setPictureSize(QSize)));
     QObject::connect(mPreviewForm->brightnessSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
     QObject::connect(mPreviewForm->redSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
     QObject::connect(mPreviewForm->greenSlider(), SIGNAL(sliderReleased()), this, SLOT(deflicker()));
@@ -333,7 +334,6 @@ void MainWindow::setStripeOrientation(bool vertical)
         mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
     else
         mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
-    mPreviewForm->resize(mDecoder->frameSize());
 }
 
 
@@ -342,6 +342,11 @@ void MainWindow::setPictureSize(const QSize& size)
     if (mVideoReaderThread->isRunning())
         stopRendering();
     mStripeImage = QImage(size, QImage::Format_RGB888);
+    QPainter painter(&mStripeImage);
+    painter.setBrush(QBrush(Qt::darkMagenta, Qt::Dense7Pattern));
+    painter.setPen(Qt::NoPen);
+    painter.drawRect(0, 0, size.width()-1, size.height()-1);
+    mPreviewForm->pictureWidget()->setPicture(mStripeImage, -1);
 }
 
 
@@ -681,9 +686,6 @@ void MainWindow::deflicker(void)
         mPreviewForm->pictureWidget()->setPicture(mStripeImage, -1);
     setCursor(Qt::ArrowCursor);
     mPreviewForm->setCursor(Qt::ArrowCursor);
-#ifndef NODEBUG
-    qDebug() << "deflicker() took " << t.elapsed() << "ms";
-#endif
 }
 
 
@@ -886,9 +888,7 @@ void MainWindow::openWebcam(void)
     useDecoder(new Webcam(this))->open(camId);
     mVideoReaderThread->setSource(mDecoder);
     mVideoWidget->setFrameSize(mDecoder->frameSize());
-    mStripeImage = QImage(mDecoder->frameSize(), QImage::Format_RGB888);
-    mStripeImage.fill(qRgb(116, 214, 252));
-    mPreviewForm->pictureWidget()->resize(mDecoder->frameSize());
+    setPictureSize(mDecoder->frameSize());
     if (mProject.stripeIsVertical())
         mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
     else
@@ -930,7 +930,7 @@ bool MainWindow::loadVideoFile(void)
     bool ok = useDecoder(new VideoDecoder)->open(mProject.videoFileName().toLatin1().constData());
     if (!ok) {
         mVideoWidget->setFrame(QImage());
-        QMessageBox::warning(this, tr("Video nicht lesbar"), tr("Die ausgewählte Datei kann nicht gelesen werden"), QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Opening video failed."), tr("The selected video could not be read."), QMessageBox::Ok);
         ui->statusBar->showMessage(tr("Opening video failed."), 5000);
         return false;
     }
@@ -941,18 +941,15 @@ bool MainWindow::loadVideoFile(void)
     mDecoder->getFrame(img, &mLastFrameNumber);
     if (mLastFrameNumber == 0) {
         mVideoWidget->setFrame(QImage());
-        QMessageBox::warning(this, tr("Video nicht lesbar"), tr("Das ausgewählte Video kann nicht gelesen werden. Bitte konvertieren Sie es in eine H.264-kodierte AVI-Datei."), QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Opening video failed."), tr("The selected video could not be read. Be sure to have any video encoded with H.264 and saved in AVI format."), QMessageBox::Ok);
         ui->statusBar->showMessage(tr("Opening video failed."), 5000);
         return false;
     }
-    mStripeImage = QImage(mDecoder->frameSize(), QImage::Format_RGB888);
-    mStripeImage.fill(qRgb(116, 214, 252));
-    mPreviewForm->pictureWidget()->resize(mDecoder->frameSize());
+    setPictureSize(mDecoder->frameSize());
     if (mProject.stripeIsVertical())
         mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
     else
         mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
-    mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     showPictureWidget();
     ui->action_CloseVideoFile->setEnabled(true);
     mFrameSlider->setMaximum(mLastFrameNumber);

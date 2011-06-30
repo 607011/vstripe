@@ -35,20 +35,21 @@ public:
 public slots:
     void resetRGBLCorrections(void);
     void amplificationChanged(void);
+    void choosePictureSize(void);
 
 signals:
     void correctionsChanged(void);
     void visibilityChanged(bool);
-    void sizeChanged(const QSize&);
+    void pictureSizeChanged(QSize);
 
 protected:
-    void resizeEvent(QResizeEvent*);
     void closeEvent(QCloseEvent*);
     void keyPressEvent(QKeyEvent*);
 
 private:
     Ui::PreviewForm *ui;
     PictureWidget* mPictureWidget;
+    bool mStripeIsVertical;
     static const QString WinTitle;
 
 };
