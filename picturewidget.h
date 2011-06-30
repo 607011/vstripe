@@ -41,6 +41,7 @@ public slots:
 protected:
     void paintEvent(QPaintEvent*);
     void keyPressEvent(QKeyEvent*);
+    void resizeEvent(QResizeEvent*);
 
 private:
     QImage mImage;

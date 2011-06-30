@@ -53,6 +53,12 @@ void PictureWidget::keyPressEvent(QKeyEvent* e)
 }
 
 
+void PictureWidget::resizeEvent(QResizeEvent* e)
+{
+    qDebug() << "PictureWidget::resizeEvent(" << e->size() << ")";
+}
+
+
 void PictureWidget::setPicture(const QImage& img, int stripePos, bool stripeVertical)
 {
     mImage = img;
