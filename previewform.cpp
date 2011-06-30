@@ -8,6 +8,8 @@
 
 #include "previewform.h"
 #include "ui_previewform.h"
+#include "picturesizedialog.h"
+
 
 const QString PreviewForm::WinTitle = QObject::tr("VStripe - Picture Preview");
 
@@ -18,7 +20,10 @@ QSlider* PreviewForm::blueSlider(void) { return ui->exposureBSlider; }
 QDial* PreviewForm::factorDial(void) { return ui->dialCorrectionFactor; }
 
 
-PreviewForm::PreviewForm(QWidget *parent) : QWidget(parent), ui(new Ui::PreviewForm)
+PreviewForm::PreviewForm(QWidget *parent) :
+        QWidget(parent),
+        ui(new Ui::PreviewForm),
+        mStripeIsVertical(true)
 {
     ui->setupUi(this);
 
@@ -27,7 +32,7 @@ PreviewForm::PreviewForm(QWidget *parent) : QWidget(parent), ui(new Ui::PreviewF
 
     QObject::connect(ui->resetRGBLButton, SIGNAL(clicked()), this, SLOT(resetRGBLCorrections()));
     QObject::connect(ui->checkBoxShowCurves, SIGNAL(toggled(bool)), mPictureWidget, SLOT(showCurves(bool)));
-
+    QObject::connect(ui->pushButtonPictureSize, SIGNAL(clicked()), this, SLOT(choosePictureSize()));
     QObject::connect(ui->dialCorrectionFactor, SIGNAL(valueChanged(int)), this, SLOT(amplificationChanged()));
 
     mPictureWidget->showCurves(ui->checkBoxShowCurves->isChecked());
@@ -70,11 +75,22 @@ qreal PreviewForm::amplificationCorrection(void) const
 }
 
 
+void PreviewForm::choosePictureSize(void)
+{
+    PictureSizeDialog diag(mPictureWidget->picture().size(), mStripeIsVertical);
+    int rc = diag.exec();
+    if (rc == QDialog::Accepted) {
+        emit pictureSizeChanged(diag.requestedSize());
+        qDebug() << "size = " << diag.requestedSize();
+    }
+}
+
 
 void PreviewForm::setSizeConstraint(const QSize& minimum, const QSize& maximum)
 {
     mPictureWidget->setMinimumSize(minimum);
     mPictureWidget->setMaximumSize(maximum);
+    mStripeIsVertical = (minimum.width() == 0);
 }
 
 
@@ -88,11 +104,4 @@ void PreviewForm::keyPressEvent(QKeyEvent* event)
 void PreviewForm::closeEvent(QCloseEvent*)
 {
     emit visibilityChanged(false);
-}
-
-
-void PreviewForm::resizeEvent(QResizeEvent*)
-{
-    emit sizeChanged(mPictureWidget->size());
-    setWindowTitle(QString("%1 - %2x%3").arg(WinTitle).arg(mPictureWidget->width()).arg(mPictureWidget->height()));
 }
