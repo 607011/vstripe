@@ -129,8 +129,9 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         if (!cam.open(i))
             break;
         QImage img;
-        cam.getFrame(img);
-        if (img.isNull())
+        bool ok = cam.getFrame(img);
+        qDebug() << img.size();
+        if (!ok || img.isNull())
             break;
         if (webcamMenu == NULL)
             webcamMenu = new QMenu(tr("Open webcam"), ui->menu_File);
@@ -138,6 +139,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         camMenu->setData(i);
         webcamMenu->addAction(camMenu);
         QObject::connect(camMenu, SIGNAL(triggered()), this, SLOT(openWebcam()));
+        break; // one camera is enough, use it
     }
     if (webcamMenu)
         ui->menu_File->insertMenu(ui->action_OpenVideoFile, webcamMenu);
@@ -880,7 +882,7 @@ void MainWindow::updateRecentProjectFileActions(void)
 }
 
 
-void MainWindow::timerEvent(QTimerEvent* event)
+void MainWindow::timerEvent(QTimerEvent*)
 {
     /* ... */
 }
