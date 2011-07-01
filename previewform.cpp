@@ -23,9 +23,7 @@ QDial* PreviewForm::factorDial(void) { return ui->dialCorrectionFactor; }
 PreviewForm::PreviewForm(QWidget* parent) :
         QWidget(parent),
         ui(new Ui::PreviewForm),
-        mStripeIsVertical(true),
-        mDragging(false),
-        mZoom(1.0)
+        mStripeIsVertical(true)
 {
     ui->setupUi(this);
 
@@ -103,8 +101,7 @@ void PreviewForm::keyPressEvent(QKeyEvent* event)
         mPictureWidget->copyImageToClipboard();
     }
     else if (event->key() == Qt::Key_Escape) {
-        mZoom = 1.0;
-        mPictureWidget->setZoom(mZoom);
+        mPictureWidget->setZoom(1.0);
         mPictureWidget->move(0, 0);
     }
 }
@@ -113,41 +110,4 @@ void PreviewForm::keyPressEvent(QKeyEvent* event)
 void PreviewForm::closeEvent(QCloseEvent*)
 {
     emit visibilityChanged(false);
-}
-
-
-void PreviewForm::mousePressEvent(QMouseEvent* event)
-{
-    if (event->button() == Qt::LeftButton) {
-        mPictureWidget->setCursor(Qt::ClosedHandCursor);
-        mDragStartPos = event->pos();
-        mPreviousPos = mPictureWidget->pos();
-        mDragging = true;
-    }
-}
-
-
-void PreviewForm::mouseReleaseEvent(QMouseEvent*)
-{
-    if (mDragging) {
-        mPictureWidget->setCursor(Qt::OpenHandCursor);
-        mDragging = false;
-    }
-}
-
-
-void PreviewForm::mouseMoveEvent(QMouseEvent* event)
-{
-    if (mDragging)
-        mPictureWidget->move(mPreviousPos + event->pos() - mDragStartPos);
-}
-
-
-void PreviewForm::wheelEvent(QWheelEvent* e)
-{
-    int numDegrees = e->delta() / 8;
-    int numSteps = numDegrees / 15;
-    mZoom *= pow(1.1, numSteps);
-    mPictureWidget->setZoom(mZoom);
-    e->ignore();
 }

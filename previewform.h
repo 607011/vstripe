@@ -45,10 +45,6 @@ signals:
 protected:
     void closeEvent(QCloseEvent*);
     void keyPressEvent(QKeyEvent*);
-    void mousePressEvent(QMouseEvent*);
-    void mouseReleaseEvent(QMouseEvent*);
-    void mouseMoveEvent(QMouseEvent*);
-    void wheelEvent(QWheelEvent*);
 
 private:
     Ui::PreviewForm *ui;
@@ -56,10 +52,6 @@ private:
     bool mStripeIsVertical;
     QSize mDefaultSize;
     QSize mMaximumSize;
-    bool mDragging;
-    QPoint mDragStartPos;
-    QPoint mPreviousPos;
-    qreal mZoom;
     static const QString WinTitle;
 
 };
