@@ -9,6 +9,7 @@
 #include <QClipboard>
 #include "picturewidget.h"
 
+#include <qmath.h>
 
 PictureWidget::PictureWidget(QWidget* parent) :
         QWidget(parent),
@@ -27,6 +28,7 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mMinBlue(-1),
         mStripePos(-1),
         mStripeVertical(true),
+        mDragging(false),
         mZoom(1.0)
 {
     // ...
@@ -60,6 +62,43 @@ void PictureWidget::resizeEvent(QResizeEvent* e)
 }
 
 
+void PictureWidget::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton) {
+        setCursor(Qt::ClosedHandCursor);
+        mDragStartPos = event->pos() - pos();
+        mDragging = true;
+    }
+}
+
+
+void PictureWidget::mouseReleaseEvent(QMouseEvent*)
+{
+    if (mDragging) {
+        setCursor(Qt::OpenHandCursor);
+        mDragging = false;
+    }
+}
+
+
+void PictureWidget::mouseMoveEvent(QMouseEvent* event)
+{
+    if (mDragging) {
+        move(event->pos() - mDragStartPos);
+        update();
+    }
+}
+
+
+void PictureWidget::wheelEvent(QWheelEvent* event)
+{
+    int numDegrees = event->delta() / 8;
+    int numSteps = numDegrees / 15;
+    mZoom *= pow(1.1, numSteps);
+    setZoom(mZoom);
+}
+
+
 void PictureWidget::setZoom(qreal zoom)
 {
     mZoom = zoom;
@@ -75,7 +114,7 @@ void PictureWidget::setPicture(const QImage& img, int stripePos, bool stripeVert
     mStripePos = stripePos;
     mStripeVertical = stripeVertical;
     setMinimumSize(mImage.size() * mZoom);
-    resize(img.size() * mZoom);
+    resize(mImage.size() * mZoom);
     update();
 }
 

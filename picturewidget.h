@@ -44,6 +44,10 @@ protected:
     void paintEvent(QPaintEvent*);
     void keyPressEvent(QKeyEvent*);
     void resizeEvent(QResizeEvent*);
+    void mousePressEvent(QMouseEvent*);
+    void mouseReleaseEvent(QMouseEvent*);
+    void mouseMoveEvent(QMouseEvent*);
+    void wheelEvent(QWheelEvent*);
 
 private:
     QImage mImage;
@@ -62,6 +66,8 @@ private:
     qreal mMinBlue;
     int mStripePos;
     bool mStripeVertical;
+    bool mDragging;
+    QPoint mDragStartPos;
     qreal mZoom;
 };
 
