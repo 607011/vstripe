@@ -1,3 +1,10 @@
+/* Copyright (c) 2011 Oliver Lau <oliver@von-und-fuer-lau.de>
+ * All rights reserved.
+ * $Id$
+ */
+
+#include <QtCore/QtDebug>
+
 #include "picturesizedialog.h"
 #include "ui_picturesizedialog.h"
 
@@ -10,14 +17,10 @@ PictureSizeDialog::PictureSizeDialog(const QSize& currentSize, const QSize& defa
     mStripeIsVertical(stripeIsVertical)
 {
     ui->setupUi(this);
-    if (stripeIsVertical) {
+    if (stripeIsVertical)
         ui->spinBoxWidth->setEnabled(true);
-        ui->spinBoxHeight->setEnabled(false);
-    }
-    else {
-        ui->spinBoxWidth->setEnabled(false);
+    else
         ui->spinBoxHeight->setEnabled(true);
-    }
     ui->spinBoxWidth->setValue(currentSize.width());
     ui->spinBoxWidth->setMaximum(maximumSize.width());
     ui->spinBoxHeight->setValue(currentSize.height());
@@ -42,8 +45,10 @@ void PictureSizeDialog::resetSize(void)
 
 void PictureSizeDialog::optimizeSize(void)
 {
-    ui->spinBoxWidth->setValue(mMaximumSize.width());
-    ui->spinBoxHeight->setValue(mMaximumSize.height());
+    if (mStripeIsVertical)
+        ui->spinBoxWidth->setValue(mMaximumSize.width());
+    else
+        ui->spinBoxHeight->setValue(mMaximumSize.height());
 }
 
 

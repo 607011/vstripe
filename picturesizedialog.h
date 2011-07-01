@@ -1,5 +1,10 @@
-#ifndef PICTURESIZEDIALOG_H
-#define PICTURESIZEDIALOG_H
+/* Copyright (c) 2011 Oliver Lau <oliver@von-und-fuer-lau.de>
+ * All rights reserved.
+ * $Id$
+ */
+
+#ifndef __PICTURESIZEDIALOG_H_
+#define __PICTURESIZEDIALOG_H_
 
 #include <QDialog>
 
@@ -29,4 +34,4 @@ private:
 };
 
 
-#endif // PICTURESIZEDIALOG_H
+#endif // __PICTURESIZEDIALOG_H_

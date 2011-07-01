@@ -26,7 +26,8 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mMinGreen(-1),
         mMinBlue(-1),
         mStripePos(-1),
-        mStripeVertical(true)
+        mStripeVertical(true),
+        mZoom(1.0)
 {
     // ...
 }
@@ -55,7 +56,16 @@ void PictureWidget::keyPressEvent(QKeyEvent* e)
 
 void PictureWidget::resizeEvent(QResizeEvent* e)
 {
-    qDebug() << "PictureWidget::resizeEvent(" << e->size() << ")";
+    // ...
+}
+
+
+void PictureWidget::setZoom(qreal zoom)
+{
+    mZoom = zoom;
+    setMinimumSize(mImage.size() * mZoom);
+    resize(mImage.size() * mZoom);
+    update();
 }
 
 
@@ -64,7 +74,8 @@ void PictureWidget::setPicture(const QImage& img, int stripePos, bool stripeVert
     mImage = img;
     mStripePos = stripePos;
     mStripeVertical = stripeVertical;
-    resize(img.size());
+    setMinimumSize(mImage.size() * mZoom);
+    resize(img.size() * mZoom);
     update();
 }
 
@@ -102,6 +113,7 @@ void PictureWidget::setBrightnessData(
 void PictureWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
+    painter.scale(mZoom, mZoom);
     painter.drawImage(QPoint(0, 0), mImage);
     painter.setBrush(Qt::NoBrush);
     if (mStripePos >= 0) {
