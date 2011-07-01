@@ -29,6 +29,7 @@ unix:!macx {
 FFMPEGDIR = ../ffmpeg-static
 LIBS += -L$${FFMPEGDIR}/lib -lavformat -lavcodec -lavutil -lswscale
 LIBS += -L$${OPENCVDIR}/lib -lopencv_core -lopencv_highgui
+LIBS += -lgomp
 }
 
 macx {
@@ -38,6 +39,7 @@ ICON = VStripe.icns
 QMAKE_INFO_PLIST = VStripe.plist
 LIBS += -L$${FFMPEGDIR}/lib -lavformat -lavcodec -lavutil -lswscale
 LIBS += -L$${OPENCVDIR}/lib -lopencv_core -lopencv_highgui
+LIBS += -lgomp
 }
 
 INCLUDEPATH += $${FFMPEGDIR}/include \

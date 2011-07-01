@@ -56,7 +56,7 @@ void PictureWidget::keyPressEvent(QKeyEvent* e)
 }
 
 
-void PictureWidget::resizeEvent(QResizeEvent* e)
+void PictureWidget::resizeEvent(QResizeEvent*)
 {
     // ...
 }
