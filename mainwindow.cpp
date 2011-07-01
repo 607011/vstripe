@@ -60,7 +60,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     QObject::connect(ui->action_OpenVideoFile, SIGNAL(triggered()), this, SLOT(openVideoFile()));
     QObject::connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
-    QObject::connect(ui->actionAutofitPreview, SIGNAL(triggered()), this, SLOT(autoFitPreview()));
     QObject::connect(ui->actionHistogram, SIGNAL(toggled(bool)), mVideoWidget, SLOT(setHistogramEnabled(bool)));
     QObject::connect(ui->actionClear_histogram_region, SIGNAL(triggered()), this, SLOT(clearHistogramRegion()));
 
@@ -331,9 +330,9 @@ void MainWindow::setStripeOrientation(bool vertical)
     if (mStripeImage.isNull())
         return;
     if (vertical)
-        mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
+        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()), mDecoder->frameSize());
     else
-        mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
+        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX),  mDecoder->frameSize());
 }
 
 
@@ -708,7 +707,6 @@ void MainWindow::enableGuiButtons(void)
     ui->action_CloseVideoFile->setEnabled(true);
     ui->action_Save_picture->setEnabled(true);
     ui->actionClear_marks->setEnabled(true);
-    ui->actionAutofitPreview->setEnabled(true);
 }
 
 
@@ -731,7 +729,6 @@ void MainWindow::disableGuiButtons(void)
     ui->action_CloseVideoFile->setEnabled(false);
     ui->action_Save_picture->setEnabled(false);
     ui->actionClear_marks->setEnabled(false);
-    ui->actionAutofitPreview->setEnabled(false);
 }
 
 
@@ -890,9 +887,9 @@ void MainWindow::openWebcam(void)
     mVideoWidget->setFrameSize(mDecoder->frameSize());
     setPictureSize(mDecoder->frameSize());
     if (mProject.stripeIsVertical())
-        mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
+        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()), mDecoder->frameSize());
     else
-        mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
+        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX), mDecoder->frameSize());
     mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     showPictureWidget();
     QImage img;
@@ -947,9 +944,9 @@ bool MainWindow::loadVideoFile(void)
     }
     setPictureSize(mDecoder->frameSize());
     if (mProject.stripeIsVertical())
-        mPreviewForm->setSizeConstraint(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()));
+        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()), mDecoder->frameSize());
     else
-        mPreviewForm->setSizeConstraint(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX));
+        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX), mDecoder->frameSize());
     showPictureWidget();
     ui->action_CloseVideoFile->setEnabled(true);
     mFrameSlider->setMaximum(mLastFrameNumber);
@@ -985,10 +982,4 @@ void MainWindow::savePicture(void)
 {
     QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save picture as ..."), QString(), "*.png, *.jpg");
     mPreviewForm->pictureWidget()->picture().save(saveFileName, 0, 80);
-}
-
-
-void MainWindow::autoFitPreview(void)
-{
-    mPreviewForm->resize(mDecoder->frameSize()); // XXX
 }

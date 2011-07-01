@@ -20,7 +20,7 @@ QSlider* PreviewForm::blueSlider(void) { return ui->exposureBSlider; }
 QDial* PreviewForm::factorDial(void) { return ui->dialCorrectionFactor; }
 
 
-PreviewForm::PreviewForm(QWidget *parent) :
+PreviewForm::PreviewForm(QWidget* parent) :
         QWidget(parent),
         ui(new Ui::PreviewForm),
         mStripeIsVertical(true)
@@ -78,20 +78,20 @@ qreal PreviewForm::amplificationCorrection(void) const
 
 void PreviewForm::choosePictureSize(void)
 {
-    PictureSizeDialog diag(mPictureWidget->picture().size(), mStripeIsVertical);
+    PictureSizeDialog diag(mPictureWidget->picture().size(), mDefaultSize, mMaximumSize, mStripeIsVertical);
     int rc = diag.exec();
-    if (rc == QDialog::Accepted) {
+    if (rc == QDialog::Accepted)
         emit pictureSizeChanged(diag.requestedSize());
-        qDebug() << "size = " << diag.requestedSize();
-    }
 }
 
 
-void PreviewForm::setSizeConstraint(const QSize& minimum, const QSize& maximum)
+void PreviewForm::setSizeConstraints(const QSize& minimumSize, const QSize& maximumSize, const QSize& defaultSize)
 {
-    mPictureWidget->setMinimumSize(minimum);
-    mPictureWidget->setMaximumSize(maximum);
-    mStripeIsVertical = (minimum.width() == 0);
+    mMaximumSize = maximumSize;
+    mDefaultSize = defaultSize;
+    mPictureWidget->setMinimumSize(minimumSize);
+    mPictureWidget->setMaximumSize(maximumSize);
+    mStripeIsVertical = (minimumSize.width() == 0);
 }
 
 
