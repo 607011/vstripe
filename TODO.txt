@@ -5,21 +5,15 @@ FEHLER
 
 [ ] Die ausgeschnittenen müssen in umgekehrter Richtung zusammengesetzt werden, damit bewegte Objekte nicht spiegelverkehrt abgebildet werden.
 
-[ ] size constraints der PreviewForm funktionieren nicht ???
-
-[ ] Nach der Größenänderung des PreviewForm friert das GUI ein, wenn man die Schieberegler bedient
-
 
 FEATURES
 ========
 
 [ ] Webcam-Aufzeichnung soll sich als Video speichern lassen können
 
-[ ] Anzeige der Frames/Sekunde im Statusbar
+[ ] Beim Generieren: Anzeige der Frames/Sekunde im Statusbar
 
 [ ] Einlesen eines Frames in MainWindow::seekToFrame() mit QFuture/QtConcurrent::run() implementieren ???
-
-[ ] Gerendertes Bild soll beliebig groß werden können -> Bild in Vorschaufenster skalierbar machen
 
 [ ] Anzahl der mit [A und B] markierten Frames nicht nur im Info-Feld anzeigen, sondern in Echtzeit
 

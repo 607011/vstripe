@@ -300,6 +300,25 @@ QString MainWindow::ms2hmsz(int ms, bool withMs)
 }
 
 
+QSize MainWindow::optimalPictureSize(void) const
+{
+    QSize goalSize(mDecoder->frameSize());
+    if (mProject.markAIsSet() && mProject.markBIsSet()) {
+        if (mProject.stripeIsVertical())
+            goalSize.setWidth(mProject.markB() - mProject.markA());
+        else
+            goalSize.setHeight(mProject.markB() - mProject.markA());
+    }
+    else {
+        if (mProject.stripeIsVertical())
+            goalSize.setWidth(mWebcamThread? 9999: (mLastFrameNumber - mProject.currentFrame()));
+        else
+            goalSize.setHeight(mWebcamThread? 9999: (mLastFrameNumber - mProject.currentFrame()));
+    }
+    return goalSize;
+}
+
+
 void MainWindow::seekToFrame(int n)
 {
     setCursor(Qt::WaitCursor);
@@ -329,10 +348,11 @@ void MainWindow::setStripeOrientation(bool vertical)
 {
     if (mStripeImage.isNull())
         return;
+    mProject.setStripeOrientation(vertical);
     if (vertical)
-        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()), mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize());
     else
-        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX),  mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize());
 }
 
 
@@ -341,8 +361,9 @@ void MainWindow::setPictureSize(const QSize& size)
     if (mVideoReaderThread->isRunning())
         stopRendering();
     mStripeImage = QImage(size, QImage::Format_RGB888);
+    mStripeImage.fill(qRgb(82, 179, 169));
     QPainter painter(&mStripeImage);
-    painter.setBrush(QBrush(Qt::darkMagenta, Qt::Dense7Pattern));
+    painter.setBrush(QBrush(QColor(43, 17, 110), Qt::DiagCrossPattern));
     painter.setPen(Qt::NoPen);
     painter.drawRect(0, 0, size.width()-1, size.height()-1);
     mPreviewForm->pictureWidget()->setPicture(mStripeImage, -1);
@@ -887,9 +908,9 @@ void MainWindow::openWebcam(void)
     mVideoWidget->setFrameSize(mDecoder->frameSize());
     setPictureSize(mDecoder->frameSize());
     if (mProject.stripeIsVertical())
-        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()), mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize());
     else
-        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX), mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize());
     mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     showPictureWidget();
     QImage img;
@@ -944,9 +965,9 @@ bool MainWindow::loadVideoFile(void)
     }
     setPictureSize(mDecoder->frameSize());
     if (mProject.stripeIsVertical())
-        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), QSize(QWIDGETSIZE_MAX, mDecoder->frameSize().height()), mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize());
     else
-        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), QSize(mDecoder->frameSize().width(), QWIDGETSIZE_MAX), mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize());
     showPictureWidget();
     ui->action_CloseVideoFile->setEnabled(true);
     mFrameSlider->setMaximum(mLastFrameNumber);

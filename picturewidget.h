@@ -18,6 +18,7 @@ class PictureWidget : public QWidget
 public:
     PictureWidget(QWidget* parent = NULL);
     QSize sizeHint(void) const { return QSize(1920, 1080); }
+    QSize minimumSizeHint(void) const { return QSize(320, 240); }
     void setPicture(const QImage& img, int stripePos, bool stripeVertical = true);
     void setBrightnessData(
             const BrightnessData* brightness,
@@ -33,6 +34,7 @@ public:
             qreal minGreen = -1,
             qreal minBlue = -1);
     inline const QImage& picture(void) const { return mImage; }
+    void setZoom(qreal);
 
 public slots:
     void copyImageToClipboard(void);
@@ -60,6 +62,7 @@ private:
     qreal mMinBlue;
     int mStripePos;
     bool mStripeVertical;
+    qreal mZoom;
 };
 
 #endif // __PICTUREWIDGET_H_
