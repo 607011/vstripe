@@ -542,7 +542,6 @@
      <string>Window</string>
     </property>
     <addaction name="actionPreview_picture"/>
-    <addaction name="actionAutofitPreview"/>
     <addaction name="separator"/>
     <addaction name="actionHelp"/>
     <addaction name="actionAbout"/>
