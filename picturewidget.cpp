@@ -84,7 +84,7 @@ void PictureWidget::mouseReleaseEvent(QMouseEvent*)
 void PictureWidget::mouseMoveEvent(QMouseEvent* event)
 {
     if (mDragging) {
-        move(event->pos() - mDragStartPos);
+        event->pos();
         update();
     }
 }
