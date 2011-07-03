@@ -32,9 +32,9 @@
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.7 DEBUG $Date$";
+const QString MainWindow::AppVersion = "0.9.8 DEBUG $Date$";
 #else
-const QString MainWindow::AppVersion = "0.9.7";
+const QString MainWindow::AppVersion = "0.9.8";
 #endif
 
 
@@ -131,7 +131,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QImage img;
         bool ok = cam.getFrame(img);
         qDebug() << img.size();
-        if (!ok || img.isNull())
+        if (!ok || img.isNull()) // TODO: works with Windows, but with Mac OS X (10.6) there is no error despite an invalid camera id; not tested with Linux
             break;
         if (webcamMenu == NULL)
             webcamMenu = new QMenu(tr("Open webcam"), ui->menu_File);
@@ -139,7 +139,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         camMenu->setData(i);
         webcamMenu->addAction(camMenu);
         QObject::connect(camMenu, SIGNAL(triggered()), this, SLOT(openWebcam()));
-        break; // one camera is enough, use it
+        break; // one camera is enough, use it (TODO: remove this statement if above TODO is solved)
     }
     if (webcamMenu)
         ui->menu_File->insertMenu(ui->action_OpenVideoFile, webcamMenu);
@@ -305,6 +305,7 @@ QString MainWindow::ms2hmsz(int ms, bool withMs)
 QSize MainWindow::optimalPictureSize(void) const
 {
     QSize goalSize(mDecoder->frameSize());
+    qDebug() << "MainWindow::optimalPictureSize() goalSize =" << goalSize;
     if (mProject.markAIsSet() && mProject.markBIsSet()) {
         if (mProject.stripeIsVertical())
             goalSize.setWidth(mProject.markB() - mProject.markA());
@@ -905,10 +906,13 @@ void MainWindow::openWebcam(void)
 {
     QAction* action = qobject_cast<QAction*>(sender());
     int camId = action->data().toInt();
-    useDecoder(new Webcam(this))->open(camId);
+    useDecoder(new Webcam(this))->open(camId); // useDecoder() sets mDecoder
     mVideoReaderThread->setSource(mDecoder);
     mVideoWidget->setFrameSize(mDecoder->frameSize());
     setPictureSize(mDecoder->frameSize());
+    mEffectiveFrameNumber = 0;
+    mWebcamThread = new WebcamThread(qobject_cast<Webcam*>(mDecoder), this);
+    QObject::connect(mWebcamThread, SIGNAL(frameReady(QImage)), mVideoWidget, SLOT(setFrame(const QImage&)));
     if (mProject.stripeIsVertical())
         mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize());
     else
@@ -922,9 +926,6 @@ void MainWindow::openWebcam(void)
     ui->actionSave_project->setEnabled(true);
     ui->actionSave_project_as->setEnabled(true);
     enableGuiButtons();
-    mEffectiveFrameNumber = 0;
-    mWebcamThread = new WebcamThread(qobject_cast<Webcam*>(mDecoder), this);
-    QObject::connect(mWebcamThread, SIGNAL(frameReady(QImage)), mVideoWidget, SLOT(setFrame(const QImage&)));
     mWebcamThread->startReading();
     ui->statusBar->showMessage(tr("Webcam is running ..."));
     clearMarks();
@@ -947,7 +948,7 @@ bool MainWindow::loadVideoFile(void)
 {
     if (mWebcamThread)
         mWebcamThread->stopReading();
-    bool ok = useDecoder(new VideoDecoder)->open(mProject.videoFileName().toLatin1().constData());
+    bool ok = useDecoder(new VideoDecoder)->open(mProject.videoFileName().toLatin1().constData()); // useDecoder() sets mDecoder
     if (!ok) {
         mVideoWidget->setFrame(QImage());
         QMessageBox::warning(this, tr("Opening video failed."), tr("The selected video could not be read."), QMessageBox::Ok);

@@ -23,7 +23,7 @@ class PreviewForm : public QWidget
 public:
     PreviewForm(QWidget* parent = NULL);
     ~PreviewForm();
-    void setSizeConstraints(const QSize& minimumSize, const QSize& maximumSize, const QSize& defaultSize);
+    void setSizeConstraints(const QSize& minimumSize, const QSize& optimumSize, const QSize& defaultSize);
     PictureWidget* pictureWidget(void) { return mPictureWidget; }
     QSlider* brightnessSlider(void);
     QSlider* redSlider(void);
@@ -51,7 +51,7 @@ private:
     PictureWidget* mPictureWidget;
     bool mStripeIsVertical;
     QSize mDefaultSize;
-    QSize mMaximumSize;
+    QSize mOptimumSize;
     static const QString WinTitle;
 
 };

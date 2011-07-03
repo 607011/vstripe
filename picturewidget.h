@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <QImage>
 #include <QResizeEvent>
+#include <QScrollArea>
 
 #include "histogram.h"
 
@@ -35,6 +36,7 @@ public:
             qreal minBlue = -1);
     inline const QImage& picture(void) const { return mImage; }
     void setZoom(qreal);
+    void setScrollArea(QScrollArea*);
 
 public slots:
     void copyImageToClipboard(void);
@@ -69,6 +71,7 @@ private:
     bool mDragging;
     QPoint mDragStartPos;
     qreal mZoom;
+    QScrollArea* mScrollArea;
 };
 
 #endif // __PICTUREWIDGET_H_

@@ -29,6 +29,7 @@ PreviewForm::PreviewForm(QWidget* parent) :
 
     mPictureWidget = new PictureWidget;
     mPictureWidget->showCurves(ui->checkBoxShowCurves->isChecked());
+    mPictureWidget->setScrollArea(ui->scrollArea);
 
     ui->scrollArea->setWidget(mPictureWidget);
     ui->scrollArea->setBackgroundRole(QPalette::Dark);
@@ -78,19 +79,20 @@ qreal PreviewForm::amplificationCorrection(void) const
 
 void PreviewForm::choosePictureSize(void)
 {
-    PictureSizeDialog diag(mPictureWidget->picture().size(), mDefaultSize, mMaximumSize, mStripeIsVertical);
+    PictureSizeDialog diag(mPictureWidget->picture().size(), mDefaultSize, mOptimumSize, mStripeIsVertical);
     int rc = diag.exec();
     if (rc == QDialog::Accepted)
         emit pictureSizeChanged(diag.requestedSize());
 }
 
 
-void PreviewForm::setSizeConstraints(const QSize& minimumSize, const QSize& maximumSize, const QSize& defaultSize)
+void PreviewForm::setSizeConstraints(const QSize& minimumSize, const QSize& optimumSize, const QSize& defaultSize)
 {
-    mMaximumSize = maximumSize;
+    qDebug() << "PreviewForm::setSizeConstraints(minimumSize =" << minimumSize << ", optimumSize =" << optimumSize << ", defaultSize =" << defaultSize;
+    mOptimumSize = optimumSize;
     mDefaultSize = defaultSize;
     mPictureWidget->setMinimumSize(minimumSize);
-    mPictureWidget->setMaximumSize(maximumSize);
+    mPictureWidget->setMaximumSize(mOptimumSize);
     mStripeIsVertical = (minimumSize.width() == 0);
 }
 
