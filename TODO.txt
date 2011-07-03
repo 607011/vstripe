@@ -1,11 +1,7 @@
 FEHLER
 ======
 
-[ ] Fehlerbehandlung, wenn das Video nicht eingelesen werden konnte (z.B. Anzahl Frames = 0)
-
 [ ] Die ausgeschnittenen Streifen müssen in umgekehrter Richtung zusammengesetzt werden, damit bewegte Objekte nicht spiegelverkehrt abgebildet werden.
-
-[ ] Dialog zum Setzen der Bildgröße funktioniert nicht, wenn im Webcam-Betrieb
 
 
 FEATURES
@@ -18,8 +14,6 @@ FEATURES
 [ ] Einlesen eines Frames in MainWindow::seekToFrame() mit QFuture/QtConcurrent::run() implementieren ???
 
 [ ] Anzahl der mit [A und B] markierten Frames nicht nur im Info-Feld anzeigen, sondern in Echtzeit
-
-[ ] Einlesen in Echtzeit von Webcam oder anderer angeschlossener Videokamera (OpenCV??)
 
 [ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
 

@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QApplication>
+#include <QScrollArea>
+#include <QScrollBar>
 #include <QClipboard>
 #include "picturewidget.h"
 
@@ -29,7 +31,8 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mStripePos(-1),
         mStripeVertical(true),
         mDragging(false),
-        mZoom(1.0)
+        mZoom(1.0),
+        mScrollArea(NULL)
 {
     // ...
 }
@@ -84,8 +87,10 @@ void PictureWidget::mouseReleaseEvent(QMouseEvent*)
 void PictureWidget::mouseMoveEvent(QMouseEvent* event)
 {
     if (mDragging) {
-        event->pos();
-        update();
+        Q_ASSERT(mScrollArea != NULL);
+        QPoint d = mDragStartPos - event->pos();
+        mScrollArea->horizontalScrollBar()->setValue(mScrollArea->horizontalScrollBar()->value() + d.x());
+        mScrollArea->verticalScrollBar()->setValue(mScrollArea->verticalScrollBar()->value() + d.y());
     }
 }
 
@@ -105,6 +110,12 @@ void PictureWidget::setZoom(qreal zoom)
     setMinimumSize(mImage.size() * mZoom);
     resize(mImage.size() * mZoom);
     update();
+}
+
+
+void PictureWidget::setScrollArea(QScrollArea* scrollArea)
+{
+    mScrollArea = scrollArea;
 }
 
 
