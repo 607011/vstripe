@@ -10,9 +10,15 @@
 
 class IAbstractVideoDecoder : public QObject
 {
-public: // virtual methods
-    IAbstractVideoDecoder(QObject* parent = NULL) : QObject(parent) { /* ... */ }
+public:
+    IAbstractVideoDecoder(QObject* parent = NULL) :
+            QObject(parent),
+            mDefaultSkip(1)
+    { /* ... */ }
+    virtual ~IAbstractVideoDecoder()
+    { /* ... */ }
 
+public: // virtual methods
     virtual bool open(const char* fileName) = 0;
     virtual bool open(int deviceId) = 0;
     virtual void close(void) = 0;

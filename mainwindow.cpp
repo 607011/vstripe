@@ -302,10 +302,15 @@ QString MainWindow::ms2hmsz(int ms, bool withMs)
 }
 
 
+bool MainWindow::webcamRunning(void) const
+{
+    return mWebcamThread != NULL && mWebcamThread->isRunning();
+}
+
+
 QSize MainWindow::optimalPictureSize(void) const
 {
     QSize goalSize(mDecoder->frameSize());
-    qDebug() << "MainWindow::optimalPictureSize() goalSize =" << goalSize;
     if (mProject.markAIsSet() && mProject.markBIsSet()) {
         if (mProject.stripeIsVertical())
             goalSize.setWidth(mProject.markB() - mProject.markA());
@@ -314,9 +319,9 @@ QSize MainWindow::optimalPictureSize(void) const
     }
     else {
         if (mProject.stripeIsVertical())
-            goalSize.setWidth(mWebcamThread? 9999: (mLastFrameNumber - mProject.currentFrame()));
+            goalSize.setWidth(webcamRunning()? 9999: (mLastFrameNumber - mProject.currentFrame()));
         else
-            goalSize.setHeight(mWebcamThread? 9999: (mLastFrameNumber - mProject.currentFrame()));
+            goalSize.setHeight(webcamRunning()? 9999: (mLastFrameNumber - mProject.currentFrame()));
     }
     return goalSize;
 }
@@ -401,7 +406,7 @@ void MainWindow::startRendering(void)
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
     mPreRenderFrameNumber = mFrameSlider->value();
     mProject.setCurrentFrame(mPreRenderFrameNumber);
-    if (mWebcamThread)
+    if (webcamRunning())
         mWebcamThread->stopReading();
     mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameDelta);
 }
@@ -946,7 +951,7 @@ void MainWindow::openVideoFile(void)
 
 bool MainWindow::loadVideoFile(void)
 {
-    if (mWebcamThread)
+    if (webcamRunning())
         mWebcamThread->stopReading();
     bool ok = useDecoder(new VideoDecoder)->open(mProject.videoFileName().toLatin1().constData()); // useDecoder() sets mDecoder
     if (!ok) {
