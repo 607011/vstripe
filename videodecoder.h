@@ -64,7 +64,6 @@ private: // variables
     int mLastFrameTime, mLastLastFrameTime, mLastLastFrameNumber, mLastFrameNumber;
     int mDesiredFrameTime, mDesiredFrameNumber;
     bool mLastFrameOk; // Set upon start or after a seek we don't have a frame yet
-    int mDefaultSkip;
 
 private: // methods
     bool initCodec();
