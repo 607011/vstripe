@@ -48,6 +48,8 @@ void VideoReaderThread::startReading(int firstFrameNumber, int nFrames, qreal fr
     Q_ASSERT(nFrames > 0);
     Q_ASSERT(frameDelta > 0);
 
+    qDebug() << "VideoReaderThread::startReading(" << firstFrameNumber << "," << nFrames << "," << frameDelta << ")";
+
     stopReading();
     mFrameNumber = (qreal)firstFrameNumber;
     mMaxFrameCount = nFrames;

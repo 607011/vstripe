@@ -25,7 +25,7 @@ make
 
 echo Making translations ..
 
-$QTDIR/bin/lrelease VStripe.pro
+$QTDIR/bin/lrelease -compress VStripe.pro
 cp $APP*.qm $APPBUNDLE/Contents/MacOS
 
 echo Generating help ..

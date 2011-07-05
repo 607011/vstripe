@@ -146,8 +146,8 @@ private: // methods
     void setCurrentProjectFile(const QString&);
     IAbstractVideoDecoder* useDecoder(IAbstractVideoDecoder*);
     QSize optimalPictureSize(void) const;
-    bool webcamRunning(void) const;
-    void closeWebcamIfOpen(void);
+    bool webcamIsActive(void) const;
+    void deactivateWebcam(void);
 
     static QString ms2hmsz(int ms, bool withMs = true);
     static QString strippedName(const QString& fullFileName);
