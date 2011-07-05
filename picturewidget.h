@@ -6,10 +6,13 @@
 #ifndef __PICTUREWIDGET_H_
 #define __PICTUREWIDGET_H_
 
-#include <QWidget>
+#include <QtGui/QWidget>
 #include <QImage>
 #include <QResizeEvent>
 #include <QScrollArea>
+#include <QtCore/QTime>
+#include <QtCore/QTimer>
+#include <QtCore/QTimerEvent>
 
 #include "histogram.h"
 
@@ -51,6 +54,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent*);
     void mouseMoveEvent(QMouseEvent*);
     void wheelEvent(QWheelEvent*);
+    void timerEvent(QTimerEvent*);
 
 private:
     QImage mImage;
@@ -72,6 +76,10 @@ private:
     bool mStripeVertical;
     bool mDragging;
     QPoint mDragStartPos;
+    QTime mMouseMoveStartTime;
+    QTimer mKineticTimer;
+    int mKineticEnergy;
+    int mNumMoveEvents;
     qreal mZoom;
     QScrollArea* mScrollArea;
 };
