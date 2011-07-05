@@ -31,6 +31,7 @@ public:
     QSlider* blueSlider(void);
     QDial* factorDial(void);
     qreal amplificationCorrection(void) const;
+    void setPictureSize(const QSize&);
 
 public slots:
     void resetRGBLCorrections(void);

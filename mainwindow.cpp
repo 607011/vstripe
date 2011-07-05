@@ -130,7 +130,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
             break;
         QImage img;
         bool ok = cam.getFrame(img);
-        qDebug() << img.size();
         if (!ok || img.isNull()) // TODO: works with Windows, but with Mac OS X (10.6) there is no error despite an invalid camera id; not tested with Linux
             break;
         if (webcamMenu == NULL)
@@ -302,10 +301,22 @@ QString MainWindow::ms2hmsz(int ms, bool withMs)
 }
 
 
-bool MainWindow::webcamRunning(void) const
+void MainWindow::deactivateWebcam(void)
+{
+    if (mWebcamThread) {
+        delete mWebcamThread;
+        mWebcamThread = NULL;
+    }
+    if (mDecoder) {
+        delete mDecoder;
+        mDecoder = NULL;
+    }
+}
+
+
+bool MainWindow::webcamIsActive(void) const
 {
     return mWebcamThread != NULL;
-    // return mWebcamThread != NULL && mWebcamThread->isRunning();
 }
 
 
@@ -320,9 +331,9 @@ QSize MainWindow::optimalPictureSize(void) const
     }
     else {
         if (mProject.stripeIsVertical())
-            goalSize.setWidth(webcamRunning()? 9999: (mLastFrameNumber - mProject.currentFrame()));
+            goalSize.setWidth(webcamIsActive()? 9999: (mLastFrameNumber - mProject.currentFrame()));
         else
-            goalSize.setHeight(webcamRunning()? 9999: (mLastFrameNumber - mProject.currentFrame()));
+            goalSize.setHeight(webcamIsActive()? 9999: (mLastFrameNumber - mProject.currentFrame()));
     }
     return goalSize;
 }
@@ -333,7 +344,7 @@ void MainWindow::seekToFrame(int n)
     setCursor(Qt::WaitCursor);
     mPreviewForm->setCursor(Qt::WaitCursor);
     mProject.setCurrentFrame(n);
-    ui->statusBar->showMessage(tr("Seeking to frame #%1 ...").arg(n), 3000);
+    ui->statusBar->showMessage(tr("Seeking to frame #%1 ...").arg(n));
     mDecoder->seekFrame(n);
     QImage img;
     mDecoder->getFrame(img, &mEffectiveFrameNumber, &mEffectiveFrameTime, &mDesiredFrameNumber, &mDesiredFrameTime);
@@ -349,7 +360,7 @@ void MainWindow::seekToFrame(int n)
 
 void MainWindow::showPercentReady(int percent)
 {
-    ui->statusBar->showMessage(tr("Loading %1 frames ... %2%").arg(mFrameCount).arg(percent), 1000);
+    ui->statusBar->showMessage(tr("Loading %1 frames ... %2%").arg(mFrameCount).arg(percent));
 }
 
 
@@ -370,18 +381,21 @@ void MainWindow::setPictureSize(const QSize& size)
     if (mVideoReaderThread->isRunning())
         stopRendering();
     mStripeImage = QImage(size, QImage::Format_RGB888);
-    mStripeImage.fill(qRgb(82, 179, 169));
-    QPainter painter(&mStripeImage);
-    painter.setBrush(QBrush(QColor(43, 17, 110), Qt::DiagCrossPattern));
-    painter.setPen(Qt::NoPen);
-    painter.drawRect(0, 0, size.width()-1, size.height()-1);
+    if (!mStripeImage.isNull()) {
+        mStripeImage.fill(qRgb(82, 179, 169));
+        QPainter painter(&mStripeImage);
+        painter.setBrush(QBrush(QColor(43, 17, 110), Qt::DiagCrossPattern));
+        painter.setPen(Qt::NoPen);
+        painter.drawRect(0, 0, size.width()-1, size.height()-1);
+    }
     mPreviewForm->pictureWidget()->setPicture(mStripeImage, -1);
+    mPreviewForm->setPictureSize(size);
 }
 
 
 void MainWindow::startRendering(void)
 {
-    if (webcamRunning())
+    if (webcamIsActive())
         mWebcamThread->stopReading();
     ui->renderButton->setText(tr("Stop rendering"));
     disablePreviewForm();
@@ -395,6 +409,7 @@ void MainWindow::startRendering(void)
     mMinTotalBlue = INT_MAX;
     mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness, &mFrameRed, &mFrameGreen, &mFrameBlue);
 
+    mFrameCount = mProject.stripeIsVertical()? mStripeImage.width() : mStripeImage.height();
     int firstFrame = 0;
     if (mDecoder->typeName() == "VideoFile") {
         int lastFrame;
@@ -414,7 +429,6 @@ void MainWindow::startRendering(void)
     else { // mDecoder->typeName() == "Webcam"
         mFrameDelta = 1;
     }
-    mFrameCount = mVideoWidget->stripeIsVertical()? mStripeImage.width() : mStripeImage.height();
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
     mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameDelta);
 }
@@ -904,7 +918,7 @@ void MainWindow::timerEvent(QTimerEvent*)
 
 IAbstractVideoDecoder* MainWindow::useDecoder(IAbstractVideoDecoder* decoder)
 {
-    closeWebcamIfOpen();
+    deactivateWebcam();
     if (mDecoder)
         delete mDecoder;
     mDecoder = decoder;
@@ -922,6 +936,7 @@ void MainWindow::openWebcam(void)
     mVideoWidget->setFrameSize(mDecoder->frameSize());
     setPictureSize(mDecoder->frameSize());
     mEffectiveFrameNumber = 0;
+    mProject.setCurrentFrame(0);
     mWebcamThread = new WebcamThread(qobject_cast<Webcam*>(mDecoder), this);
     QObject::connect(mWebcamThread, SIGNAL(frameReady(QImage)), mVideoWidget, SLOT(setFrame(const QImage&)));
     if (mProject.stripeIsVertical())
@@ -957,8 +972,6 @@ void MainWindow::openVideoFile(void)
 
 bool MainWindow::loadVideoFile(void)
 {
-    if (webcamRunning())
-        mWebcamThread->stopReading();
     bool ok = useDecoder(new VideoDecoder)->open(mProject.videoFileName().toLatin1().constData()); // useDecoder() sets mDecoder
     if (!ok) {
         mVideoWidget->setFrame(QImage());
@@ -968,7 +981,7 @@ bool MainWindow::loadVideoFile(void)
     }
     mVideoWidget->setFrameSize(mDecoder->frameSize());
     ui->statusBar->showMessage(tr("Seeking last frame ..."));
-    mDecoder->seekMs(mDecoder->getVideoLengthMs());
+    mDecoder->seekMs(mDecoder->getVideoLengthMs()-1);
     QImage img;
     mDecoder->getFrame(img, &mLastFrameNumber);
     if (mLastFrameNumber == 0) {
@@ -999,17 +1012,9 @@ bool MainWindow::loadVideoFile(void)
 }
 
 
-void MainWindow::closeWebcamIfOpen(void)
-{
-    if (webcamRunning())
-        mWebcamThread->stopReading();
-}
-
-
 void MainWindow::closeInput(void)
 {
-    closeWebcamIfOpen();
-    mDecoder->close();
+    deactivateWebcam();
     disableGuiButtons();
     ui->frameNumberLineEdit->setText(QString());
     ui->frameTimeLineEdit->setText(QString());

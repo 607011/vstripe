@@ -16,7 +16,6 @@
 PictureWidget::PictureWidget(QWidget* parent) :
         QWidget(parent),
         mShowCurves(true),
-        mMouseSteps(0),
         mBrightnessData(NULL),
         mRedData(NULL),
         mGreenData(NULL),
@@ -32,10 +31,9 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mStripePos(-1),
         mStripeVertical(true),
         mDragging(false),
-        mZoom(1.0),
         mScrollArea(NULL)
 {
-    // ...
+    resetPanAndZoom();
 }
 
 
@@ -60,9 +58,9 @@ void PictureWidget::keyPressEvent(QKeyEvent* e)
 }
 
 
-void PictureWidget::resizeEvent(QResizeEvent*)
+void PictureWidget::resizeEvent(QResizeEvent* event)
 {
-    // ...
+    qDebug() << "PictureWidget::resizeEvent() size() =" << event->size();
 }
 
 
@@ -116,8 +114,10 @@ void PictureWidget::setZoom(qreal zoom)
 
 void PictureWidget::resetPanAndZoom(void)
 {
-    mScrollArea->horizontalScrollBar()->setValue(0);
-    mScrollArea->verticalScrollBar()->setValue(0);
+    if (mScrollArea) {
+        mScrollArea->horizontalScrollBar()->setValue(0);
+        mScrollArea->verticalScrollBar()->setValue(0);
+    }
     mMouseSteps = 0;
     setZoom(1.0);
 }
@@ -132,11 +132,12 @@ void PictureWidget::setScrollArea(QScrollArea* scrollArea)
 void PictureWidget::setPicture(const QImage& img, int stripePos, bool stripeVertical)
 {
     mImage = img;
+    qDebug() << "PictureWidget::setPicture() mImage.size =" << mImage.size();
     mStripePos = stripePos;
     mStripeVertical = stripeVertical;
+    update();
     setMinimumSize(mImage.size() * mZoom);
     resize(mImage.size() * mZoom);
-    update();
 }
 
 
@@ -175,6 +176,8 @@ void PictureWidget::paintEvent(QPaintEvent*)
     QPainter painter(this);
     painter.scale(mZoom, mZoom);
     painter.drawImage(QPoint(0, 0), mImage);
+    qDebug() << "PictureWidget::paintEvent() mImage.size =" << mImage.size();
+    qDebug() << "PictureWidget::size() =" << this->size();
     painter.setBrush(Qt::NoBrush);
     if (mStripePos >= 0) {
         painter.setPen(Qt::red);

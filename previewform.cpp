@@ -86,12 +86,16 @@ void PreviewForm::choosePictureSize(void)
 }
 
 
+void PreviewForm::setPictureSize(const QSize& sz)
+{
+    ui->pushButtonPictureSize->setText(tr("Change picture size (%1x%2)").arg(sz.width()).arg(sz.height()));
+}
+
+
 void PreviewForm::setSizeConstraints(const QSize& minimumSize, const QSize& optimumSize, const QSize& defaultSize)
 {
     mOptimumSize = optimumSize;
     mDefaultSize = defaultSize;
-    mPictureWidget->setMinimumSize(minimumSize);
-    mPictureWidget->setMaximumSize(mOptimumSize);
     mStripeIsVertical = (minimumSize.width() == 0);
 }
 
