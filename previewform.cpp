@@ -88,7 +88,6 @@ void PreviewForm::choosePictureSize(void)
 
 void PreviewForm::setSizeConstraints(const QSize& minimumSize, const QSize& optimumSize, const QSize& defaultSize)
 {
-    qDebug() << "PreviewForm::setSizeConstraints(minimumSize =" << minimumSize << ", optimumSize =" << optimumSize << ", defaultSize =" << defaultSize;
     mOptimumSize = optimumSize;
     mDefaultSize = defaultSize;
     mPictureWidget->setMinimumSize(minimumSize);
@@ -103,8 +102,7 @@ void PreviewForm::keyPressEvent(QKeyEvent* event)
         mPictureWidget->copyImageToClipboard();
     }
     else if (event->key() == Qt::Key_Escape) {
-        mPictureWidget->setZoom(1.0);
-        mPictureWidget->move(0, 0);
+        mPictureWidget->resetPanAndZoom();
     }
 }
 

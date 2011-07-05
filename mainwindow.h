@@ -48,7 +48,7 @@ public:
 public slots:
     void openVideoFile(void);
     void openWebcam(void);
-    void closeVideoFile(void);
+    void closeInput(void);
     void openRecentVideoFile(void);
     void openRecentProjectFile(void);
     bool loadVideoFile(void);
@@ -147,6 +147,7 @@ private: // methods
     IAbstractVideoDecoder* useDecoder(IAbstractVideoDecoder*);
     QSize optimalPictureSize(void) const;
     bool webcamRunning(void) const;
+    void closeWebcamIfOpen(void);
 
     static QString ms2hmsz(int ms, bool withMs = true);
     static QString strippedName(const QString& fullFileName);

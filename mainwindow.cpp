@@ -58,8 +58,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     QObject::connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), &mProject, SLOT(setStripeOrientation(bool)));
     QObject::connect(mVideoWidget, SIGNAL(stripePosChanged(int)), &mProject, SLOT(setStripePos(int)));
 
-    QObject::connect(ui->action_OpenVideoFile, SIGNAL(triggered()), this, SLOT(openVideoFile()));
-    QObject::connect(ui->action_CloseVideoFile, SIGNAL(triggered()), this, SLOT(closeVideoFile()));
+    QObject::connect(ui->actionOpenVideoFile, SIGNAL(triggered()), this, SLOT(openVideoFile()));
+    QObject::connect(ui->actionCloseInput, SIGNAL(triggered()), this, SLOT(closeInput()));
     QObject::connect(ui->actionHistogram, SIGNAL(toggled(bool)), mVideoWidget, SLOT(setHistogramEnabled(bool)));
     QObject::connect(ui->actionClear_histogram_region, SIGNAL(triggered()), this, SLOT(clearHistogramRegion()));
 
@@ -142,7 +142,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         break; // one camera is enough, use it (TODO: remove this statement if above TODO is solved)
     }
     if (webcamMenu)
-        ui->menu_File->insertMenu(ui->action_OpenVideoFile, webcamMenu);
+        ui->menu_File->insertMenu(ui->actionOpenVideoFile, webcamMenu);
 
     restoreAppSettings();
 
@@ -304,7 +304,8 @@ QString MainWindow::ms2hmsz(int ms, bool withMs)
 
 bool MainWindow::webcamRunning(void) const
 {
-    return mWebcamThread != NULL && mWebcamThread->isRunning();
+    return mWebcamThread != NULL;
+    // return mWebcamThread != NULL && mWebcamThread->isRunning();
 }
 
 
@@ -380,6 +381,8 @@ void MainWindow::setPictureSize(const QSize& size)
 
 void MainWindow::startRendering(void)
 {
+    if (webcamRunning())
+        mWebcamThread->stopReading();
     ui->renderButton->setText(tr("Stop rendering"));
     disablePreviewForm();
     mFrameBrightness.clear();
@@ -391,23 +394,28 @@ void MainWindow::startRendering(void)
     mMinTotalGreen = INT_MAX;
     mMinTotalBlue = INT_MAX;
     mPreviewForm->pictureWidget()->setBrightnessData(&mFrameBrightness, &mFrameRed, &mFrameGreen, &mFrameBlue);
-    int firstFrame, lastFrame;
-    mFrameCount = mVideoWidget->stripeIsVertical()? qreal(mStripeImage.width()) : qreal(mStripeImage.height());
-    if (mProject.markA() != Project::INVALID_FRAME && mProject.markB() != Project::INVALID_FRAME && mProject.markB() > mProject.markA()) {
-        mFrameSlider->setValue(mProject.markA());
-        firstFrame = mProject.markA();
-        lastFrame = mProject.markB();
+
+    int firstFrame = 0;
+    if (mDecoder->typeName() == "VideoFile") {
+        int lastFrame;
+        if (mProject.markA() != Project::INVALID_FRAME && mProject.markB() != Project::INVALID_FRAME && mProject.markB() > mProject.markA()) {
+            mFrameSlider->setValue(mProject.markA());
+            firstFrame = mProject.markA();
+            lastFrame = mProject.markB();
+        }
+        else {
+            firstFrame = mEffectiveFrameNumber;
+            lastFrame = mLastFrameNumber;
+        }
+        mFrameDelta = (qreal)(lastFrame - firstFrame) / mFrameCount;
+        mPreRenderFrameNumber = mFrameSlider->value();
+        mProject.setCurrentFrame(mPreRenderFrameNumber);
     }
-    else {
-        firstFrame = mEffectiveFrameNumber;
-        lastFrame = mLastFrameNumber;
+    else { // mDecoder->typeName() == "Webcam"
+        mFrameDelta = 1;
     }
-    mFrameDelta = (mDecoder->typeName() == "VideoFile")? qreal(lastFrame - firstFrame) / mFrameCount : 1;
+    mFrameCount = mVideoWidget->stripeIsVertical()? mStripeImage.width() : mStripeImage.height();
     ui->statusBar->showMessage(tr("Loading %1 frames ...").arg(mFrameCount));
-    mPreRenderFrameNumber = mFrameSlider->value();
-    mProject.setCurrentFrame(mPreRenderFrameNumber);
-    if (webcamRunning())
-        mWebcamThread->stopReading();
     mVideoReaderThread->startReading(firstFrame, mFrameCount, mFrameDelta);
 }
 
@@ -733,7 +741,7 @@ void MainWindow::enableGuiButtons(void)
     ui->backwardButton->setEnabled(true);
     ui->fastForwardButton->setEnabled(true);
     ui->fastBackwardButton->setEnabled(true);
-    ui->action_CloseVideoFile->setEnabled(true);
+    ui->actionCloseInput->setEnabled(true);
     ui->action_Save_picture->setEnabled(true);
     ui->actionClear_marks->setEnabled(true);
 }
@@ -755,7 +763,7 @@ void MainWindow::disableGuiButtons(void)
     ui->backwardButton->setEnabled(false);
     ui->fastForwardButton->setEnabled(false);
     ui->fastBackwardButton->setEnabled(false);
-    ui->action_CloseVideoFile->setEnabled(false);
+    ui->actionCloseInput->setEnabled(false);
     ui->action_Save_picture->setEnabled(false);
     ui->actionClear_marks->setEnabled(false);
 }
@@ -896,9 +904,7 @@ void MainWindow::timerEvent(QTimerEvent*)
 
 IAbstractVideoDecoder* MainWindow::useDecoder(IAbstractVideoDecoder* decoder)
 {
-    Q_ASSERT(mVideoReaderThread != NULL);
-    Q_ASSERT(decoder != NULL);
-
+    closeWebcamIfOpen();
     if (mDecoder)
         delete mDecoder;
     mDecoder = decoder;
@@ -977,7 +983,7 @@ bool MainWindow::loadVideoFile(void)
     else
         mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize());
     showPictureWidget();
-    ui->action_CloseVideoFile->setEnabled(true);
+    ui->actionCloseInput->setEnabled(true);
     mFrameSlider->setMaximum(mLastFrameNumber);
     mFrameSlider->setValue(0);
     ui->infoPlainTextEdit->clear();
@@ -993,8 +999,17 @@ bool MainWindow::loadVideoFile(void)
 }
 
 
-void MainWindow::closeVideoFile(void)
+void MainWindow::closeWebcamIfOpen(void)
 {
+    if (webcamRunning())
+        mWebcamThread->stopReading();
+}
+
+
+void MainWindow::closeInput(void)
+{
+    closeWebcamIfOpen();
+    mDecoder->close();
     disableGuiButtons();
     ui->frameNumberLineEdit->setText(QString());
     ui->frameTimeLineEdit->setText(QString());
@@ -1003,7 +1018,7 @@ void MainWindow::closeVideoFile(void)
     mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     hidePictureWidget();
     clearMarks();
-    ui->statusBar->showMessage(tr("File closed."), 5000);
+    ui->statusBar->showMessage(tr("Input closed."), 5000);
 }
 
 

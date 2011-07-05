@@ -16,6 +16,7 @@
 PictureWidget::PictureWidget(QWidget* parent) :
         QWidget(parent),
         mShowCurves(true),
+        mMouseSteps(0),
         mBrightnessData(NULL),
         mRedData(NULL),
         mGreenData(NULL),
@@ -68,8 +69,9 @@ void PictureWidget::resizeEvent(QResizeEvent*)
 void PictureWidget::mousePressEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton) {
+        Q_ASSERT(mScrollArea != NULL);
         setCursor(Qt::ClosedHandCursor);
-        mDragStartPos = event->pos() - pos();
+        mDragStartPos = event->pos();
         mDragging = true;
     }
 }
@@ -97,9 +99,8 @@ void PictureWidget::mouseMoveEvent(QMouseEvent* event)
 
 void PictureWidget::wheelEvent(QWheelEvent* event)
 {
-    int numDegrees = event->delta() / 8;
-    int numSteps = numDegrees / 15;
-    mZoom *= pow(1.1, numSteps);
+    mMouseSteps += event->delta() / 16;
+    mZoom = pow(1.1, mMouseSteps);
     setZoom(mZoom);
 }
 
@@ -110,6 +111,15 @@ void PictureWidget::setZoom(qreal zoom)
     setMinimumSize(mImage.size() * mZoom);
     resize(mImage.size() * mZoom);
     update();
+}
+
+
+void PictureWidget::resetPanAndZoom(void)
+{
+    mScrollArea->horizontalScrollBar()->setValue(0);
+    mScrollArea->verticalScrollBar()->setValue(0);
+    mMouseSteps = 0;
+    setZoom(1.0);
 }
 
 

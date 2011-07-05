@@ -6,7 +6,7 @@
 # CHANGE NAMES AND PATHS ACCORDING TO YOUR ENVIRONMENT
 # ----------------------------------------------------
 APP=VStripe
-VERSION=0.9.2
+VERSION=0.9.8
 QTDIR=/Developer/QtSDK/Desktop/Qt/473/gcc
 QTLIBDIR=$QTDIR/lib
 
