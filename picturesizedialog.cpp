@@ -21,10 +21,12 @@ PictureSizeDialog::PictureSizeDialog(const QSize& currentSize, const QSize& defa
         ui->spinBoxWidth->setEnabled(true);
     else
         ui->spinBoxHeight->setEnabled(true);
-    ui->spinBoxWidth->setValue(currentSize.width());
+    ui->spinBoxWidth->setMinimum(1);
     ui->spinBoxWidth->setMaximum(maximumSize.width());
-    ui->spinBoxHeight->setValue(currentSize.height());
+    ui->spinBoxWidth->setValue(currentSize.isNull()? defaultSize.width() : currentSize.width());
+    ui->spinBoxHeight->setMinimum(1);
     ui->spinBoxHeight->setMaximum(maximumSize.height());
+    ui->spinBoxHeight->setValue(currentSize.isNull()? defaultSize.height() : currentSize.height());
     QObject::connect(ui->pushButtonReset, SIGNAL(clicked()), this, SLOT(resetSize()));
     QObject::connect(ui->pushButtonOptimize, SIGNAL(clicked()), this, SLOT(optimizeSize()));
 }

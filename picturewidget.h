@@ -36,6 +36,7 @@ public:
             qreal minBlue = -1);
     inline const QImage& picture(void) const { return mImage; }
     void setZoom(qreal);
+    void resetPanAndZoom(void);
     void setScrollArea(QScrollArea*);
 
 public slots:
@@ -54,6 +55,7 @@ protected:
 private:
     QImage mImage;
     bool mShowCurves;
+    int mMouseSteps;
     const BrightnessData* mBrightnessData;
     const BrightnessData* mRedData;
     const BrightnessData* mGreenData;
