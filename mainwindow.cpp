@@ -34,9 +34,9 @@
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.8.2 DEBUG $Date$";
+const QString MainWindow::AppVersion = "0.9.8.3 DEBUG $Date$";
 #else
-const QString MainWindow::AppVersion = "0.9.8.2";
+const QString MainWindow::AppVersion = "0.9.8.3";
 #endif
 
 
@@ -337,9 +337,9 @@ QSize MainWindow::optimalPictureSize(void) const
     }
     else {
         if (mProject.stripeIsVertical())
-            goalSize.setWidth(webcamIsActive()? 9999: (mLastFrameNumber - mProject.currentFrame()));
+            goalSize.setWidth(webcamIsActive()? 9999: mLastFrameNumber);
         else
-            goalSize.setHeight(webcamIsActive()? 9999: (mLastFrameNumber - mProject.currentFrame()));
+            goalSize.setHeight(webcamIsActive()? 9999: mLastFrameNumber);
     }
     return goalSize;
 }
@@ -389,10 +389,11 @@ void MainWindow::setPictureSize(const QSize& size)
     mStripeImage = QImage(size, QImage::Format_RGB888);
     if (!mStripeImage.isNull()) {
         mStripeImage.fill(qRgb(82, 179, 169));
+        QImage bg(QString(":/images/checkered-background.png"));
         QPainter painter(&mStripeImage);
-        painter.setBrush(QBrush(QImage(":/images/checkered-background.png")));
+        painter.setBrush(QBrush(bg.convertToFormat(QImage::Format_RGB888)));
         painter.setPen(Qt::NoPen);
-        painter.drawRect(0, 0, size.width()-1, size.height()-1);
+        painter.drawRect(0, 0, size.width(), size.height());
     }
     mPreviewForm->pictureWidget()->setPicture(mStripeImage, -1);
     mPreviewForm->setPictureSize(size);
@@ -504,8 +505,10 @@ void MainWindow::setMarkB(void)
 
 void MainWindow::setMark(void)
 {
-    mProject.appendMark(Project::mark_type(mEffectiveFrameNumber, QString()));
-    mFrameSlider->update();
+    if (!mProject.marks().contains(Project::mark_type(mEffectiveFrameNumber, QString()))) {
+        mProject.appendMark(Project::mark_type(mEffectiveFrameNumber, QString()));
+        mFrameSlider->update();
+    }
 }
 
 
