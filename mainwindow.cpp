@@ -19,7 +19,7 @@
 
 #include <QMap>
 #include <QUrl>
-#include <QtHelp/QHelpEngineCore>
+// #include <QtHelp/QHelpEngineCore>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -41,7 +41,7 @@ const QString MainWindow::AppVersion = "0.9.8";
 MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
-        mHelpBrowser(NULL),
+//        mHelpBrowser(NULL),
         mWebcamThread(NULL),
         mDecoder(NULL)
 {
@@ -158,8 +158,8 @@ MainWindow::~MainWindow()
         delete mWebcamThread;
     if (mDecoder)
         delete mDecoder;
-    if (mHelpBrowser)
-        delete mHelpBrowser;
+//    if (mHelpBrowser)
+//        delete mHelpBrowser;
     delete ui;
     delete mVideoWidget;
     delete mPreviewForm;
@@ -816,17 +816,17 @@ void MainWindow::about(void)
         tr("<p><strong>%1</strong> &ndash; Generate streak photos from footage.</p>"
            "<p>Copyright (c) 2011 Oliver Lau &lt;oliver@von-und-fuer-lau.de&gt;</p>"
            "<p>VideoDecoder Copyright (c) 2009-2010 by Daniel Roggen &lt;droggen@gmail.com&gt;</p>"
-           "<p>HelpBrowser Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).</p>"
+           // "<p>HelpBrowser Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).</p>"
            "<p>All rights reserved.</p>").arg(MainWindow::AppName));
 }
 
 
 void MainWindow::help(void)
 {
-    if (mHelpBrowser == NULL)
-        mHelpBrowser = new HelpBrowser;
-    mHelpBrowser->showHelpForKeyword("VStripe::index");
-    mHelpBrowser->show();
+//    if (mHelpBrowser == NULL)
+//        mHelpBrowser = new HelpBrowser;
+//    mHelpBrowser->showHelpForKeyword("VStripe::index");
+//    mHelpBrowser->show();
 }
 
 
