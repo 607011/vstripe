@@ -10,9 +10,9 @@
 #include <QImage>
 #include <QResizeEvent>
 #include <QScrollArea>
-#include <QtCore/QTime>
-#include <QtCore/QTimer>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/QTimerEvent>
+#include <QtCore/QVector>
 
 #include "histogram.h"
 
@@ -56,7 +56,15 @@ protected:
     void wheelEvent(QWheelEvent*);
     void timerEvent(QTimerEvent*);
 
-private:
+private: // methods
+    void scrollBy(const QPoint&);
+    QPoint mousePosInScrollArea(void) const;
+
+private: // variables
+    static const qreal KineticFriction;
+    static const int KineticTimeInterval;
+    static const int MaxKineticPoints;
+
     QImage mImage;
     bool mShowCurves;
     int mMouseSteps;
@@ -76,9 +84,12 @@ private:
     bool mStripeVertical;
     bool mDragging;
     QPoint mDragStartPos;
-    QTime mMouseMoveStartTime;
-    QTimer mKineticTimer;
-    int mKineticEnergy;
+    QPoint mKineticStartPos;
+    QVector<QPoint> mKineticMousePos;
+    QVector<int> mKineticMouseTime;
+    QElapsedTimer mMouseMoveTimer;
+    int mKineticTimer;
+    QPointF mVelocity;
     int mNumMoveEvents;
     qreal mZoom;
     QScrollArea* mScrollArea;

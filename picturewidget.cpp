@@ -14,8 +14,9 @@
 #include <qmath.h>
 
 
-static const int Friction = 3;
-
+const qreal PictureWidget::KineticFriction = 0.75;
+const int PictureWidget::KineticTimeInterval = 30;
+const int PictureWidget::MaxKineticPoints = 5;
 
 PictureWidget::PictureWidget(QWidget* parent) :
         QWidget(parent),
@@ -35,6 +36,7 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mStripePos(-1),
         mStripeVertical(true),
         mDragging(false),
+        mKineticTimer(0),
         mNumMoveEvents(0),
         mScrollArea(NULL)
 {
@@ -74,27 +76,34 @@ void PictureWidget::mousePressEvent(QMouseEvent* event)
     if (event->button() == Qt::LeftButton) {
         Q_ASSERT(mScrollArea != NULL);
         setCursor(Qt::ClosedHandCursor);
-        mMouseMoveStartTime = QTime::currentTime();
         mDragStartPos = event->pos();
         mDragging = true;
+        mMouseMoveTimer.start();
+        mKineticStartPos = mousePosInScrollArea();
         mNumMoveEvents = 0;
-
+        mKineticMousePos.clear();
+        mKineticMouseTime.clear();
     }
 }
 
 
-void PictureWidget::mouseReleaseEvent(QMouseEvent* event)
+void PictureWidget::mouseReleaseEvent(QMouseEvent*)
 {
     if (mDragging) {
         mDragging = false;
         setCursor(Qt::OpenHandCursor);
-        QPointF mouseDiff = mDragStartPos - event->pos();
-        int dt = 1000 * (QTime::currentTime().msec() - mMouseMoveStartTime.msec());
-        qDebug() << "mNumMoveEvents =" << mNumMoveEvents;
-        qDebug() << "mouse diff =" << mouseDiff;
-        qDebug() << "mouse velocity =" << mouseDiff / (qreal)dt;
-        if (!mKineticTimer.isActive())
-            mKineticTimer.start(30);
+        if (mNumMoveEvents > MaxKineticPoints) {
+            for (int i = 0; i < MaxKineticPoints; ++i)
+                qDebug() << "P" << mKineticMousePos[i] << mKineticMouseTime[i];
+            QPoint mouseDiff = mKineticMousePos.last() - mousePosInScrollArea();
+            qDebug() << "mouseDiff =" << mouseDiff;
+            int dt = mMouseMoveTimer.elapsed();
+            qDebug() << "mouse velocity =" << 1e-3 * mouseDiff / dt << " px/s";
+            mVelocity = 1000 * mouseDiff / dt / KineticTimeInterval;
+            qDebug() << "mVelocity =" << mVelocity;
+            if (mKineticTimer == 0)
+                mKineticTimer = startTimer(KineticTimeInterval);
+        }
     }
 }
 
@@ -102,11 +111,14 @@ void PictureWidget::mouseReleaseEvent(QMouseEvent* event)
 void PictureWidget::mouseMoveEvent(QMouseEvent* event)
 {
     if (mDragging) {
-        Q_ASSERT(mScrollArea != NULL);
-        QPoint d = mDragStartPos - event->pos();
-        mScrollArea->horizontalScrollBar()->setValue(mScrollArea->horizontalScrollBar()->value() + d.x());
-        mScrollArea->verticalScrollBar()->setValue(mScrollArea->verticalScrollBar()->value() + d.y());
+        scrollBy(mDragStartPos - event->pos());
         ++mNumMoveEvents;
+        mKineticMousePos.push_back(event->pos());
+        mKineticMouseTime.push_back(mMouseMoveTimer.elapsed());
+        if (mKineticMousePos.count() > MaxKineticPoints) {
+            mKineticMousePos.pop_front();
+            mKineticMouseTime.pop_front();
+        }
     }
 }
 
@@ -121,7 +133,24 @@ void PictureWidget::wheelEvent(QWheelEvent* event)
 
 void PictureWidget::timerEvent(QTimerEvent*)
 {
+    if (mVelocity.manhattanLength() < 1) {
+        killTimer(mKineticTimer);
+        mKineticTimer = 0;
+        mVelocity = QPointF(0, 0);
+    }
+    else {
+        scrollBy(mVelocity.toPoint());
+        mVelocity *= KineticFriction;
+    }
+    qDebug() << "mVelocity =" << mVelocity;
+}
 
+
+void PictureWidget::scrollBy(const QPoint& d)
+{
+    Q_ASSERT(mScrollArea != NULL);
+    mScrollArea->horizontalScrollBar()->setValue(mScrollArea->horizontalScrollBar()->value() + d.x());
+    mScrollArea->verticalScrollBar()->setValue(mScrollArea->verticalScrollBar()->value() + d.y());
 }
 
 
@@ -142,6 +171,13 @@ void PictureWidget::resetPanAndZoom(void)
     }
     mMouseSteps = 0;
     setZoom(1.0);
+}
+
+
+QPoint PictureWidget::mousePosInScrollArea(void) const
+{
+    Q_ASSERT(mScrollArea != NULL);
+    return QPoint(mScrollArea->horizontalScrollBar()->value(), mScrollArea->verticalScrollBar()->value());
 }
 
 

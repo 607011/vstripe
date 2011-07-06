@@ -48,8 +48,6 @@ void VideoReaderThread::startReading(int firstFrameNumber, int nFrames, qreal fr
     Q_ASSERT(nFrames > 0);
     Q_ASSERT(frameDelta > 0);
 
-    qDebug() << "VideoReaderThread::startReading(" << firstFrameNumber << "," << nFrames << "," << frameDelta << ")";
-
     stopReading();
     mFrameNumber = (qreal)firstFrameNumber;
     mMaxFrameCount = nFrames;
@@ -70,10 +68,8 @@ void VideoReaderThread::stopReading(void)
 
 void VideoReaderThread::setHistogramRegion(const QRect& rect)
 {
-    if (isRunning()) {
-        qDebug() << "VideoReaderThread is running, cannot execute setHistogramRegion(). Returning ...";
+    if (isRunning())
         return;
-    }
     mHistogramRegion = rect;
 }
 

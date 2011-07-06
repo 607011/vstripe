@@ -133,6 +133,8 @@ private: // methods
     void hidePictureWidget(void);
     void startRendering(void);
     void stopRendering(void);
+    void enableNavigationButtons(void);
+    void disableNavigationButtons(void);
     void enableGuiButtons(void);
     void disableGuiButtons(void);
     void enablePreviewForm(void);
