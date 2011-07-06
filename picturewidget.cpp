@@ -3,6 +3,8 @@
  * $Id$
  */
 
+#undef WITH_KINETIC_SCROLLING
+
 #include <QPainter>
 #include <QPainterPath>
 #include <QApplication>
@@ -14,9 +16,11 @@
 #include <qmath.h>
 
 
+#ifdef WITH_KINETIC_SCROLLING
 const qreal PictureWidget::KineticFriction = 0.75;
 const int PictureWidget::KineticTimeInterval = 30;
 const int PictureWidget::MaxKineticPoints = 5;
+#endif
 
 PictureWidget::PictureWidget(QWidget* parent) :
         QWidget(parent),
@@ -36,8 +40,10 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mStripePos(-1),
         mStripeVertical(true),
         mDragging(false),
+#ifdef WITH_KINETIC_SCROLLING
         mKineticTimer(0),
         mNumMoveEvents(0),
+#endif
         mScrollArea(NULL)
 {
     resetPanAndZoom();
@@ -78,11 +84,13 @@ void PictureWidget::mousePressEvent(QMouseEvent* event)
         setCursor(Qt::ClosedHandCursor);
         mDragStartPos = event->pos();
         mDragging = true;
+#ifdef WITH_KINETIC_SCROLLING
         mMouseMoveTimer.start();
         mKineticStartPos = mousePosInScrollArea();
         mNumMoveEvents = 0;
         mKineticMousePos.clear();
         mKineticMouseTime.clear();
+#endif
     }
 }
 
@@ -92,6 +100,7 @@ void PictureWidget::mouseReleaseEvent(QMouseEvent*)
     if (mDragging) {
         mDragging = false;
         setCursor(Qt::OpenHandCursor);
+#ifdef WITH_KINETIC_SCROLLING
         if (mNumMoveEvents > MaxKineticPoints) {
             for (int i = 0; i < MaxKineticPoints; ++i)
                 qDebug() << "P" << mKineticMousePos[i] << mKineticMouseTime[i];
@@ -104,6 +113,7 @@ void PictureWidget::mouseReleaseEvent(QMouseEvent*)
             if (mKineticTimer == 0)
                 mKineticTimer = startTimer(KineticTimeInterval);
         }
+#endif
     }
 }
 
@@ -112,6 +122,7 @@ void PictureWidget::mouseMoveEvent(QMouseEvent* event)
 {
     if (mDragging) {
         scrollBy(mDragStartPos - event->pos());
+#ifdef WITH_KINETIC_SCROLLING
         ++mNumMoveEvents;
         mKineticMousePos.push_back(event->pos());
         mKineticMouseTime.push_back(mMouseMoveTimer.elapsed());
@@ -119,6 +130,7 @@ void PictureWidget::mouseMoveEvent(QMouseEvent* event)
             mKineticMousePos.pop_front();
             mKineticMouseTime.pop_front();
         }
+#endif
     }
 }
 
@@ -131,6 +143,7 @@ void PictureWidget::wheelEvent(QWheelEvent* event)
 }
 
 
+#ifdef WITH_KINETIC_SCROLLING
 void PictureWidget::timerEvent(QTimerEvent*)
 {
     if (mVelocity.manhattanLength() < 1) {
@@ -144,7 +157,7 @@ void PictureWidget::timerEvent(QTimerEvent*)
     }
     qDebug() << "mVelocity =" << mVelocity;
 }
-
+#endif
 
 void PictureWidget::scrollBy(const QPoint& d)
 {
@@ -174,11 +187,13 @@ void PictureWidget::resetPanAndZoom(void)
 }
 
 
+#ifdef WITH_KINETIC_SCROLLING
 QPoint PictureWidget::mousePosInScrollArea(void) const
 {
     Q_ASSERT(mScrollArea != NULL);
     return QPoint(mScrollArea->horizontalScrollBar()->value(), mScrollArea->verticalScrollBar()->value());
 }
+#endif
 
 
 void PictureWidget::setScrollArea(QScrollArea* scrollArea)

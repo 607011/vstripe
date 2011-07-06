@@ -19,7 +19,9 @@
 
 #include <QMap>
 #include <QUrl>
-// #include <QtHelp/QHelpEngineCore>
+#ifdef WITH_HELPBROWSER
+#include <QtHelp/QHelpEngineCore>
+#endif
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -41,7 +43,9 @@ const QString MainWindow::AppVersion = "0.9.8.2";
 MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
-//        mHelpBrowser(NULL),
+#ifdef WITH_HELPBROWSER
+        mHelpBrowser(NULL),
+#endif
         mWebcamThread(NULL),
         mDecoder(NULL)
 {
@@ -158,8 +162,10 @@ MainWindow::~MainWindow()
         delete mWebcamThread;
     if (mDecoder)
         delete mDecoder;
-//    if (mHelpBrowser)
-//        delete mHelpBrowser;
+#ifdef WITH_HELPBROWSER
+    if (mHelpBrowser)
+        delete mHelpBrowser;
+#endif
     delete ui;
     delete mVideoWidget;
     delete mPreviewForm;
@@ -384,7 +390,7 @@ void MainWindow::setPictureSize(const QSize& size)
     if (!mStripeImage.isNull()) {
         mStripeImage.fill(qRgb(82, 179, 169));
         QPainter painter(&mStripeImage);
-        painter.setBrush(QBrush(QColor(43, 17, 110), Qt::DiagCrossPattern));
+        painter.setBrush(QBrush(QImage(":/images/checkered-background.png")));
         painter.setPen(Qt::NoPen);
         painter.drawRect(0, 0, size.width()-1, size.height()-1);
     }
@@ -838,17 +844,21 @@ void MainWindow::about(void)
         tr("<p><strong>%1</strong> &ndash; Generate streak photos from footage.</p>"
            "<p>Copyright (c) 2011 Oliver Lau &lt;oliver@von-und-fuer-lau.de&gt;</p>"
            "<p>VideoDecoder Copyright (c) 2009-2010 by Daniel Roggen &lt;droggen@gmail.com&gt;</p>"
-           // "<p>HelpBrowser Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).</p>"
+#ifdef WITH_HELPBROWSER
+           "<p>HelpBrowser Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).</p>"
+#endif
            "<p>All rights reserved.</p>").arg(MainWindow::AppName));
 }
 
 
 void MainWindow::help(void)
 {
+#ifdef WITH_HELPBROWSER
 //    if (mHelpBrowser == NULL)
 //        mHelpBrowser = new HelpBrowser;
 //    mHelpBrowser->showHelpForKeyword("VStripe::index");
 //    mHelpBrowser->show();
+#endif
 }
 
 
