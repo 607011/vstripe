@@ -30,6 +30,12 @@ public:
         int frame;
         QString name;
         bool isNull(void) const { return frame < 0; }
+        bool operator==(const mark_type& other)
+        {
+            return frame == other.frame &&
+                    id == other.id &&
+                    name == other.name;
+        }
     };
 
     Project(QObject* parent = NULL);
