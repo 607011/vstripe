@@ -424,10 +424,14 @@ void MainWindow::startRendering(void)
             QMessageBox::information(this, tr("Invalid markers"), tr("Marker B must be after marker A"), QMessageBox::Ok);
             return;
         }
-        if (mProject.markA() == Project::INVALID_FRAME)
+        if (mProject.markA() == Project::INVALID_FRAME) {
             mProject.setMarkA(0);
-        if (mProject.markB() == Project::INVALID_FRAME)
+            ui->AButton->setChecked(true);
+        }
+        if (mProject.markB() == Project::INVALID_FRAME) {
             mProject.setMarkB(mLastFrameNumber);
+            ui->BButton->setChecked(true);
+        }
         mFrameSlider->setValue(mProject.markA());
         mFrameDelta = (qreal)(mProject.markB() - mProject.markA()) / mFrameCount;
         mPreRenderFrameNumber = mFrameSlider->value();
