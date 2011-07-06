@@ -3,7 +3,8 @@
 
 QT += core gui xml
 
-CONFIG += warn_on thread qt help
+CONFIG += warn_on thread qt
+# CONFIG += help
 
 TARGET = VStripe
 TEMPLATE = app
@@ -66,10 +67,10 @@ SOURCES += main.cpp\
     project.cpp \
     histogram.cpp \
     previewform.cpp \
-    helpbrowser.cpp \
     webcam.cpp \
     webcamthread.cpp \
     picturesizedialog.cpp
+#    helpbrowser.cpp
 
 HEADERS += mainwindow.h \
     videowidget.h \
@@ -81,11 +82,11 @@ HEADERS += mainwindow.h \
     project.h \
     histogram.h \
     previewform.h \
-    helpbrowser.h \
     abstractvideodecoder.h \
     webcam.h \
     webcamthread.h \
     picturesizedialog.h
+#    helpbrowser.h
 
 FORMS += mainwindow.ui \
     previewform.ui \
