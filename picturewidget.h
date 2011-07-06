@@ -54,16 +54,22 @@ protected:
     void mouseReleaseEvent(QMouseEvent*);
     void mouseMoveEvent(QMouseEvent*);
     void wheelEvent(QWheelEvent*);
+#ifdef WITH_KINETIC_SCROLLING
     void timerEvent(QTimerEvent*);
+#endif
 
 private: // methods
     void scrollBy(const QPoint&);
+#ifdef WITH_KINETIC_SCROLLING
     QPoint mousePosInScrollArea(void) const;
+#endif
 
 private: // variables
+#ifdef WITH_KINETIC_SCROLLING
     static const qreal KineticFriction;
     static const int KineticTimeInterval;
     static const int MaxKineticPoints;
+#endif
 
     QImage mImage;
     bool mShowCurves;
@@ -84,6 +90,7 @@ private: // variables
     bool mStripeVertical;
     bool mDragging;
     QPoint mDragStartPos;
+#ifdef WITH_KINETIC_SCROLLING
     QPoint mKineticStartPos;
     QVector<QPoint> mKineticMousePos;
     QVector<int> mKineticMouseTime;
@@ -91,6 +98,7 @@ private: // variables
     int mKineticTimer;
     QPointF mVelocity;
     int mNumMoveEvents;
+#endif
     qreal mZoom;
     QScrollArea* mScrollArea;
 };
