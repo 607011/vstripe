@@ -10,7 +10,6 @@
 #include "ui_previewform.h"
 #include "picturesizedialog.h"
 
-
 const QString PreviewForm::WinTitle = QObject::tr("VStripe - Picture Preview");
 
 QSlider* PreviewForm::brightnessSlider(void) { return ui->exposureLSlider; }

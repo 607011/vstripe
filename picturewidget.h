@@ -60,9 +60,6 @@ protected:
 
 private: // methods
     void scrollBy(const QPoint&);
-#ifdef WITH_KINETIC_SCROLLING
-    QPoint mousePosInScrollArea(void) const;
-#endif
 
 private: // variables
 #ifdef WITH_KINETIC_SCROLLING
@@ -90,6 +87,9 @@ private: // variables
     bool mStripeVertical;
     bool mDragging;
     QPoint mDragStartPos;
+    qreal mZoom;
+    QScrollArea* mScrollArea;
+
 #ifdef WITH_KINETIC_SCROLLING
     QPoint mKineticStartPos;
     QVector<QPoint> mKineticMousePos;
@@ -99,8 +99,6 @@ private: // variables
     QPointF mVelocity;
     int mNumMoveEvents;
 #endif
-    qreal mZoom;
-    QScrollArea* mScrollArea;
 };
 
 #endif // __PICTUREWIDGET_H_

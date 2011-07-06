@@ -92,10 +92,11 @@ void PictureWidget::mousePressEvent(QMouseEvent* event)
         mKineticMouseTime.clear();
 #endif
     }
+    event->accept();
 }
 
 
-void PictureWidget::mouseReleaseEvent(QMouseEvent*)
+void PictureWidget::mouseReleaseEvent(QMouseEvent* event)
 {
     if (mDragging) {
         mDragging = false;
@@ -115,6 +116,7 @@ void PictureWidget::mouseReleaseEvent(QMouseEvent*)
         }
 #endif
     }
+    event->accept();
 }
 
 
@@ -132,6 +134,7 @@ void PictureWidget::mouseMoveEvent(QMouseEvent* event)
         }
 #endif
     }
+    event->accept();
 }
 
 
@@ -140,6 +143,7 @@ void PictureWidget::wheelEvent(QWheelEvent* event)
     mMouseSteps += event->delta() / 16;
     mZoom = pow(1.1, mMouseSteps);
     setZoom(mZoom);
+    event->accept();
 }
 
 
@@ -156,6 +160,7 @@ void PictureWidget::timerEvent(QTimerEvent*)
         mVelocity *= KineticFriction;
     }
     qDebug() << "mVelocity =" << mVelocity;
+    event->accept();
 }
 #endif
 
