@@ -32,9 +32,9 @@
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.8 DEBUG $Date$";
+const QString MainWindow::AppVersion = "0.9.8.2 DEBUG $Date$";
 #else
-const QString MainWindow::AppVersion = "0.9.8";
+const QString MainWindow::AppVersion = "0.9.8.2";
 #endif
 
 
@@ -399,6 +399,7 @@ void MainWindow::startRendering(void)
         mWebcamThread->stopReading();
     ui->renderButton->setText(tr("Stop rendering"));
     disablePreviewForm();
+    disableNavigationButtons();
     mFrameBrightness.clear();
     mFrameRed.clear();
     mFrameGreen.clear();
@@ -412,19 +413,19 @@ void MainWindow::startRendering(void)
     mFrameCount = mProject.stripeIsVertical()? mStripeImage.width() : mStripeImage.height();
     int firstFrame = 0;
     if (mDecoder->typeName() == "VideoFile") {
-        int lastFrame;
-        if (mProject.markA() != Project::INVALID_FRAME && mProject.markB() != Project::INVALID_FRAME && mProject.markB() > mProject.markA()) {
-            mFrameSlider->setValue(mProject.markA());
-            firstFrame = mProject.markA();
-            lastFrame = mProject.markB();
+        if (mProject.markA() != Project::INVALID_FRAME && mProject.markB() != Project::INVALID_FRAME && mProject.markB() <= mProject.markA()) {
+            QMessageBox::information(this, tr("Invalid markers"), tr("Marker B must be after marker A"), QMessageBox::Ok);
+            return;
         }
-        else {
-            firstFrame = mEffectiveFrameNumber;
-            lastFrame = mLastFrameNumber;
-        }
-        mFrameDelta = (qreal)(lastFrame - firstFrame) / mFrameCount;
+        if (mProject.markA() == Project::INVALID_FRAME)
+            mProject.setMarkA(0);
+        if (mProject.markB() == Project::INVALID_FRAME)
+            mProject.setMarkB(mLastFrameNumber);
+        mFrameSlider->setValue(mProject.markA());
+        mFrameDelta = (qreal)(mProject.markB() - mProject.markA()) / mFrameCount;
         mPreRenderFrameNumber = mFrameSlider->value();
         mProject.setCurrentFrame(mPreRenderFrameNumber);
+        firstFrame = mProject.markA();
     }
     else { // mDecoder->typeName() == "Webcam"
         mFrameDelta = 1;
@@ -440,6 +441,7 @@ void MainWindow::stopRendering(void) {
     mVideoReaderThread->stopReading();
     setCursor(Qt::ArrowCursor);
     mPreviewForm->setCursor(Qt::ArrowCursor);
+    enableNavigationButtons();
 }
 
 
@@ -646,6 +648,7 @@ void MainWindow::decodingFinished()
 
     deflicker();
     enablePreviewForm();
+    enableNavigationButtons();
     setCursor(Qt::ArrowCursor);
     mPreviewForm->setCursor(Qt::ArrowCursor);
 }
@@ -739,12 +742,11 @@ void MainWindow::deflicker(void)
 }
 
 
-void MainWindow::enableGuiButtons(void)
+void MainWindow::enableNavigationButtons(void)
 {
     ui->frameNumberLineEdit->setEnabled(true);
     ui->frameTimeLineEdit->setEnabled(true);
     ui->setParamsButton->setEnabled(true);
-    ui->renderButton->setEnabled(true);
     mFrameSlider->setEnabled(true);
     ui->AButton->setEnabled(true);
     ui->BButton->setEnabled(true);
@@ -761,12 +763,22 @@ void MainWindow::enableGuiButtons(void)
 }
 
 
-void MainWindow::disableGuiButtons(void)
+void MainWindow::enableGuiButtons(void)
 {
+    ui->renderButton->setEnabled(true);
+    ui->actionCloseInput->setEnabled(true);
+    ui->action_Save_picture->setEnabled(true);
+    ui->actionClear_marks->setEnabled(true);
+    enableNavigationButtons();
+}
+
+
+void MainWindow::disableNavigationButtons(void)
+{
+
     ui->frameNumberLineEdit->setEnabled(false);
     ui->frameTimeLineEdit->setEnabled(false);
     ui->setParamsButton->setEnabled(false);
-    ui->renderButton->setEnabled(false);
     mFrameSlider->setEnabled(false);
     ui->AButton->setEnabled(false);
     ui->BButton->setEnabled(false);
@@ -780,6 +792,16 @@ void MainWindow::disableGuiButtons(void)
     ui->actionCloseInput->setEnabled(false);
     ui->action_Save_picture->setEnabled(false);
     ui->actionClear_marks->setEnabled(false);
+}
+
+
+void MainWindow::disableGuiButtons(void)
+{
+    ui->renderButton->setEnabled(false);
+    ui->actionCloseInput->setEnabled(false);
+    ui->action_Save_picture->setEnabled(false);
+    ui->actionClear_marks->setEnabled(false);
+    disableNavigationButtons();
 }
 
 
