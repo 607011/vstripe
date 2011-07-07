@@ -18,6 +18,31 @@
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
+       <widget class="QWidget" name="widgetDummy" native="true">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>384</width>
+          <height>480</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>384</width>
+          <height>216</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="sliderLayout">
         <property name="spacing">
          <number>8</number>
@@ -410,7 +435,7 @@
            <item row="1" column="0">
             <layout class="QFormLayout" name="formLayout">
              <property name="sizeConstraint">
-              <enum>QLayout::SetMinimumSize</enum>
+              <enum>QLayout::SetDefaultConstraint</enum>
              </property>
              <property name="fieldGrowthPolicy">
               <enum>QFormLayout::ExpandingFieldsGrow</enum>
@@ -503,7 +528,7 @@
      <x>0</x>
      <y>0</y>
      <width>995</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -546,7 +571,6 @@
     </property>
     <addaction name="actionPreview_picture"/>
     <addaction name="separator"/>
-    <addaction name="actionHelp"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
