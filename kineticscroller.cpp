@@ -27,9 +27,17 @@ KineticScroller::KineticScroller(QObject* parent) :
 
 KineticScroller::~KineticScroller()
 {
+    stopMotion();
     detach();
-    if (mTimer)
+}
+
+
+void KineticScroller::stopMotion(void)
+{
+    if (mTimer) {
         killTimer(mTimer);
+        mTimer = 0;
+    }
 }
 
 
@@ -57,6 +65,7 @@ bool KineticScroller::eventFilter(QObject* object, QEvent* event)
     switch (event->type()) {
     case QEvent::MouseButtonPress:
         if (mouseEvent->button() == Qt::LeftButton) {
+            stopMotion();
             mScrollArea->viewport()->setCursor(Qt::ClosedHandCursor);
             mLastMousePos = mouseEvent->pos();
             mDragging = true;
@@ -102,8 +111,7 @@ void KineticScroller::timerEvent(QTimerEvent*)
         mVelocity *= Friction;
     }
     else {
-        killTimer(mTimer);
-        mTimer = 0;
+        stopMotion();
         mVelocity = QPointF(0, 0);
     }
 }

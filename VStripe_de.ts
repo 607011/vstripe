@@ -622,7 +622,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="previewform.cpp" line="14"/>
+        <location filename="previewform.cpp" line="13"/>
         <source>VStripe - Picture Preview</source>
         <translation>VStripe - Generiertes Streifenbild</translation>
     </message>
