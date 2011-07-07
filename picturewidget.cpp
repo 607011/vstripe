@@ -13,10 +13,6 @@
 
 #include <qmath.h>
 
-const qreal PictureWidget::KineticFriction = 0.75;
-const int PictureWidget::KineticTimeInterval = 30;
-const int PictureWidget::MaxKineticPoints = 5;
-
 PictureWidget::PictureWidget(QWidget* parent) :
         QWidget(parent),
         mShowCurves(true),
@@ -34,11 +30,9 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mMinBlue(-1),
         mStripePos(-1),
         mStripeVertical(true),
-        mDragging(false),
-        mScrollArea(NULL),
-        mKineticTimer(0)
+        mMouseSteps(0)
 {
-    resetPanAndZoom();
+    setZoom(1.0);
 }
 
 
@@ -63,73 +57,11 @@ void PictureWidget::keyPressEvent(QKeyEvent* e)
 }
 
 
-void PictureWidget::mousePressEvent(QMouseEvent* event)
-{
-    if (event->button() == Qt::LeftButton) {
-        Q_ASSERT(mScrollArea != NULL);
-        setCursor(Qt::ClosedHandCursor);
-        mDragStartPos = event->pos();
-        mDragging = true;
-        mMouseMoveTimer.start();
-        mKineticMouse.clear();
-    }
-}
-
-
-void PictureWidget::mouseReleaseEvent(QMouseEvent* event)
-{
-    if (mDragging) {
-        mDragging = false;
-        setCursor(Qt::OpenHandCursor);
-        if (mKineticMouse.count() == MaxKineticPoints) {
-            QPoint mouseDiff = mKineticMouse.first().p - event->globalPos();
-            int dt = mMouseMoveTimer.elapsed() - mKineticMouse.first().t;
-            mVelocity = 1000 * mouseDiff / dt / KineticTimeInterval;
-            if (mKineticTimer == 0)
-                mKineticTimer = startTimer(KineticTimeInterval);
-        }
-    }
-}
-
-
-void PictureWidget::mouseMoveEvent(QMouseEvent* event)
-{
-    if (mDragging) {
-        scrollBy(mDragStartPos - event->pos());
-        mKineticMouse.push_back(KineticEnergy(event->globalPos(), mMouseMoveTimer.elapsed()));
-        if (mKineticMouse.count() > MaxKineticPoints)
-            mKineticMouse.pop_front();
-    }
-}
-
-
 void PictureWidget::wheelEvent(QWheelEvent* event)
 {
     mMouseSteps += event->delta() / 16;
     mZoom = pow(1.1, mMouseSteps);
     setZoom(mZoom);
-}
-
-
-void PictureWidget::timerEvent(QTimerEvent*)
-{
-    if (mVelocity.manhattanLength() < 1) {
-        killTimer(mKineticTimer);
-        mKineticTimer = 0;
-        mVelocity = QPointF(0, 0);
-    }
-    else {
-        scrollBy(mVelocity.toPoint());
-        mVelocity *= KineticFriction;
-    }
-}
-
-
-void PictureWidget::scrollBy(const QPoint& d)
-{
-    Q_ASSERT(mScrollArea != NULL);
-    mScrollArea->horizontalScrollBar()->setValue(mScrollArea->horizontalScrollBar()->value() + d.x());
-    mScrollArea->verticalScrollBar()->setValue(mScrollArea->verticalScrollBar()->value() + d.y());
 }
 
 
@@ -139,23 +71,6 @@ void PictureWidget::setZoom(qreal zoom)
     setMinimumSize(mImage.size() * mZoom);
     resize(mImage.size() * mZoom);
     update();
-}
-
-
-void PictureWidget::resetPanAndZoom(void)
-{
-    if (mScrollArea) {
-        mScrollArea->horizontalScrollBar()->setValue(0);
-        mScrollArea->verticalScrollBar()->setValue(0);
-    }
-    mMouseSteps = 0;
-    setZoom(1.0);
-}
-
-
-void PictureWidget::setScrollArea(QScrollArea* scrollArea)
-{
-    mScrollArea = scrollArea;
 }
 
 
@@ -206,6 +121,8 @@ void PictureWidget::paintEvent(QPaintEvent*)
     painter.scale(mZoom, mZoom);
     painter.drawImage(QPoint(0, 0), mImage);
     painter.setBrush(Qt::NoBrush);
+    painter.setPen(Qt::cyan);
+    painter.drawRect(0, 0, width()-1, height()-1);
     if (mStripePos >= 0) {
         painter.setPen(Qt::red);
         if (mStripeVertical)

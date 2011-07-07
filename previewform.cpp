@@ -28,10 +28,10 @@ PreviewForm::PreviewForm(QWidget* parent) :
 
     mPictureWidget = new PictureWidget;
     mPictureWidget->showCurves(ui->checkBoxShowCurves->isChecked());
-    mPictureWidget->setScrollArea(ui->scrollArea);
 
     ui->scrollArea->setWidget(mPictureWidget);
     ui->scrollArea->setBackgroundRole(QPalette::Dark);
+    mKineticScroller.attachTo(ui->scrollArea);
 
     QObject::connect(ui->resetRGBLButton, SIGNAL(clicked()), this, SLOT(resetRGBLCorrections()));
     QObject::connect(ui->checkBoxShowCurves, SIGNAL(toggled(bool)), mPictureWidget, SLOT(showCurves(bool)));
@@ -45,6 +45,7 @@ PreviewForm::PreviewForm(QWidget* parent) :
 
 PreviewForm::~PreviewForm()
 {
+    mKineticScroller.detach();
     delete ui;
     delete mPictureWidget;
 }
@@ -101,12 +102,8 @@ void PreviewForm::setSizeConstraints(const QSize& minimumSize, const QSize& opti
 
 void PreviewForm::keyPressEvent(QKeyEvent* event)
 {
-    if (event->key() == Qt::Key_C && (event->modifiers() & Qt::ControlModifier)) {
+    if (event->key() == Qt::Key_C && (event->modifiers() & Qt::ControlModifier))
         mPictureWidget->copyImageToClipboard();
-    }
-    else if (event->key() == Qt::Key_Escape) {
-        mPictureWidget->resetPanAndZoom();
-    }
 }
 
 
