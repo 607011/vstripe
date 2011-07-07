@@ -10,7 +10,7 @@
 #include <QSlider>
 #include <QDial>
 #include "picturewidget.h"
-
+#include "kineticscroller.h"
 
 namespace Ui {
     class PreviewForm;
@@ -48,12 +48,13 @@ protected:
     void keyPressEvent(QKeyEvent*);
 
 private:
-    Ui::PreviewForm *ui;
+    Ui::PreviewForm* ui;
     PictureWidget* mPictureWidget;
     bool mStripeIsVertical;
     QSize mDefaultSize;
     QSize mOptimumSize;
     static const QString WinTitle;
+    KineticScroller mKineticScroller;
 
 };
 

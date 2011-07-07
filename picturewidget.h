@@ -16,14 +16,6 @@
 
 #include "histogram.h"
 
-class KineticEnergy {
-public:
-    KineticEnergy(void) : t(0) { /* ... */ }
-    KineticEnergy(const QPoint& p, int t) : p(p), t(t) { /* ... */ }
-    QPoint p;
-    int t;
-};
-
 
 class PictureWidget : public QWidget
 {
@@ -48,8 +40,6 @@ public:
             qreal minBlue = -1);
     inline const QImage& picture(void) const { return mImage; }
     void setZoom(qreal);
-    void resetPanAndZoom(void);
-    void setScrollArea(QScrollArea*);
 
 public slots:
     void copyImageToClipboard(void);
@@ -58,23 +48,13 @@ public slots:
 protected:
     void paintEvent(QPaintEvent*);
     void keyPressEvent(QKeyEvent*);
-    void mousePressEvent(QMouseEvent*);
-    void mouseReleaseEvent(QMouseEvent*);
-    void mouseMoveEvent(QMouseEvent*);
     void wheelEvent(QWheelEvent*);
-    void timerEvent(QTimerEvent*);
 
 private: // methods
-    void scrollBy(const QPoint&);
 
 private: // variables
-    static const qreal KineticFriction;
-    static const int KineticTimeInterval;
-    static const int MaxKineticPoints;
-
     QImage mImage;
     bool mShowCurves;
-    int mMouseSteps;
     const BrightnessData* mBrightnessData;
     const BrightnessData* mRedData;
     const BrightnessData* mGreenData;
@@ -89,16 +69,8 @@ private: // variables
     qreal mMinBlue;
     int mStripePos;
     bool mStripeVertical;
-    bool mDragging;
-    QPoint mDragStartPos;
+    int mMouseSteps;
     qreal mZoom;
-    QScrollArea* mScrollArea;
-
-    QVector<KineticEnergy> mKineticMouse;
-    QElapsedTimer mMouseMoveTimer;
-    int mKineticTimer;
-    QPointF mVelocity;
-    int mNumMoveEvents;
 };
 
 #endif // __PICTUREWIDGET_H_

@@ -69,7 +69,8 @@ SOURCES += main.cpp\
     previewform.cpp \
     webcam.cpp \
     webcamthread.cpp \
-    picturesizedialog.cpp
+    picturesizedialog.cpp \
+    kineticscroller.cpp
 #    helpbrowser.cpp
 
 HEADERS += mainwindow.h \
@@ -85,7 +86,8 @@ HEADERS += mainwindow.h \
     abstractvideodecoder.h \
     webcam.h \
     webcamthread.h \
-    picturesizedialog.h
+    picturesizedialog.h \
+    kineticscroller.h
 #    helpbrowser.h
 
 FORMS += mainwindow.ui \

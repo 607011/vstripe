@@ -8,9 +8,6 @@ TODO
 
 [ ] Die ausgeschnittenen Streifen müssen in umgekehrter Richtung zusammengesetzt werden, damit bewegte Objekte nicht spiegelverkehrt abgebildet werden.
 
-[ ] Verlagern des kinetischen Scrolling in eine eigene Klasse und installieren eines Objekts derselben mit installEventFilter() in QScrollArea
-
-
 
 FEATURES
 ========
