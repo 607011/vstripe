@@ -40,6 +40,7 @@ private:
     };
 
     void scrollBy(const QPoint&);
+    void startMotion(const QPointF& velocity);
     void stopMotion(void);
 
     QScrollArea* mScrollArea;
