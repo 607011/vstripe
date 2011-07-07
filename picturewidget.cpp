@@ -52,8 +52,13 @@ void PictureWidget::showCurves(bool enabled)
 
 void PictureWidget::keyPressEvent(QKeyEvent* e)
 {
-    if (e->key() == Qt::Key_C && (e->modifiers() & Qt::ControlModifier) == Qt::ControlModifier)
+    qDebug() << "PictureWidget::keyPressEvent()";
+    if (e->key() == Qt::Key_C && (e->modifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
         copyImageToClipboard();
+    }
+    else if (e->key() == Qt::Key_Escape) {
+        setZoom(1.0);
+    }
 }
 
 
@@ -62,6 +67,7 @@ void PictureWidget::wheelEvent(QWheelEvent* event)
     mMouseSteps += event->delta() / 16;
     mZoom = pow(1.1, mMouseSteps);
     setZoom(mZoom);
+    setFocus(Qt::MouseFocusReason);
 }
 
 
@@ -79,9 +85,9 @@ void PictureWidget::setPicture(const QImage& img, int stripePos, bool stripeVert
     mImage = img;
     mStripePos = stripePos;
     mStripeVertical = stripeVertical;
-    update();
     setMinimumSize(mImage.size() * mZoom);
     resize(mImage.size() * mZoom);
+    update();
 }
 
 
@@ -121,8 +127,6 @@ void PictureWidget::paintEvent(QPaintEvent*)
     painter.scale(mZoom, mZoom);
     painter.drawImage(QPoint(0, 0), mImage);
     painter.setBrush(Qt::NoBrush);
-    painter.setPen(Qt::cyan);
-    painter.drawRect(0, 0, width()-1, height()-1);
     if (mStripePos >= 0) {
         painter.setPen(Qt::red);
         if (mStripeVertical)

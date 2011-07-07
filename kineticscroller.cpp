@@ -10,9 +10,10 @@
 #include <QtCore/QtDebug>
 #include <qmath.h>
 
-const qreal KineticScroller::Friction = 0.6;
-const int KineticScroller::TimeInterval = 30;
+const qreal KineticScroller::Friction = 0.85;
+const int KineticScroller::TimeInterval = 20;
 const int KineticScroller::NumKineticDataSamples = 5;
+
 
 KineticScroller::KineticScroller(QObject* parent) :
     QObject(parent),
@@ -57,8 +58,7 @@ bool KineticScroller::eventFilter(QObject* object, QEvent* event)
     case QEvent::MouseButtonPress:
         if (mouseEvent->button() == Qt::LeftButton) {
             mScrollArea->viewport()->setCursor(Qt::ClosedHandCursor);
-            mDragStartPos = mouseEvent->pos();
-            mOrigScrollBarValue = QPoint(mScrollArea->horizontalScrollBar()->value(), mScrollArea->verticalScrollBar()->value());
+            mLastMousePos = mouseEvent->pos();
             mDragging = true;
             mMouseMoveTimer.start();
             mKineticData.clear();
@@ -66,10 +66,11 @@ bool KineticScroller::eventFilter(QObject* object, QEvent* event)
         break;
     case QEvent::MouseMove:
         if (mDragging) {
-            scrollBy(mDragStartPos - mouseEvent->pos());
+            scrollBy(mLastMousePos - mouseEvent->pos());
             mKineticData.push_back(KineticData(mouseEvent->pos(), mMouseMoveTimer.elapsed()));
             if (mKineticData.count() > NumKineticDataSamples)
                 mKineticData.pop_front();
+            mLastMousePos = mouseEvent->pos();
         }
         break;
     case QEvent::MouseButtonRelease:
@@ -77,12 +78,9 @@ bool KineticScroller::eventFilter(QObject* object, QEvent* event)
             mDragging = false;
             mScrollArea->viewport()->setCursor(Qt::OpenHandCursor);
             if (mKineticData.count() == NumKineticDataSamples) {
-                mOrigScrollBarValue = QPoint(mScrollArea->horizontalScrollBar()->value(), mScrollArea->verticalScrollBar()->value());
-                QPoint dp(mKineticData.first().p - mouseEvent->pos());
-                qDebug() << "KineticScroller::eventFilter() dp =" << dp;
-                int dt = mMouseMoveTimer.elapsed() - mKineticData.first().t;
+                const QPoint dp(mKineticData.first().p - mouseEvent->pos());
+                const int dt = mMouseMoveTimer.elapsed() - mKineticData.first().t;
                 mVelocity = 1000 * dp / dt / TimeInterval;
-                qDebug() << "KineticScroller::eventFilter() mVelocity =" << mVelocity;
                 if (mTimer == 0)
                     mTimer = startTimer(TimeInterval);
             }
@@ -100,7 +98,7 @@ bool KineticScroller::eventFilter(QObject* object, QEvent* event)
 void KineticScroller::timerEvent(QTimerEvent*)
 {
     if (mVelocity.manhattanLength() > M_SQRT2) {
-        scrollBy(-mVelocity.toPoint());
+        scrollBy(mVelocity.toPoint());
         mVelocity *= Friction;
     }
     else {
@@ -108,13 +106,12 @@ void KineticScroller::timerEvent(QTimerEvent*)
         mTimer = 0;
         mVelocity = QPointF(0, 0);
     }
-    qDebug() << "KineticScroller::timerEvent() mVelocity =" << mVelocity;
 }
 
 
 void KineticScroller::scrollBy(const QPoint& d)
 {
     Q_ASSERT_X(mScrollArea != NULL, "KineticScroller", "QScrollArea not set");
-    mScrollArea->horizontalScrollBar()->setValue(mOrigScrollBarValue.x() + d.x());
-    mScrollArea->verticalScrollBar()->setValue(mOrigScrollBarValue.y() + d.y());
+    mScrollArea->horizontalScrollBar()->setValue(mScrollArea->horizontalScrollBar()->value() + d.x());
+    mScrollArea->verticalScrollBar()->setValue(mScrollArea->verticalScrollBar()->value() + d.y());
 }
