@@ -28,9 +28,8 @@ echo Making translations ..
 $QTDIR/bin/lrelease -compress VStripe.pro
 cp $APP*.qm $APPBUNDLE/Contents/MacOS
 
-echo Generating help ..
-
-$QTDIR/bin/qcollectiongenerator doc.qhcp -o vstripe.qhc
+# echo Generating help ..
+# $QTDIR/bin/qcollectiongenerator doc.qhcp -o vstripe.qhc
 
 echo Bundling libs ..
 
@@ -41,27 +40,18 @@ echo Creating directories for Qt frameworks ..
 mkdir -pv $APPBUNDLE/Contents/Frameworks/QtCore.framework/Versions/4
 mkdir -pv $APPBUNDLE/Contents/Frameworks/QtGui.framework/Versions/4
 mkdir -pv $APPBUNDLE/Contents/Frameworks/QtXml.framework/Versions/4
-# mkdir -pv $APPBUNDLE/Contents/Frameworks/QtSql.framework/Versions/4
-# mkdir -pv $APPBUNDLE/Contents/Frameworks/QtHelp.framework/Versions/4
-# mkdir -pv $APPBUNDLE/Contents/Frameworks/QtNetwork.framework/Versions/4
 
 echo Copying Qt framework resources to application bundle ..
 
 cp -Rv $QTLIBDIR/QtCore.framework/Versions/4/Resources $APPBUNDLE/Contents/Frameworks/QtCore.framework
 cp -Rv $QTLIBDIR/QtGui.framework/Versions/4/Resources $APPBUNDLE/Contents/Frameworks/QtGui.framework
 cp -Rv $QTLIBDIR/QtXml.framework/Versions/4/Resources $APPBUNDLE/Contents/Frameworks/QtXml.framework
-# cp -Rv $QTLIBDIR/QtSql.framework/Versions/4/Resources $APPBUNDLE/Contents/Frameworks/QtSql.framework
-# cp -Rv $QTLIBDIR/QtHelp.framework/Versions/4/Resources $APPBUNDLE/Contents/Frameworks/QtHelp.framework
-# cp -Rv $QTLIBDIR/QtNetwork.framework/Versions/4/Resources $APPBUNDLE/Contents/Frameworks/QtNetwork.framework
 
 echo Copying Qt frameworks to application bundle ..
 
 cp -v $QTLIBDIR/QtCore.framework/Versions/4/QtCore $APPBUNDLE/Contents/Frameworks/QtCore.framework/Versions/4
 cp -v $QTLIBDIR/QtGui.framework/Versions/4/QtGui $APPBUNDLE/Contents/Frameworks/QtGui.framework/Versions/4
 cp -v $QTLIBDIR/QtXml.framework/Versions/4/QtXml $APPBUNDLE/Contents/Frameworks/QtXml.framework/Versions/4
-# cp -v $QTLIBDIR/QtSql.framework/Versions/4/QtSql $APPBUNDLE/Contents/Frameworks/QtSql.framework/Versions/4
-# cp -v $QTLIBDIR/QtHelp.framework/Versions/4/QtHelp $APPBUNDLE/Contents/Frameworks/QtHelp.framework/Versions/4
-# cp -v $QTLIBDIR/QtNetwork.framework/Versions/4/QtNetwork $APPBUNDLE/Contents/Frameworks/QtNetwork.framework/Versions/4
 
 echo Fixing dependencies on $APP ..
 
