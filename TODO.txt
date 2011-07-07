@@ -1,13 +1,21 @@
 FEHLER
 ======
 
+[ ] Ändern der Streifenausrichtung passt nicht zuverlässig die Größe des Zielbildes an.
+
+TODO
+====
+
 [ ] Die ausgeschnittenen Streifen müssen in umgekehrter Richtung zusammengesetzt werden, damit bewegte Objekte nicht spiegelverkehrt abgebildet werden.
+
+[ ] Verlagern des kinetischen Scrolling in eine eigene Klasse und installieren eines Objekts derselben mit installEventFilter() in QScrollArea
+
 
 
 FEATURES
 ========
 
-[ ] Webcam-Aufzeichnung soll sich als Video speichern lassen können
+[ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
 
 [ ] Beim Generieren: Anzeige der Frames/Sekunde im Statusbar
 
@@ -15,10 +23,11 @@ FEATURES
 
 [ ] Anzahl der mit [A und B] markierten Frames nicht nur im Info-Feld anzeigen, sondern in Echtzeit
 
-[ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
-
 [ ] Mehr Informationen über das Video in infoPlainTextEdit ausgeben, z.B. Framerate, Codec-Kurzname, Format-Kurzname, ...
 
 [ ] fileDropped(argv[1]) darf in MainWindow erst aufgerufen werden, wenn das Fenster aufgebaut ist.
     
     NOTIZEN: Versuche mit dem Abfangen von showEvent() und changeEvent() führten ins Leere.
+
+[ ] Webcam-Aufzeichnung soll sich als Video speichern lassen können
+

@@ -13,7 +13,6 @@
 
 #include <qmath.h>
 
-
 const qreal PictureWidget::KineticFriction = 0.75;
 const int PictureWidget::KineticTimeInterval = 30;
 const int PictureWidget::MaxKineticPoints = 5;
@@ -37,8 +36,7 @@ PictureWidget::PictureWidget(QWidget* parent) :
         mStripeVertical(true),
         mDragging(false),
         mScrollArea(NULL),
-        mKineticTimer(0),
-        mNumMoveEvents(0)
+        mKineticTimer(0)
 {
     resetPanAndZoom();
 }
@@ -65,12 +63,6 @@ void PictureWidget::keyPressEvent(QKeyEvent* e)
 }
 
 
-void PictureWidget::resizeEvent(QResizeEvent*)
-{
-    // ...
-}
-
-
 void PictureWidget::mousePressEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton) {
@@ -79,10 +71,7 @@ void PictureWidget::mousePressEvent(QMouseEvent* event)
         mDragStartPos = event->pos();
         mDragging = true;
         mMouseMoveTimer.start();
-        mKineticStartPos = event->globalPos();
-        mNumMoveEvents = 0;
-        mKineticMousePos.clear();
-        mKineticMouseTime.clear();
+        mKineticMouse.clear();
     }
 }
 
@@ -92,11 +81,10 @@ void PictureWidget::mouseReleaseEvent(QMouseEvent* event)
     if (mDragging) {
         mDragging = false;
         setCursor(Qt::OpenHandCursor);
-        if (mNumMoveEvents > MaxKineticPoints) {
-            QPoint mouseDiff = mKineticMousePos.first() - event->globalPos();
-            int dt = mMouseMoveTimer.elapsed() - mKineticMouseTime.first();
+        if (mKineticMouse.count() == MaxKineticPoints) {
+            QPoint mouseDiff = mKineticMouse.first().p - event->globalPos();
+            int dt = mMouseMoveTimer.elapsed() - mKineticMouse.first().t;
             mVelocity = 1000 * mouseDiff / dt / KineticTimeInterval;
-            qDebug() << "mVelocity =" << mVelocity;
             if (mKineticTimer == 0)
                 mKineticTimer = startTimer(KineticTimeInterval);
         }
@@ -108,13 +96,9 @@ void PictureWidget::mouseMoveEvent(QMouseEvent* event)
 {
     if (mDragging) {
         scrollBy(mDragStartPos - event->pos());
-        ++mNumMoveEvents;
-        mKineticMousePos.push_back(event->globalPos());
-        mKineticMouseTime.push_back(mMouseMoveTimer.elapsed());
-        if (mKineticMousePos.count() > MaxKineticPoints) {
-            mKineticMousePos.pop_front();
-            mKineticMouseTime.pop_front();
-        }
+        mKineticMouse.push_back(KineticEnergy(event->globalPos(), mMouseMoveTimer.elapsed()));
+        if (mKineticMouse.count() > MaxKineticPoints)
+            mKineticMouse.pop_front();
     }
 }
 
@@ -138,7 +122,6 @@ void PictureWidget::timerEvent(QTimerEvent*)
         scrollBy(mVelocity.toPoint());
         mVelocity *= KineticFriction;
     }
-    qDebug() << "[timerEvent] mVelocity =" << mVelocity;
 }
 
 
