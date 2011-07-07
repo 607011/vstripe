@@ -4,7 +4,6 @@
 QT += core gui xml
 
 CONFIG += warn_on thread qt
-# CONFIG += help
 
 TARGET = VStripe
 TEMPLATE = app
@@ -22,8 +21,6 @@ RC_FILE = VStripe.rc
 LIBS += -L$${FFMPEGDIR}/lib -lavcodec -lavformat -lavutil -lswscale
 LIBS += -L$${OPENCVDIR}/lib -lopencv_core220.dll -lopencv_highgui220.dll
 LIBS += -lgomp
-# LIBS += -LC:/Qt/2010.05/mingw/lib/gcc/mingw32/4.4.0 -lgomp -lpthread
-# INCLUDEPATH += C:/Qt/2010.05/mingw/lib/gcc/mingw32/4.4.0/include
 }
 
 unix:!macx {
@@ -71,7 +68,6 @@ SOURCES += main.cpp\
     webcamthread.cpp \
     picturesizedialog.cpp \
     kineticscroller.cpp
-#    helpbrowser.cpp
 
 HEADERS += mainwindow.h \
     videowidget.h \
@@ -88,7 +84,6 @@ HEADERS += mainwindow.h \
     webcamthread.h \
     picturesizedialog.h \
     kineticscroller.h
-#    helpbrowser.h
 
 FORMS += mainwindow.ui \
     previewform.ui \

@@ -18,7 +18,6 @@
 #include "project.h"
 #include "previewform.h"
 #include "histogram.h"
-#include "helpbrowser.h"
 
 
 namespace Ui {
@@ -74,7 +73,6 @@ public slots:
     void renderButtonClicked(void);
     void setParamsButtonClicked(void);
     void about(void);
-    void help(void);
     void saveProject(void);
     void saveProjectAs(void);
     void openProject(void);
@@ -104,7 +102,6 @@ private: // variables
     int mDesiredFrameTime;
     int mPreRenderFrameNumber;
     QString mFileNameFromCmdLine;
-    HelpBrowser* mHelpBrowser;
 
     BrightnessData mFrameBrightness;
     BrightnessData mFrameRed;

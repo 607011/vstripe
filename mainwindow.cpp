@@ -16,12 +16,8 @@
 #include <QTextStream>
 #include <QFileInfo>
 #include <QPainter>
-
 #include <QMap>
 #include <QUrl>
-#ifdef WITH_HELPBROWSER
-#include <QtHelp/QHelpEngineCore>
-#endif
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -43,9 +39,6 @@ const QString MainWindow::AppVersion = "0.9.8.4";
 MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
-#ifdef WITH_HELPBROWSER
-        mHelpBrowser(NULL),
-#endif
         mWebcamThread(NULL),
         mDecoder(NULL)
 {
@@ -56,6 +49,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     qRegisterMetaType<Histogram>();
 
     mVideoWidget = new VideoWidget;
+
+    ui->verticalLayout->removeWidget(ui->widgetDummy);
     ui->verticalLayout->insertWidget(0, mVideoWidget);
     QObject::connect(mVideoWidget, SIGNAL(fileDropped(QString)), this, SLOT(fileDropped(QString)));
     QObject::connect(mVideoWidget, SIGNAL(stripeOrientationChanged(bool)), this, SLOT(setStripeOrientation(bool)));
@@ -109,7 +104,6 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     QObject::connect(ui->renderButton, SIGNAL(clicked()), this, SLOT(renderButtonClicked()));
     QObject::connect(ui->action_Save_picture, SIGNAL(triggered()), this, SLOT(savePicture()));
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
-    QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(help()));
     QObject::connect(ui->actionOpen_project, SIGNAL(triggered()), this, SLOT(openProject()));
     QObject::connect(ui->actionSave_project, SIGNAL(triggered()), this, SLOT(saveProject()));
     QObject::connect(ui->actionSave_project_as, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
@@ -162,10 +156,6 @@ MainWindow::~MainWindow()
         delete mWebcamThread;
     if (mDecoder)
         delete mDecoder;
-#ifdef WITH_HELPBROWSER
-    if (mHelpBrowser)
-        delete mHelpBrowser;
-#endif
     delete ui;
     delete mVideoWidget;
     delete mPreviewForm;
@@ -337,9 +327,9 @@ QSize MainWindow::optimalPictureSize(void) const
     }
     else {
         if (mProject.stripeIsVertical())
-            goalSize.setWidth(webcamIsActive()? 9999: mLastFrameNumber);
+            goalSize.setWidth(webcamIsActive()? 1999: mLastFrameNumber);
         else
-            goalSize.setHeight(webcamIsActive()? 9999: mLastFrameNumber);
+            goalSize.setHeight(webcamIsActive()? 1999: mLastFrameNumber);
     }
     return goalSize;
 }
@@ -852,21 +842,7 @@ void MainWindow::about(void)
         tr("<p><strong>%1</strong> &ndash; Generate streak photos from footage.</p>"
            "<p>Copyright (c) 2011 Oliver Lau &lt;oliver@von-und-fuer-lau.de&gt;</p>"
            "<p>VideoDecoder Copyright (c) 2009-2010 by Daniel Roggen &lt;droggen@gmail.com&gt;</p>"
-#ifdef WITH_HELPBROWSER
-           "<p>HelpBrowser Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).</p>"
-#endif
            "<p>All rights reserved.</p>").arg(MainWindow::AppName));
-}
-
-
-void MainWindow::help(void)
-{
-#ifdef WITH_HELPBROWSER
-//    if (mHelpBrowser == NULL)
-//        mHelpBrowser = new HelpBrowser;
-//    mHelpBrowser->showHelpForKeyword("VStripe::index");
-//    mHelpBrowser->show();
-#endif
 }
 
 
