@@ -87,11 +87,13 @@ bool KineticScroller::eventFilter(QObject* object, QEvent* event)
             mDragging = false;
             mScrollArea->viewport()->setCursor(Qt::OpenHandCursor);
             if (mKineticData.count() == NumKineticDataSamples) {
-                const QPoint dp(mKineticData.first().p - mouseEvent->pos());
-                const int dt = mMouseMoveTimer.elapsed() - mKineticData.first().t;
-                mVelocity = 1000 * dp / dt / TimeInterval;
-                if (mTimer == 0)
-                    mTimer = startTimer(TimeInterval);
+                if (mMouseMoveTimer.elapsed() - mKineticData.last().t < 150) {
+                    const QPoint dp(mKineticData.first().p - mouseEvent->pos());
+                    const int dt = mMouseMoveTimer.elapsed() - mKineticData.first().t;
+                    mVelocity = 1000 * dp / dt / TimeInterval;
+                    if (mTimer == 0)
+                        mTimer = startTimer(TimeInterval);
+                }
             }
         }
         break;
