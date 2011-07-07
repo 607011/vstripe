@@ -52,7 +52,6 @@ void PictureWidget::showCurves(bool enabled)
 
 void PictureWidget::keyPressEvent(QKeyEvent* e)
 {
-    qDebug() << "PictureWidget::keyPressEvent()";
     if (e->key() == Qt::Key_C && (e->modifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
         copyImageToClipboard();
     }

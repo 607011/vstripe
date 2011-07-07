@@ -40,6 +40,7 @@ private:
     };
 
     void scrollBy(const QPoint&);
+    void stopMotion(void);
 
     QScrollArea* mScrollArea;
     bool mDragging;
