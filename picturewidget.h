@@ -16,6 +16,15 @@
 
 #include "histogram.h"
 
+class KineticEnergy {
+public:
+    KineticEnergy(void) : t(0) { /* ... */ }
+    KineticEnergy(const QPoint& p, int t) : p(p), t(t) { /* ... */ }
+    QPoint p;
+    int t;
+};
+
+
 class PictureWidget : public QWidget
 {
     Q_OBJECT
@@ -49,7 +58,6 @@ public slots:
 protected:
     void paintEvent(QPaintEvent*);
     void keyPressEvent(QKeyEvent*);
-    void resizeEvent(QResizeEvent*);
     void mousePressEvent(QMouseEvent*);
     void mouseReleaseEvent(QMouseEvent*);
     void mouseMoveEvent(QMouseEvent*);
@@ -86,9 +94,7 @@ private: // variables
     qreal mZoom;
     QScrollArea* mScrollArea;
 
-    QPoint mKineticStartPos;
-    QVector<QPoint> mKineticMousePos;
-    QVector<int> mKineticMouseTime;
+    QVector<KineticEnergy> mKineticMouse;
     QElapsedTimer mMouseMoveTimer;
     int mKineticTimer;
     QPointF mVelocity;
