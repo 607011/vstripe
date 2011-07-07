@@ -43,8 +43,7 @@ private:
 
     QScrollArea* mScrollArea;
     bool mDragging;
-    QPoint mDragStartPos;
-    QPoint mOrigScrollBarValue;
+    QPoint mLastMousePos;
     QVector<KineticData> mKineticData;
     QElapsedTimer mMouseMoveTimer;
     int mTimer;
