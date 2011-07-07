@@ -97,6 +97,8 @@ void PreviewForm::setSizeConstraints(const QSize& minimumSize, const QSize& opti
     mOptimumSize = optimumSize;
     mDefaultSize = defaultSize;
     mStripeIsVertical = (minimumSize.width() == 0);
+    setPictureSize(defaultSize);
+    emit pictureSizeChanged(defaultSize);
 }
 
 

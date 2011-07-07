@@ -1,7 +1,6 @@
 FEHLER
 ======
 
-[ ] Ändern der Streifenausrichtung passt nicht zuverlässig die Größe des Zielbildes an.
 
 TODO
 ====

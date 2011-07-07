@@ -34,9 +34,9 @@
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.8.3 DEBUG $Date$";
+const QString MainWindow::AppVersion = "0.9.8.4 DEBUG $Date$";
 #else
-const QString MainWindow::AppVersion = "0.9.8.3";
+const QString MainWindow::AppVersion = "0.9.8.4";
 #endif
 
 
@@ -384,6 +384,7 @@ void MainWindow::setStripeOrientation(bool vertical)
 
 void MainWindow::setPictureSize(const QSize& size)
 {
+    qDebug() << "MainWindow::setPictureSize(" << size << ")";
     if (mVideoReaderThread->isRunning())
         stopRendering();
     mStripeImage = QImage(size, QImage::Format_RGB888);
