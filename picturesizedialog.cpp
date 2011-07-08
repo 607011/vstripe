@@ -8,13 +8,14 @@
 #include "picturesizedialog.h"
 #include "ui_picturesizedialog.h"
 
-PictureSizeDialog::PictureSizeDialog(const QSize& currentSize, const QSize& defaultSize, const QSize& maximumSize, bool stripeIsVertical, QWidget* parent) :
+PictureSizeDialog::PictureSizeDialog(const QSize& currentSize, const QSize& defaultSize, const QSize& maximumSize, bool stripeIsVertical, bool stripeIsFixed, QWidget* parent) :
     QDialog(parent),
     ui(new Ui::PictureSizeDialog),
     mOldSize(currentSize),
     mDefaultSize(defaultSize),
     mMaximumSize(maximumSize),
-    mStripeIsVertical(stripeIsVertical)
+    mStripeIsVertical(stripeIsVertical),
+    mStripeIsFixed(stripeIsFixed)
 {
     ui->setupUi(this);
     if (stripeIsVertical)
@@ -48,9 +49,9 @@ void PictureSizeDialog::resetSize(void)
 void PictureSizeDialog::optimizeSize(void)
 {
     if (mStripeIsVertical)
-        ui->spinBoxWidth->setValue(mMaximumSize.width());
+        ui->spinBoxWidth->setValue(mStripeIsFixed? mMaximumSize.width() : mDefaultSize.width());
     else
-        ui->spinBoxHeight->setValue(mMaximumSize.height());
+        ui->spinBoxHeight->setValue(mStripeIsFixed? mMaximumSize.height() : mDefaultSize.height());
 }
 
 

@@ -17,7 +17,7 @@ class PictureSizeDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit PictureSizeDialog(const QSize& currentSize, const QSize& defaultSize, const QSize& maximumSize, bool stripeIsVertical, QWidget* parent = NULL);
+    PictureSizeDialog(const QSize& currentSize, const QSize& defaultSize, const QSize& maximumSize, bool stripeIsVertical, bool stripeIsFixed, QWidget* parent = NULL);
     ~PictureSizeDialog();
     QSize requestedSize(void) const;
 
@@ -31,6 +31,7 @@ private:
     QSize mDefaultSize;
     QSize mMaximumSize;
     bool mStripeIsVertical;
+    bool mStripeIsFixed;
 };
 
 

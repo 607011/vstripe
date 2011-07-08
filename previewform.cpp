@@ -22,7 +22,8 @@ QDial* PreviewForm::factorDial(void) { return ui->dialCorrectionFactor; }
 PreviewForm::PreviewForm(QWidget* parent) :
         QWidget(parent),
         ui(new Ui::PreviewForm),
-        mStripeIsVertical(true)
+        mStripeIsVertical(true),
+        mStripeIsFixed(false)
 {
     ui->setupUi(this);
 
@@ -79,7 +80,7 @@ qreal PreviewForm::amplificationCorrection(void) const
 
 void PreviewForm::choosePictureSize(void)
 {
-    PictureSizeDialog diag(mPictureWidget->picture().size(), mDefaultSize, mOptimumSize, mStripeIsVertical);
+    PictureSizeDialog diag(mPictureWidget->picture().size(), mDefaultSize, mOptimumSize, mStripeIsVertical, mStripeIsFixed);
     int rc = diag.exec();
     if (rc == QDialog::Accepted)
         emit pictureSizeChanged(diag.requestedSize());
@@ -92,11 +93,12 @@ void PreviewForm::setPictureSize(const QSize& sz)
 }
 
 
-void PreviewForm::setSizeConstraints(const QSize& minimumSize, const QSize& optimumSize, const QSize& defaultSize)
+void PreviewForm::setSizeConstraints(const QSize& minimumSize, const QSize& optimumSize, const QSize& defaultSize, bool stripeIsFixed)
 {
+    mStripeIsVertical = (minimumSize.width() == 0);
     mOptimumSize = optimumSize;
     mDefaultSize = defaultSize;
-    mStripeIsVertical = (minimumSize.width() == 0);
+    mStripeIsFixed = stripeIsFixed;
     setPictureSize(defaultSize);
     emit pictureSizeChanged(defaultSize);
 }
