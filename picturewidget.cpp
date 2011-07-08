@@ -64,9 +64,8 @@ void PictureWidget::keyPressEvent(QKeyEvent* e)
 void PictureWidget::wheelEvent(QWheelEvent* event)
 {
     mMouseSteps += event->delta() / 16;
-    mZoom = pow(1.1, mMouseSteps);
+    mZoom = pow(1.05, mMouseSteps);
     setZoom(mZoom);
-    setFocus(Qt::MouseFocusReason);
 }
 
 
