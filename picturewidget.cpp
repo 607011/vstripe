@@ -50,17 +50,6 @@ void PictureWidget::showCurves(bool enabled)
 }
 
 
-void PictureWidget::keyPressEvent(QKeyEvent* e)
-{
-    if (e->key() == Qt::Key_C && (e->modifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
-        copyImageToClipboard();
-    }
-    else if (e->key() == Qt::Key_Escape) {
-        setZoom(1.0);
-    }
-}
-
-
 void PictureWidget::wheelEvent(QWheelEvent* event)
 {
     mMouseSteps += event->delta() / 16;

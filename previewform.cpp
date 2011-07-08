@@ -106,8 +106,12 @@ void PreviewForm::setSizeConstraints(const QSize& minimumSize, const QSize& opti
 
 void PreviewForm::keyPressEvent(QKeyEvent* event)
 {
-    if (event->key() == Qt::Key_C && (event->modifiers() & Qt::ControlModifier))
+    if (event->key() == Qt::Key_C && (event->modifiers() & Qt::ControlModifier)) {
         mPictureWidget->copyImageToClipboard();
+    }
+    else if (event->key() == Qt::Key_Escape) {
+        mPictureWidget->setZoom(1.0);
+    }
 }
 
 

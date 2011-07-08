@@ -347,7 +347,6 @@ void VideoWidget::mousePressEvent(QMouseEvent* event)
     mMouseButtonDown = (event->button() == Qt::LeftButton);
     mMousePos = event->pos() + QPoint(1, 1);
     if (mMouseButtonDown) {
-        setFocus(Qt::MouseFocusReason);
         if (event->modifiers() & Qt::AltModifier) {
             mDrawingHistogram = true;
             constrainMousePos();

@@ -109,6 +109,13 @@ bool KineticScroller::eventFilter(QObject* object, QEvent* event)
             const QResizeEvent* const resizeEvent = reinterpret_cast<const QResizeEvent*>(event);
             emit sizeChanged(resizeEvent->size());
         }
+        break;
+    case QEvent::KeyPress:
+        {
+            const QKeyEvent* const keyEvent = reinterpret_cast<const QKeyEvent*>(event);
+            qDebug() << "keyEvent->key() =" << keyEvent->key();
+        }
+        break;
     default:
         doFilterEvent = false;
         break;
