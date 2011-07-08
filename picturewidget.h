@@ -47,7 +47,6 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent*);
-    void keyPressEvent(QKeyEvent*);
     void wheelEvent(QWheelEvent*);
 
 private: // methods
