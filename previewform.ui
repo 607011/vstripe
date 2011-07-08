@@ -54,13 +54,13 @@
           <bool>false</bool>
          </property>
          <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          <set>Qt::AlignCenter</set>
          </property>
          <widget class="QWidget" name="scrollAreaWidgetContents_3">
           <property name="geometry">
            <rect>
-            <x>0</x>
-            <y>0</y>
+            <x>101</x>
+            <y>63</y>
             <width>526</width>
             <height>324</height>
            </rect>

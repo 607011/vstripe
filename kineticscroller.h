@@ -23,6 +23,9 @@ public:
     void attachTo(QScrollArea* scrollArea);
     void detach(void);
 
+signals:
+    void sizeChanged(QSize);
+
 protected:
     bool eventFilter(QObject* object, QEvent* event);
     void timerEvent(QTimerEvent*);

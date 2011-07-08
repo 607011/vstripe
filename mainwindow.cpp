@@ -366,15 +366,14 @@ void MainWindow::setStripeOrientation(bool vertical)
         return;
     mProject.setStripeOrientation(vertical);
     if (vertical)
-        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
     else
-        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
 }
 
 
 void MainWindow::setPictureSize(const QSize& size)
 {
-    qDebug() << "MainWindow::setPictureSize(" << size << ")";
     if (mVideoReaderThread->isRunning())
         stopRendering();
     mStripeImage = QImage(size, QImage::Format_RGB888);
@@ -956,9 +955,9 @@ void MainWindow::openWebcam(void)
     mWebcamThread = new WebcamThread(qobject_cast<Webcam*>(mDecoder), this);
     QObject::connect(mWebcamThread, SIGNAL(frameReady(QImage)), mVideoWidget, SLOT(setFrame(const QImage&)));
     if (mProject.stripeIsVertical())
-        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
     else
-        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
     mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     showPictureWidget();
     QImage img;
@@ -1008,9 +1007,9 @@ bool MainWindow::loadVideoFile(void)
     }
     setPictureSize(mDecoder->frameSize());
     if (mProject.stripeIsVertical())
-        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
     else
-        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize());
+        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
     showPictureWidget();
     ui->actionCloseInput->setEnabled(true);
     mFrameSlider->setMaximum(mLastFrameNumber);

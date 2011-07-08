@@ -53,6 +53,7 @@ protected:
 private: // methods
 
 private: // variables
+    QSize mScrollAreaSize;
     QImage mImage;
     bool mShowCurves;
     const BrightnessData* mBrightnessData;
