@@ -18,7 +18,7 @@ class KineticScroller : public QObject
 {
     Q_OBJECT
 public:
-    KineticScroller(QObject* parent = NULL);
+    KineticScroller(QScrollArea* scrollArea = NULL, QObject* parent = NULL);
     ~KineticScroller();
     void attachTo(QScrollArea* scrollArea);
     void detach(void);

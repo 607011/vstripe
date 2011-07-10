@@ -52,8 +52,8 @@ void PictureWidget::showCurves(bool enabled)
 
 void PictureWidget::wheelEvent(QWheelEvent* event)
 {
-    mMouseSteps += event->delta() / 16;
-    mZoom = pow(1.05, mMouseSteps);
+    mMouseSteps += event->delta();
+    mZoom = pow(1.001, mMouseSteps);
     setZoom(mZoom);
 }
 

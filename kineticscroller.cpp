@@ -15,13 +15,14 @@ const int KineticScroller::TimeInterval = 20;
 const int KineticScroller::NumKineticDataSamples = 5;
 
 
-KineticScroller::KineticScroller(QObject* parent) :
+KineticScroller::KineticScroller(QScrollArea* scrollArea, QObject* parent) :
     QObject(parent),
-    mScrollArea(NULL),
+    mScrollArea(scrollArea),
     mDragging(false),
     mTimer(0)
 {
-    /* ... */
+    if (mScrollArea)
+        attachTo(mScrollArea);
 }
 
 
@@ -46,6 +47,7 @@ void KineticScroller::stopMotion(void)
         killTimer(mTimer);
         mTimer = 0;
     }
+    mVelocity = QPointF(0, 0);
 }
 
 
@@ -105,16 +107,7 @@ bool KineticScroller::eventFilter(QObject* object, QEvent* event)
         }
         break;
     case QEvent::Resize:
-        {
-            const QResizeEvent* const resizeEvent = reinterpret_cast<const QResizeEvent*>(event);
-            emit sizeChanged(resizeEvent->size());
-        }
-        break;
-    case QEvent::KeyPress:
-        {
-            const QKeyEvent* const keyEvent = reinterpret_cast<const QKeyEvent*>(event);
-            qDebug() << "keyEvent->key() =" << keyEvent->key();
-        }
+        emit sizeChanged(reinterpret_cast<const QResizeEvent*>(event)->size());
         break;
     default:
         doFilterEvent = false;
@@ -131,10 +124,7 @@ void KineticScroller::timerEvent(QTimerEvent*)
         scrollBy(mVelocity.toPoint());
         mVelocity *= Friction;
     }
-    else {
-        stopMotion();
-        mVelocity = QPointF(0, 0);
-    }
+    else stopMotion();
 }
 
 

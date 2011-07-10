@@ -5,7 +5,7 @@ FEHLER
 TODO
 ====
 
-[ ] Die ausgeschnittenen Streifen müssen in umgekehrter Richtung zusammengesetzt werden, damit bewegte Objekte nicht spiegelverkehrt abgebildet werden.
+[ ] Läuft der Streifen durch, müssen die Ausschnitte in umgekehrter Richtung zusammengesetzt werden, damit bewegte Objekte nicht spiegelverkehrt abgebildet werden.
 
 
 FEATURES
