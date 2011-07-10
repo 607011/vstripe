@@ -55,7 +55,7 @@ private:
     QSize mDefaultSize;
     QSize mOptimumSize;
     static const QString WinTitle;
-    KineticScroller mKineticScroller;
+    KineticScroller* mKineticScroller;
 
 };
 

@@ -32,7 +32,8 @@ PreviewForm::PreviewForm(QWidget* parent) :
 
     ui->scrollArea->setWidget(mPictureWidget);
     ui->scrollArea->setBackgroundRole(QPalette::Dark);
-    mKineticScroller.attachTo(ui->scrollArea);
+
+    mKineticScroller = new KineticScroller(ui->scrollArea);
 
     QObject::connect(ui->resetRGBLButton, SIGNAL(clicked()), this, SLOT(resetRGBLCorrections()));
     QObject::connect(ui->checkBoxShowCurves, SIGNAL(toggled(bool)), mPictureWidget, SLOT(showCurves(bool)));
@@ -46,7 +47,7 @@ PreviewForm::PreviewForm(QWidget* parent) :
 
 PreviewForm::~PreviewForm()
 {
-    mKineticScroller.detach();
+    delete mKineticScroller;
     delete ui;
     delete mPictureWidget;
 }
