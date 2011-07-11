@@ -592,31 +592,15 @@ void MainWindow::frameReady(const QImage& src, const Histogram& histogram, int f
         mMinTotalGreen = histogram.totalGreen();
     if (histogram.totalBlue() < mMinTotalBlue)
         mMinTotalBlue = histogram.totalBlue();
-    int dstpos, srcpos;
-    if (true /* mProject.stripeIsFixed() */) { // Histogramm-Reihenfolge anpassen!!!
-        dstpos = frameNumber;
-        srcpos = mProject.stripeIsFixed()? mProject.stripePos() : (frameNumber % (mProject.stripeIsVertical()? src.width() : src.height()));
-        if (mProject.stripeIsVertical()) {
-            for (int y = 0; y < src.height(); ++y)
-                mStripeImage.setPixel(dstpos, y, src.pixel(srcpos, y));
-        }
-        else {
-            for (int x = 0; x < src.width(); ++x)
-                mStripeImage.setPixel(x, dstpos, src.pixel(x, srcpos));
-        }
+    int dstpos = frameNumber;
+    int srcpos = mProject.stripeIsFixed()? mProject.stripePos() : (frameNumber % (mProject.stripeIsVertical()? src.width() : src.height()));
+    if (mProject.stripeIsVertical()) {
+        for (int y = 0; y < src.height(); ++y)
+            mStripeImage.setPixel(dstpos, y, src.pixel(srcpos, y));
     }
     else {
-        srcpos = frameNumber % (mProject.stripeIsVertical()? src.width() : src.height());
-        if (mProject.stripeIsVertical()) {
-            dstpos = src.width() - frameNumber - 1;
-            for (int y = 0; y < src.height(); ++y)
-                mStripeImage.setPixel(dstpos, y, src.pixel(srcpos, y));
-        }
-        else {
-            dstpos = src.height() - frameNumber - 1;
-            for (int x = 0; x < src.width(); ++x)
-                mStripeImage.setPixel(x, dstpos, src.pixel(x, srcpos));
-        }
+        for (int x = 0; x < src.width(); ++x)
+            mStripeImage.setPixel(x, dstpos, src.pixel(x, srcpos));
     }
     mPreviewForm->pictureWidget()->setPicture(mStripeImage, frameNumber, mProject.stripeIsVertical());
     mVideoWidget->setFrame(src, histogram, srcpos);
