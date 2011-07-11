@@ -81,13 +81,20 @@ public slots:
     void setPictureSize(const QSize&);
     void setStripeOrientation(bool vertical);
     void deflicker(void);
+#ifdef WITH_TOOLBAR
+    void stripeOrientationSelected(void);
+#endif
 
 protected:
     void closeEvent(QCloseEvent*);
-    void timerEvent(QTimerEvent*);
 
 private: // variables
     Ui::MainWindow* ui;
+#ifdef WITH_TOOLBAR
+    QIcon mStripeHIcon;
+    QIcon mStripeVIcon;
+    QAction* mStripeOrientationAction;
+#endif
     MarkableSlider* mFrameSlider;
     VideoWidget* mVideoWidget;
     PreviewForm* mPreviewForm;

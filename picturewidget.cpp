@@ -58,12 +58,13 @@ void mirrorIterable(T& container)
 
 void PictureWidget::mirror(bool mirrored)
 {
+    qDebug() << "PictureWidget::mirror(" << mirrored << ") mStripeVertical =" << mStripeVertical;
     mMirrored = mirrored;
-    mImage = mImage.mirrored(true, false);
-    mirrorIterable(*mBrightnessData);
-    mirrorIterable(*mRedData);
-    mirrorIterable(*mGreenData);
-    mirrorIterable(*mBlueData);
+    mImage = (mStripeVertical)? mImage.mirrored(true, false) : mImage.mirrored(false, true);
+//    mirrorIterable(*mBrightnessData);
+//    mirrorIterable(*mRedData);
+//    mirrorIterable(*mGreenData);
+//    mirrorIterable(*mBlueData);
     update();
 }
 
@@ -92,11 +93,16 @@ void PictureWidget::setZoom(qreal zoom)
 }
 
 
-void PictureWidget::setPicture(const QImage& img, int stripePos, bool stripeVertical)
+void PictureWidget::setStripeOrientation(bool stripeVertical)
+{
+    mStripeVertical = stripeVertical;
+}
+
+
+void PictureWidget::setPicture(const QImage& img, int stripePos)
 {
     mImage = img;
     mStripePos = stripePos;
-    mStripeVertical = stripeVertical;
     setMinimumSize(mImage.size() * mZoom);
     resize(mImage.size() * mZoom);
     update();
