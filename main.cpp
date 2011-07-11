@@ -5,11 +5,17 @@
 
 #include <QtGui/QApplication>
 #include <QTranslator>
+#include <QtCore/QtDebug>
 
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
+#if defined(Q_OS_MAC)
+    QCoreApplication::addLibraryPath("../plugins");
+    qDebug() << QCoreApplication::libraryPaths();
+#endif
+
     QApplication a(argc, argv);
 
     QTranslator translator;
