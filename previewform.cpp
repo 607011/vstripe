@@ -39,6 +39,7 @@ PreviewForm::PreviewForm(QWidget* parent) :
     QObject::connect(ui->checkBoxShowCurves, SIGNAL(toggled(bool)), mPictureWidget, SLOT(showCurves(bool)));
     QObject::connect(ui->pushButtonPictureSize, SIGNAL(clicked()), this, SLOT(choosePictureSize()));
     QObject::connect(ui->dialCorrectionFactor, SIGNAL(valueChanged(int)), this, SLOT(amplificationChanged()));
+    QObject::connect(ui->checkBoxMirror, SIGNAL(toggled(bool)), mPictureWidget, SLOT(mirror()));
 
     ui->dialCorrectionFactor->setValue(10);
     amplificationChanged();

@@ -9,12 +9,15 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QClipboard>
+#include <QtCore/QtAlgorithms>
+
 #include "picturewidget.h"
 
 #include <qmath.h>
 
 PictureWidget::PictureWidget(QWidget* parent) :
         QWidget(parent),
+        mMirrored(false),
         mShowCurves(true),
         mBrightnessData(NULL),
         mRedData(NULL),
@@ -40,6 +43,28 @@ void PictureWidget::copyImageToClipboard(void)
 {
     QClipboard* clipboard = QApplication::clipboard();
     clipboard->setImage(mImage);
+}
+
+
+template <class T>
+void mirrorIterable(T& container)
+{
+    typename T::iterator front = container.begin();
+    typename T::iterator back = container.end();
+    while (front < back)
+        qSwap(*front--, *back++);
+}
+
+
+void PictureWidget::mirror(bool mirrored)
+{
+    mMirrored = mirrored;
+    mImage = mImage.mirrored(true, false);
+    mirrorIterable(*mBrightnessData);
+    mirrorIterable(*mRedData);
+    mirrorIterable(*mGreenData);
+    mirrorIterable(*mBlueData);
+    update();
 }
 
 
@@ -79,10 +104,10 @@ void PictureWidget::setPicture(const QImage& img, int stripePos, bool stripeVert
 
 
 void PictureWidget::setBrightnessData(
-        const BrightnessData* brightness,
-        const BrightnessData* red,
-        const BrightnessData* green,
-        const BrightnessData* blue,
+        BrightnessData* brightness,
+        BrightnessData* red,
+        BrightnessData* green,
+        BrightnessData* blue,
         qreal avgBrightness,
         qreal avgRed,
         qreal avgGreen,

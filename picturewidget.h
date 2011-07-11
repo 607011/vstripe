@@ -26,10 +26,10 @@ public:
     QSize minimumSizeHint(void) const { return QSize(320, 240); }
     void setPicture(const QImage& img, int stripePos, bool stripeVertical = true);
     void setBrightnessData(
-            const BrightnessData* brightness,
-            const BrightnessData* red,
-            const BrightnessData* green,
-            const BrightnessData* blue,
+            BrightnessData* brightness,
+            BrightnessData* red,
+            BrightnessData* green,
+            BrightnessData* blue,
             qreal avgBrightness = -1,
             qreal avgRed = -1,
             qreal avgGreen = -1,
@@ -44,6 +44,7 @@ public:
 public slots:
     void copyImageToClipboard(void);
     void showCurves(bool);
+    void mirror(void);
 
 protected:
     void paintEvent(QPaintEvent*);
@@ -55,10 +56,10 @@ private: // variables
     QSize mScrollAreaSize;
     QImage mImage;
     bool mShowCurves;
-    const BrightnessData* mBrightnessData;
-    const BrightnessData* mRedData;
-    const BrightnessData* mGreenData;
-    const BrightnessData* mBlueData;
+    BrightnessData* mBrightnessData;
+    BrightnessData* mRedData;
+    BrightnessData* mGreenData;
+    BrightnessData* mBlueData;
     qreal mAvgBrightness;
     qreal mAvgRed;
     qreal mAvgGreen;
