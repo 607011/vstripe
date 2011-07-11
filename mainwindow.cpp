@@ -30,9 +30,9 @@
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.8.5 DEBUG $Date$";
+const QString MainWindow::AppVersion = "0.9.8.6 DEBUG $Date$";
 #else
-const QString MainWindow::AppVersion = "0.9.8.5";
+const QString MainWindow::AppVersion = "0.9.8.6";
 #endif
 
 
@@ -140,6 +140,14 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     }
     if (webcamMenu)
         ui->menu_File->insertMenu(ui->actionOpenVideoFile, webcamMenu);
+
+#ifdef WITH_TOOLBAR
+    mStripeHIcon = QIcon(":/images/stripeh.png");
+    mStripeVIcon = QIcon(":/images/stripev.png");
+    mStripeOrientationAction = new QAction(mStripeHIcon, tr("Horizontal stripe"), this);
+    ui->mainToolBar->addAction(mStripeOrientationAction);
+    QObject::connect(mStripeOrientationAction, SIGNAL(triggered()), this, SLOT(stripeOrientationSelected()));
+#endif
 
     restoreAppSettings();
 
@@ -365,12 +373,32 @@ void MainWindow::setStripeOrientation(bool vertical)
     if (mStripeImage.isNull())
         return;
     mProject.setStripeOrientation(vertical);
+    mPreviewForm->pictureWidget()->setStripeOrientation(vertical);
     if (vertical)
         mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
     else
         mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
 }
 
+
+#ifdef WITH_TOOLBAR
+void MainWindow::stripeOrientationSelected(void)
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        if (action->text() == tr("Vertical stripe")) {
+            action->setIcon(mStripeHIcon);
+            action->setText(tr("Horizontal stripe"));
+            setStripeOrientation(true);
+        }
+        else {
+            action->setIcon(mStripeVIcon);
+            action->setText(tr("Vertical stripe"));
+            setStripeOrientation(false);
+        }
+    }
+}
+#endif
 
 void MainWindow::setPictureSize(const QSize& size)
 {
@@ -592,8 +620,8 @@ void MainWindow::frameReady(const QImage& src, const Histogram& histogram, int f
         mMinTotalGreen = histogram.totalGreen();
     if (histogram.totalBlue() < mMinTotalBlue)
         mMinTotalBlue = histogram.totalBlue();
-    int dstpos = frameNumber;
-    int srcpos = mProject.stripeIsFixed()? mProject.stripePos() : (frameNumber % (mProject.stripeIsVertical()? src.width() : src.height()));
+    const int dstpos = frameNumber;
+    const int srcpos = mProject.stripeIsFixed()? mProject.stripePos() : (frameNumber % (mProject.stripeIsVertical()? src.width() : src.height()));
     if (mProject.stripeIsVertical()) {
         for (int y = 0; y < src.height(); ++y)
             mStripeImage.setPixel(dstpos, y, src.pixel(srcpos, y));
@@ -602,7 +630,8 @@ void MainWindow::frameReady(const QImage& src, const Histogram& histogram, int f
         for (int x = 0; x < src.width(); ++x)
             mStripeImage.setPixel(x, dstpos, src.pixel(x, srcpos));
     }
-    mPreviewForm->pictureWidget()->setPicture(mStripeImage, frameNumber, mProject.stripeIsVertical());
+    mPreviewForm->pictureWidget()->setPicture(mStripeImage, frameNumber);
+    mPreviewForm->pictureWidget()->setStripeOrientation(mProject.stripeIsVertical());
     mVideoWidget->setFrame(src, histogram, srcpos);
     mFrameSlider->blockSignals(true);
     mFrameSlider->setValue(mPreRenderFrameNumber + int(frameNumber * mFrameDelta));
@@ -899,9 +928,8 @@ void MainWindow::saveProjectAs(void)
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save project file as ..."));
     if (fileName.isNull())
         return;
-    mProject.save(fileName);
     setCurrentProjectFile(fileName);
-    ui->statusBar->showMessage(tr("Project saved."), 5000);
+    saveProject();
 }
 
 
@@ -920,12 +948,6 @@ void MainWindow::updateRecentProjectFileActions(void)
         recentProjectFileActs[j]->setVisible(false);
     if (numRecentFiles > 0)
         ui->menuOpen_recent_project->setEnabled(true);
-}
-
-
-void MainWindow::timerEvent(QTimerEvent*)
-{
-    /* ... */
 }
 
 

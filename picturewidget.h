@@ -24,7 +24,8 @@ public:
     PictureWidget(QWidget* parent = NULL);
     QSize sizeHint(void) const { return QSize(1920, 1080); }
     QSize minimumSizeHint(void) const { return QSize(320, 240); }
-    void setPicture(const QImage& img, int stripePos, bool stripeVertical = true);
+    void setPicture(const QImage& img, int stripePos);
+    void setStripeOrientation(bool stripeVertical);
     void setBrightnessData(
             BrightnessData* brightness,
             BrightnessData* red,
@@ -44,7 +45,7 @@ public:
 public slots:
     void copyImageToClipboard(void);
     void showCurves(bool);
-    void mirror(void);
+    void mirror(bool);
 
 protected:
     void paintEvent(QPaintEvent*);
@@ -54,6 +55,7 @@ private: // methods
 
 private: // variables
     QSize mScrollAreaSize;
+    bool mMirrored;
     QImage mImage;
     bool mShowCurves;
     BrightnessData* mBrightnessData;

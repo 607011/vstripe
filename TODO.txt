@@ -1,6 +1,8 @@
 FEHLER
 ======
 
+[ ] Histogramm-QVector an geänderte Streifenausrichtung anpassen
+
 
 TODO
 ====
