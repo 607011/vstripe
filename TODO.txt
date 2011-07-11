@@ -11,6 +11,10 @@ TODO
 FEATURES
 ========
 
+[ ] Bereich für den Streifendurchlauf wählbar machen
+
+[ ] Manueller Helligkeitsausgleich, indem man die Histogrammkurven mit der Maus verschiebt
+
 [ ] Umstellen auf Einlesen nach Millisekunden, da Einlesen nach Frame bei einigen Codecs/Formaten nicht richtig funktioniert
 
 [ ] Beim Generieren: Anzeige der Frames/Sekunde im Statusbar

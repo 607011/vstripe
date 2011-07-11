@@ -6,7 +6,7 @@
 # CHANGE NAMES AND PATHS ACCORDING TO YOUR ENVIRONMENT
 # ----------------------------------------------------
 APP=VStripe
-VERSION=0.9.8.5-x64
+VERSION=0.9.8.5.1-x64
 QTDIR=/Developer/QtSDK/Desktop/Qt/473/gcc
 QTLIBDIR=$QTDIR/lib
 
@@ -158,3 +158,4 @@ install_name_tool -change $QTLIBDIR/QtGui.framework/Versions/4/QtGui @executable
 echo Generating disk image ..
 
 hdiutil create -srcfolder "$APPBUNDLE" -volname "$APP $VERSION" -fs HFS+ -format UDZO -size 100M "$APP-$VERSION.dmg"
+
