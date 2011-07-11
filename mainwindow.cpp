@@ -30,9 +30,9 @@
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.8.4 DEBUG $Date$";
+const QString MainWindow::AppVersion = "0.9.8.5 DEBUG $Date$";
 #else
-const QString MainWindow::AppVersion = "0.9.8.4";
+const QString MainWindow::AppVersion = "0.9.8.5";
 #endif
 
 
