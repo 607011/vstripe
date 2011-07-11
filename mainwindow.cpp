@@ -593,9 +593,9 @@ void MainWindow::frameReady(const QImage& src, const Histogram& histogram, int f
     if (histogram.totalBlue() < mMinTotalBlue)
         mMinTotalBlue = histogram.totalBlue();
     int dstpos, srcpos;
-    if (mProject.stripeIsFixed()) { // Histogramm-Reihenfolge anpassen!!!
+    if (true /* mProject.stripeIsFixed() */) { // Histogramm-Reihenfolge anpassen!!!
         dstpos = frameNumber;
-        srcpos = mProject.stripePos();
+        srcpos = mProject.stripeIsFixed()? mProject.stripePos() : (frameNumber % (mProject.stripeIsVertical()? src.width() : src.height()));
         if (mProject.stripeIsVertical()) {
             for (int y = 0; y < src.height(); ++y)
                 mStripeImage.setPixel(dstpos, y, src.pixel(srcpos, y));
