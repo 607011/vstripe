@@ -46,25 +46,10 @@ void PictureWidget::copyImageToClipboard(void)
 }
 
 
-template <class T>
-void mirrorIterable(T& container)
-{
-    typename T::iterator front = container.begin();
-    typename T::iterator back = container.end();
-    while (front < back)
-        qSwap(*front--, *back++);
-}
-
-
 void PictureWidget::mirror(bool mirrored)
 {
-    qDebug() << "PictureWidget::mirror(" << mirrored << ") mStripeVertical =" << mStripeVertical;
     mMirrored = mirrored;
     mImage = (mStripeVertical)? mImage.mirrored(true, false) : mImage.mirrored(false, true);
-//    mirrorIterable(*mBrightnessData);
-//    mirrorIterable(*mRedData);
-//    mirrorIterable(*mGreenData);
-//    mirrorIterable(*mBlueData);
     update();
 }
 
@@ -105,6 +90,8 @@ void PictureWidget::setPicture(const QImage& img, int stripePos)
     mStripePos = stripePos;
     setMinimumSize(mImage.size() * mZoom);
     resize(mImage.size() * mZoom);
+    if (mMirrored)
+        mirror(true);
     update();
 }
 
