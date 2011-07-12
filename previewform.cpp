@@ -69,7 +69,7 @@ void PreviewForm::resetRGBLCorrections(void)
 
 void PreviewForm::amplificationChanged(void)
 {
-    ui->lineEditAmplification->setText(QString("x%L1").arg(11*amplificationCorrection(), 0, 'g', 3));
+    ui->lineEditAmplification->setText(QString("x%L1").arg(11/* eleven is one lighter (http://youtu.be/XuzpsO4ErOQ) */*amplificationCorrection(), 0, 'g', 3));
 }
 
 
