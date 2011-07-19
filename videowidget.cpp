@@ -246,11 +246,13 @@ void VideoWidget::paintEvent(QPaintEvent*)
 }
 
 
-QPoint VideoWidget::toPosInWidget(const QPoint& framePos) const
+QPoint VideoWidget::toPosInWidget(const QPoint& posInFrame) const
 {
-    return (mImage.isNull())? framePos :
-            QPoint(mDestRect.x() + framePos.x() * mDestRect.width()  / mImage.width(),
-                   mDestRect.y() + framePos.y() * mDestRect.height() / mImage.height());
+    if (mImage.isNull())
+        return posInFrame;
+    if (posInFrame.x() < 0 || posInFrame.y() < 0)
+        return QPoint(-1, -1);
+    return QPoint(mDestRect.x() + posInFrame.x() * mDestRect.width()  / mImage.width(), mDestRect.y() + posInFrame.y() * mDestRect.height() / mImage.height());
 }
 
 

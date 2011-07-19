@@ -6,6 +6,7 @@
 #include <QtGui/QApplication>
 #include <QTranslator>
 #include <QtCore/QtDebug>
+#include <QtCore/QLocale>
 
 #include "mainwindow.h"
 
@@ -19,7 +20,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QTranslator translator;
-    translator.load("VStripe_de");
+    translator.load("VStripe_" + QLocale::system().name());
     a.installTranslator(&translator);
 
     MainWindow w(argc, argv);

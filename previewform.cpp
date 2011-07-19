@@ -97,6 +97,7 @@ void PreviewForm::setPictureSize(const QSize& sz)
 
 void PreviewForm::setSizeConstraints(const QSize& minimumSize, const QSize& optimumSize, const QSize& defaultSize, bool stripeIsFixed)
 {
+    // qDebug() << "PreviewForm::setSizeConstraints(" << minimumSize << "," << optimumSize << "," << defaultSize << "," << stripeIsFixed;
     mStripeIsVertical = (minimumSize.width() == 0);
     mOptimumSize = optimumSize;
     mDefaultSize = defaultSize;
