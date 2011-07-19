@@ -78,8 +78,10 @@ public slots:
     void openProject(void);
     void openProject(const QString&);
     void fileDropped(const QString&);
+    void setSizeConstraints(void);
     void setPictureSize(const QSize&);
     void setStripeOrientation(bool vertical);
+    void setStripePos(int);
     void deflicker(void);
 #ifdef WITH_TOOLBAR
     void stripeOrientationSelected(void);
