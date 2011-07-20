@@ -20,8 +20,13 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QTranslator translator;
-    translator.load("VStripe_" + QLocale::system().name());
-    a.installTranslator(&translator);
+    bool ok = translator.load("VStripe_" + QLocale::system().name());
+#ifndef NDEBUG
+    if (!ok)
+        qDebug() << "Could not load translations for " << QLocale::system().name() << " locale";
+#endif
+    if (ok)
+        a.installTranslator(&translator);
 
     MainWindow w(argc, argv);
     w.show();
