@@ -381,11 +381,12 @@ void VideoWidget::mouseReleaseEvent(QMouseEvent* event)
 
 void VideoWidget::dragEnterEvent(QDragEnterEvent* event)
 {
-    // only accept local files
+    // only accept local files with suffix ".avi"
     if (event->mimeData()->hasUrls()) {
         bool accepted = true;
         foreach (const QUrl& url, event->mimeData()->urls()) {
-            accepted &= !url.toLocalFile().isEmpty();
+            const QString& localFile = url.toLocalFile();
+            accepted &= !localFile.isEmpty() && localFile.endsWith(".avi");
             if (!accepted)
                 break;
         }
