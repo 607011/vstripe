@@ -121,7 +121,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     // generate menu item for each attached webcam
     QMenu* webcamMenu = NULL;
-    for (int i = 0; /* */; ++i) {
+    for (int i = 0; i < 3; ++i) {
         Webcam cam;
         if (!cam.open(i))
             break;
@@ -1013,7 +1013,7 @@ void MainWindow::openWebcam(void)
 
 void MainWindow::openVideoFile(void)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open video file"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open video file"), QString(), tr("Video (*.avi)"));
     if (fileName.isNull())
         return;
     setCurrentVideoFile(fileName);
