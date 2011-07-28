@@ -33,6 +33,8 @@ public:
         inline bool operator==(const mark_type& other) { return frame == other.frame && id == other.id && name == other.name; }
     };
 
+    typedef QVector<mark_type> MarkList;
+
     Project(QObject* parent = NULL);
 
     Project::mark_type readMarkTag(void);
@@ -88,7 +90,7 @@ private: // members
     QFile mFile;
     QXmlStreamReader mXml;
 
-    QVector<mark_type> mMarks;
+    MarkList mMarks;
     bool mVerticalStripe;
     int mStripePos;
     int mCurrentFrame;

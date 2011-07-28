@@ -8,12 +8,6 @@
 #include "project.h"
 
 
-bool markLess(const Project::mark_type& m1, const Project::mark_type& m2)
-{
-    return m1.frame < m2.frame;
-}
-
-
 Project::Project(QObject* parent) :
     QObject(parent),
     mVerticalStripe(true),
@@ -29,8 +23,7 @@ Project::Project(QObject* parent) :
 
 Project::mark_type Project::readMarkTag(void)
 {
-    Q_ASSERT(mXml.isStartElement() && mXml.name() == "mark");
-
+    Q_ASSERT_X(mXml.isStartElement() && mXml.name() == "mark", "Project::readMarkTag()", "name() not \"mark\"");
     int frame = Project::INVALID_FRAME;
     QString name;
     MarkId id = Project::ID_NONE;
@@ -56,10 +49,15 @@ Project::mark_type Project::readMarkTag(void)
 }
 
 
+bool markLess(const Project::mark_type& m1, const Project::mark_type& m2)
+{
+    return m1.frame < m2.frame;
+}
+
+
 void Project::readMarksTag(void)
 {
-    Q_ASSERT(mXml.isStartElement() && mXml.name() == "marks");
-
+    Q_ASSERT_X(mXml.isStartElement() && mXml.name() == "marks", "Project::readMarksTag()", "name() not \"marks\"");
     while (!(mXml.tokenType() == QXmlStreamReader::EndElement && mXml.name() == "marks")) {
         if (mXml.tokenType() == QXmlStreamReader::StartElement) {
             if (mXml.name() == "mark") {
@@ -76,8 +74,7 @@ void Project::readMarksTag(void)
 
 void Project::readRegionTag(void)
 {
-    Q_ASSERT(mXml.isStartElement() && mXml.name() == "region");
-
+    Q_ASSERT_X(mXml.isStartElement() && mXml.name() == "region", "Project::readRegionTag()", "name() not \"region\"");
     while (!(mXml.tokenType() == QXmlStreamReader::EndElement && mXml.name() == "region")) {
         if (mXml.tokenType() == QXmlStreamReader::StartElement) {
             if (mXml.name() == "x")
@@ -96,8 +93,7 @@ void Project::readRegionTag(void)
 
 void Project::readHistogramTag(void)
 {
-    Q_ASSERT(mXml.isStartElement() && mXml.name() == "histogram");
-
+    Q_ASSERT_X(mXml.isStartElement() && mXml.name() == "histogram", "Project::readHistogramTag()", "name() not \"histogram\"");
     while (!(mXml.tokenType() == QXmlStreamReader::EndElement && mXml.name() == "histogram")) {
         if (mXml.tokenType() == QXmlStreamReader::StartElement) {
             if (mXml.name() == "region") {
@@ -122,8 +118,7 @@ void Project::readHistogramTag(void)
 
 void Project::readInputTag(void)
 {
-    Q_ASSERT(mXml.isStartElement() && mXml.name() == "input");
-
+    Q_ASSERT_X(mXml.isStartElement() && mXml.name() == "input", "Project::readInputTag()", "name() not \"input\"");
     while (mXml.readNextStartElement()) {
         if (mXml.name() == "file")
             mVideoFileName = mXml.readElementText();
@@ -134,8 +129,7 @@ void Project::readInputTag(void)
 
 void Project::read(void)
 {
-    Q_ASSERT(mXml.isStartElement() && mXml.name() == "vstripe");
-
+    Q_ASSERT_X(mXml.isStartElement() && mXml.name() == "vstripe", "Project::read()", "name() not \"vstripe\"");
     while (!mXml.atEnd() && !mXml.hasError() && mXml.readNextStartElement()) {
         if (mXml.name() == "input")
             readInputTag();
@@ -337,7 +331,7 @@ void Project::setBlueLevel(qreal level)
 
 Project::mark_type* Project::findMark(int id) const
 {
-    for (QVector<mark_type>::const_iterator m = mMarks.constBegin(); m != mMarks.constEnd(); ++m)
+    for (MarkList::const_iterator m = mMarks.constBegin(); m != mMarks.constEnd(); ++m)
         if (m->id == id)
             return const_cast<Project::mark_type*>(m);
     return NULL;
