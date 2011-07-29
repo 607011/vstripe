@@ -24,9 +24,10 @@ LIBS += -lgomp
 }
 
 unix:!macx {
+OPENCVDIR = /usr
 FFMPEGDIR = ../ffmpeg-static
 LIBS += -L$${FFMPEGDIR}/lib -lavformat -lavcodec -lavutil -lswscale
-LIBS += -L$${OPENCVDIR}/lib -lopencv_core -lopencv_highgui
+LIBS += -L$${OPENCVDIR}/lib -lcv -lhighgui
 LIBS += -lgomp
 }
 
@@ -48,8 +49,7 @@ INCLUDEPATH += $${FFMPEGDIR}/include \
     $${FFMPEGDIR}/include/libavfilter \
     $${FFMPEGDIR}/include/libswscale \
     $${OPENCVDIR}/include \
-    $${OPENCVDIR}/include/opencv \
-    $${OPENCVDIR}/include/opencv2
+    $${OPENCVDIR}/include/opencv
 
 
 DEFINES += __STDC_CONSTANT_MACROS

@@ -30,9 +30,9 @@
 const QString MainWindow::Company = "von-und-fuer-lau.de";
 const QString MainWindow::AppName = "VStripe";
 #ifndef QT_NO_DEBUG
-const QString MainWindow::AppVersion = "0.9.8.7 DEBUG $Date$";
+const QString MainWindow::AppVersion = "0.9.8.8 DEBUG $Date$";
 #else
-const QString MainWindow::AppVersion = "0.9.8.7";
+const QString MainWindow::AppVersion = "0.9.8.8";
 #endif
 
 
@@ -140,21 +140,16 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
     if (webcamMenu)
         ui->menu_File->insertMenu(ui->actionOpenVideoFile, webcamMenu);
 
-#ifdef WITH_TOOLBAR
-    mStripeHIcon = QIcon(":/images/stripeh.png");
-    mStripeVIcon = QIcon(":/images/stripev.png");
-    mStripeOrientationAction = new QAction(mStripeHIcon, tr("Horizontal stripe"), this);
-    ui->mainToolBar->addAction(mStripeOrientationAction);
-    QObject::connect(mStripeOrientationAction, SIGNAL(triggered()), this, SLOT(stripeOrientationSelected()));
-#endif
+    setStripeOrientation(true);
+    setStripePos(-1);
 
     restoreAppSettings();
 
-    if (argc > 1)
-        mFileNameFromCmdLine = argv[1];
-
-    setStripeOrientation(true);
-    setStripePos(-1);
+    if (argc > 1) {
+        QString fileName(argv[1]);
+        if (!fileName.isEmpty())
+            loadVideoFile(mFileNameFromCmdLine);
+    }
 
     ui->statusBar->showMessage(tr("Ready."), 3000);
 }
@@ -207,6 +202,12 @@ void MainWindow::restoreAppSettings(void)
 
 void MainWindow::setCurrentVideoFile(const QString& fileName)
 {
+    if (!fileName.endsWith(".avi")) {
+        mVideoWidget->setFrame(QImage());
+        QMessageBox::critical(this, tr("Opening video failed."), tr("The selected video could not be read. Be sure to have any video encoded with H.264 and saved in AVI format."), QMessageBox::Ok);
+        ui->statusBar->showMessage(tr("Opening video failed."), 5000);
+        return;
+    }
     mProject.setVideoFileName(fileName);
     setWindowTitle(tr("%1 %2 - %3").arg(MainWindow::AppName).arg(MainWindow::AppVersion).arg(mProject.videoFileName()));
     setWindowFilePath(mProject.videoFileName());
@@ -238,20 +239,16 @@ void MainWindow::setCurrentProjectFile(const QString& fileName)
 
 void MainWindow::fileDropped(const QString& fileName)
 {
-    Q_ASSERT(!fileName.isNull());
-
+    Q_ASSERT_X(!fileName.isNull(), "MainWindow::fileDropped", "Invalid filename");
     QFileInfo fi(fileName);
     if (fi.isFile() && fi.isReadable()) {
         if (fileName.endsWith(".xml") || fileName.endsWith(".vstripe"))
             openProject(fileName);
-        else {
-            setCurrentVideoFile(fileName);
-            loadVideoFile();
-            clearMarks();
-        }
+        else
+            loadVideoFile(fileName);
     }
     else
-        QMessageBox::warning(this, tr("Invalid file"), tr("File '%1' does not exist or is not accessible").arg(fileName), QMessageBox::Ok);
+        QMessageBox::critical(this, tr("Invalid file"), tr("File '%1' does not exist or is not accessible").arg(fileName), QMessageBox::Ok);
 }
 
 
@@ -398,25 +395,6 @@ void MainWindow::setStripeOrientation(bool vertical)
     setSizeConstraints();
 }
 
-
-#ifdef WITH_TOOLBAR
-void MainWindow::stripeOrientationSelected(void)
-{
-    QAction* action = qobject_cast<QAction*>(sender());
-    if (action) {
-        if (action->text() == tr("Vertical stripe")) {
-            action->setIcon(mStripeHIcon);
-            action->setText(tr("Horizontal stripe"));
-            setStripeOrientation(true);
-        }
-        else {
-            action->setIcon(mStripeVIcon);
-            action->setText(tr("Vertical stripe"));
-            setStripeOrientation(false);
-        }
-    }
-}
-#endif
 
 void MainWindow::setPictureSize(const QSize& size)
 {
@@ -626,9 +604,8 @@ void MainWindow::hidePictureWidget(void)
 
 void MainWindow::frameReady(const QImage& src, const Histogram& histogram, int frameNumber, int effectiveFrameNumber, int effectiveFrameTime)
 {
-    Q_ASSERT(!mStripeImage.isNull());
-    Q_ASSERT(!src.isNull());
-
+    Q_ASSERT_X(!mStripeImage.isNull(), "MainWindow::frameReady()", "mStripeImage must not be empty/null");
+    Q_ASSERT_X(!src.isNull(), "MainWindow::frameReady()", "source image must not be empty/null");
     mFrameBrightness.append(histogram.totalBrightness());
     mFrameRed.append(histogram.totalRed());
     mFrameGreen.append(histogram.totalGreen());
@@ -1014,10 +991,16 @@ void MainWindow::openWebcam(void)
 void MainWindow::openVideoFile(void)
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open video file"), QString(), tr("Video (*.avi)"));
-    if (fileName.isNull())
+    loadVideoFile(fileName);
+}
+
+
+void MainWindow::loadVideoFile(const QString& fileName)
+{
+    if (fileName.isEmpty())
         return;
     setCurrentVideoFile(fileName);
-    bool ok = loadVideoFile();
+    const bool ok = loadVideoFile();
     if (ok)
         clearMarks();
 }
@@ -1028,7 +1011,7 @@ bool MainWindow::loadVideoFile(void)
     bool ok = useDecoder(new VideoDecoder)->open(mProject.videoFileName().toLatin1().constData()); // useDecoder() sets mDecoder and returns it
     if (!ok) {
         mVideoWidget->setFrame(QImage());
-        QMessageBox::warning(this, tr("Opening video failed."), tr("The selected video could not be read."), QMessageBox::Ok);
+        QMessageBox::critical(this, tr("Opening video failed."), tr("The selected video could not be read."), QMessageBox::Ok);
         ui->statusBar->showMessage(tr("Opening video failed."), 5000);
         return false;
     }
@@ -1040,7 +1023,7 @@ bool MainWindow::loadVideoFile(void)
     mDecoder->getFrame(img, &mLastFrameNumber);
     if (mLastFrameNumber == 0) {
         mVideoWidget->setFrame(QImage());
-        QMessageBox::warning(this, tr("Opening video failed."), tr("The selected video could not be read. Be sure to have any video encoded with H.264 and saved in AVI format."), QMessageBox::Ok);
+        QMessageBox::critical(this, tr("Opening video failed."), tr("The selected video could not be read. Be sure to have any video encoded with H.264 and saved in AVI format."), QMessageBox::Ok);
         ui->statusBar->showMessage(tr("Opening video failed."), 5000);
         return false;
     }
