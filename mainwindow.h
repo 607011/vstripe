@@ -51,6 +51,7 @@ public slots:
     void openRecentVideoFile(void);
     void openRecentProjectFile(void);
     bool loadVideoFile(void);
+    void loadVideoFile(const QString&);
     void decodingFinished(void);
     void togglePictureWidget(bool);
     void seekToFrame(int);
@@ -83,20 +84,12 @@ public slots:
     void setStripeOrientation(bool vertical);
     void setStripePos(int);
     void deflicker(void);
-#ifdef WITH_TOOLBAR
-    void stripeOrientationSelected(void);
-#endif
 
 protected:
     void closeEvent(QCloseEvent*);
 
 private: // variables
     Ui::MainWindow* ui;
-#ifdef WITH_TOOLBAR
-    QIcon mStripeHIcon;
-    QIcon mStripeVIcon;
-    QAction* mStripeOrientationAction;
-#endif
     MarkableSlider* mFrameSlider;
     VideoWidget* mVideoWidget;
     PreviewForm* mPreviewForm;
