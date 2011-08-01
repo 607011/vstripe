@@ -121,7 +121,7 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
 
     // generate menu item for each attached webcam
     QMenu* webcamMenu = NULL;
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3 /* do not use more than 3 cams */; ++i) {
         Webcam cam;
         if (!cam.open(i))
             break;
@@ -202,12 +202,14 @@ void MainWindow::restoreAppSettings(void)
 
 void MainWindow::setCurrentVideoFile(const QString& fileName)
 {
+#ifdef QT_NO_DEBUG
     if (!fileName.endsWith(".avi")) {
         mVideoWidget->setFrame(QImage());
         QMessageBox::critical(this, tr("Opening video failed."), tr("The selected video could not be read. Be sure to have any video encoded with H.264 and saved in AVI format."), QMessageBox::Ok);
         ui->statusBar->showMessage(tr("Opening video failed."), 5000);
         return;
     }
+#endif
     mProject.setVideoFileName(fileName);
     setWindowTitle(tr("%1 %2 - %3").arg(MainWindow::AppName).arg(MainWindow::AppVersion).arg(mProject.videoFileName()));
     setWindowFilePath(mProject.videoFileName());
@@ -990,7 +992,11 @@ void MainWindow::openWebcam(void)
 
 void MainWindow::openVideoFile(void)
 {
+#ifdef QT_NO_DEBUG
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open video file"), QString(), tr("Video (*.avi)"));
+#else
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open video file"));
+#endif
     loadVideoFile(fileName);
 }
 
