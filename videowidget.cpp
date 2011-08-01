@@ -386,7 +386,10 @@ void VideoWidget::dragEnterEvent(QDragEnterEvent* event)
         bool accepted = true;
         foreach (const QUrl& url, event->mimeData()->urls()) {
             const QString& localFile = url.toLocalFile();
-            accepted &= !localFile.isEmpty() && localFile.endsWith(".avi");
+            accepted &= !localFile.isEmpty();
+#ifdef QT_NO_DEBUG
+            accepted &= localFile.endsWith(".avi");
+#endif
             if (!accepted)
                 break;
         }
