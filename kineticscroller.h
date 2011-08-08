@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QEvent>
 #include <QVector>
-#include <QElapsedTimer>
+#include <QTime>
 #include <QScrollArea>
 #include <QPoint>
 #include <QTimerEvent>
@@ -50,7 +50,7 @@ private:
     bool mDragging;
     QPoint mLastMousePos;
     QVector<KineticData> mKineticData;
-    QElapsedTimer mMouseMoveTimer;
+    QTime mMouseMoveTimer;
     int mTimer;
     QPointF mVelocity;
 };

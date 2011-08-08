@@ -10,7 +10,7 @@
 
 #include "mainwindow.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 #if defined(Q_OS_MAC)
     QCoreApplication::addLibraryPath("../plugins");
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
     QTranslator translator;
     bool ok = translator.load("VStripe_" + QLocale::system().name());
-#ifndef NDEBUG
+#ifndef QT_NO_DEBUG
     if (!ok)
         qDebug() << "Could not load translations for " << QLocale::system().name() << " locale";
 #endif
