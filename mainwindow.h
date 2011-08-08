@@ -148,7 +148,7 @@ private: // methods
     IAbstractVideoDecoder* useDecoder(IAbstractVideoDecoder*);
     QSize optimalPictureSize(void) const;
     bool webcamIsActive(void) const;
-    void deactivateWebcam(void);
+    void deactivateInputStream(void);
 
     static QString ms2hmsz(int ms, bool withMs = true);
     static QString strippedName(const QString& fullFileName);

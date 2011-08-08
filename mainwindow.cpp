@@ -306,7 +306,7 @@ QString MainWindow::ms2hmsz(int ms, bool withMs)
 }
 
 
-void MainWindow::deactivateWebcam(void)
+void MainWindow::deactivateInputStream(void)
 {
     if (mWebcamThread) {
         delete mWebcamThread;
@@ -327,6 +327,8 @@ bool MainWindow::webcamIsActive(void) const
 
 QSize MainWindow::optimalPictureSize(void) const
 {
+    if (mDecoder == NULL)
+        return QSize();
     QSize goalSize(mDecoder->frameSize());
     if (mProject.markAIsSet() && mProject.markBIsSet()) {
         if (mProject.stripeIsVertical())
@@ -346,6 +348,8 @@ QSize MainWindow::optimalPictureSize(void) const
 
 void MainWindow::seekToFrame(int n)
 {
+    if (mDecoder == NULL)
+        return;
     setCursor(Qt::WaitCursor);
     mPreviewForm->setCursor(Qt::WaitCursor);
     mProject.setCurrentFrame(n);
@@ -372,10 +376,14 @@ void MainWindow::showPercentReady(int percent)
 
 void MainWindow::setSizeConstraints(void)
 {
-    if (mProject.stripeIsVertical())
-        mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
+    if (mDecoder) {
+        if (mProject.stripeIsVertical())
+            mPreviewForm->setSizeConstraints(QSize(0, mDecoder->frameSize().height()), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
+        else
+            mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
+    }
     else
-        mPreviewForm->setSizeConstraints(QSize(mDecoder->frameSize().width(), 0), optimalPictureSize(), mDecoder->frameSize(), mProject.stripeIsFixed());
+        mPreviewForm->setSizeConstraints(QSize(), QSize(), QSize(), false);
 }
 
 
@@ -418,6 +426,7 @@ void MainWindow::setPictureSize(const QSize& size)
 
 void MainWindow::startRendering(void)
 {
+    Q_ASSERT_X(mDecoder != NULL, "MainWindow::startRendering()", "mDecoder is null");
     if (webcamIsActive())
         mWebcamThread->stopReading();
     ui->renderButton->setText(tr("Stop rendering"));
@@ -483,24 +492,28 @@ void MainWindow::renderButtonClicked(void)
 
 void MainWindow::forward(int nFrames)
 {
+    Q_ASSERT_X(mDecoder != NULL, "MainWindow::forward()", "mDecoder is null");
     mFrameSlider->setValue(mFrameSlider->value() + nFrames * mDecoder->getDefaultSkip());
 }
 
 
 void MainWindow::backward(int nFrames)
 {
+    Q_ASSERT_X(mDecoder != NULL, "MainWindow::forward()", "mDecoder is null");
     mFrameSlider->setValue(mFrameSlider->value() - nFrames * mDecoder->getDefaultSkip());
 }
 
 
 void MainWindow::fastForward(void)
 {
+    Q_ASSERT_X(mDecoder != NULL, "MainWindow::fastForward()", "mDecoder is null");
     forward(50);
 }
 
 
 void MainWindow::fastBackward(void)
 {
+    Q_ASSERT_X(mDecoder != NULL, "MainWindow::fastBackward()", "mDecoder is null");
     backward(50);
 }
 
@@ -953,7 +966,7 @@ void MainWindow::updateRecentProjectFileActions(void)
 
 IAbstractVideoDecoder* MainWindow::useDecoder(IAbstractVideoDecoder* decoder)
 {
-    deactivateWebcam();
+    deactivateInputStream();
     if (mDecoder)
         delete mDecoder;
     mDecoder = decoder;
@@ -1054,7 +1067,7 @@ bool MainWindow::loadVideoFile(void)
 
 void MainWindow::closeInput(void)
 {
-    deactivateWebcam();
+    deactivateInputStream();
     disableGuiButtons();
     ui->frameNumberLineEdit->setText(QString());
     ui->frameTimeLineEdit->setText(QString());
@@ -1063,12 +1076,13 @@ void MainWindow::closeInput(void)
     mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     hidePictureWidget();
     clearMarks();
+    ui->infoPlainTextEdit->clear();
     ui->statusBar->showMessage(tr("Input closed."), 5000);
 }
 
 
 void MainWindow::savePicture(void)
 {
-    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save picture as ..."), QString(), "*.png, *.jpg");
+    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save picture as ..."), QString(), tr("Images *.png *.jpg"));
     mPreviewForm->pictureWidget()->picture().save(saveFileName, 0, 80);
 }
