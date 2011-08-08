@@ -1,0 +1,22 @@
+syntax: glob
+*.o
+VStripe
+VStripe.app/*
+build/*
+samples/*
+moc_*.cpp
+ui_*.h
+Makefile*
+qrc_*.cpp
+*.pro.user
+VStripe*.dmg
+VStripe*.qm
+.DS_Store
+*.swp
+*.orig
+object_script.VStripe.*
+debug/*
+release/*
+doc/*.qch
+doc/*.qhc
+deploy/*

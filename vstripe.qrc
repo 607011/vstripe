@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>icons/VStripe.ico.png</file>
+        <file alias="checkered-background.png">img/checkered-background.png</file>
+        <file alias="stripeh.png">img/stripeh.png</file>
+        <file alias="stripev.png">img/stripev.png</file>
+    </qresource>
+</RCC>
