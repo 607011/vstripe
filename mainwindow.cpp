@@ -1067,11 +1067,13 @@ bool MainWindow::loadVideoFile(void)
 
 void MainWindow::closeInput(void)
 {
+    mFrameSlider->blockSignals(true);
+    mFrameSlider->setValue(0);
+    mFrameSlider->blockSignals(false);
     deactivateInputStream();
     disableGuiButtons();
     ui->frameNumberLineEdit->setText(QString());
     ui->frameTimeLineEdit->setText(QString());
-    mFrameSlider->setValue(0);
     mVideoWidget->setFrame(QImage(), Histogram(), -1);
     mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
     hidePictureWidget();
