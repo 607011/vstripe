@@ -60,6 +60,7 @@ void KineticScroller::detach(void)
 
 void KineticScroller::attachTo(QScrollArea* scrollArea)
 {
+    Q_ASSERT_X(mScrollArea != NULL, "KineticScroller::attachTo()", "QScrollArea not given");
     detach();
     mScrollArea = scrollArea;
     mScrollArea->viewport()->installEventFilter(this);
@@ -68,8 +69,8 @@ void KineticScroller::attachTo(QScrollArea* scrollArea)
 
 bool KineticScroller::eventFilter(QObject* object, QEvent* event)
 {
-    Q_ASSERT_X(mScrollArea != NULL, "KineticScroller", "QScrollArea not set");
-    Q_ASSERT_X(object == mScrollArea->viewport(), "KineticScroller", "Invalid QScrollArea");
+    Q_ASSERT_X(mScrollArea != NULL, "KineticScroller::eventFilter()", "QScrollArea not set");
+    Q_ASSERT_X(object == mScrollArea->viewport(), "KineticScroller::eventFilter()", "Invalid QScrollArea");
     const QMouseEvent* const mouseEvent = reinterpret_cast<const QMouseEvent*>(event);
     bool doFilterEvent = true;
     switch (event->type()) {
@@ -130,7 +131,7 @@ void KineticScroller::timerEvent(QTimerEvent*)
 
 void KineticScroller::scrollBy(const QPoint& d)
 {
-    Q_ASSERT_X(mScrollArea != NULL, "KineticScroller", "QScrollArea not set");
+    Q_ASSERT_X(mScrollArea != NULL, "KineticScroller::scrollBy()", "QScrollArea not set");
     mScrollArea->horizontalScrollBar()->setValue(mScrollArea->horizontalScrollBar()->value() + d.x());
     mScrollArea->verticalScrollBar()->setValue(mScrollArea->verticalScrollBar()->value() + d.y());
 }
