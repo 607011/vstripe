@@ -40,7 +40,8 @@ MainWindow::MainWindow(int argc, char* argv[], QWidget* parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow),
         mWebcamThread(NULL),
-        mDecoder(NULL)
+        mDecoder(NULL),
+        mCachedCamId(InvalidCamId)
 {
     ui->setupUi(this);
 
@@ -694,6 +695,9 @@ void MainWindow::decodingFinished()
     enableNavigationButtons();
     setCursor(Qt::ArrowCursor);
     mPreviewForm->setCursor(Qt::ArrowCursor);
+
+    if (mCachedCamId > InvalidCamId)
+        openWebcam();
 }
 
 
@@ -967,8 +971,6 @@ void MainWindow::updateRecentProjectFileActions(void)
 IAbstractVideoDecoder* MainWindow::useDecoder(IAbstractVideoDecoder* decoder)
 {
     deactivateInputStream();
-    if (mDecoder)
-        delete mDecoder;
     mDecoder = decoder;
     mVideoReaderThread->setSource(mDecoder);
     return mDecoder;
@@ -978,28 +980,35 @@ IAbstractVideoDecoder* MainWindow::useDecoder(IAbstractVideoDecoder* decoder)
 void MainWindow::openWebcam(void)
 {
     QAction* action = qobject_cast<QAction*>(sender());
-    int camId = action->data().toInt();
-    useDecoder(new Webcam(this))->open(camId); // useDecoder() sets mDecoder and returns it
+    mCachedCamId = (action)? action->data().toInt() : mCachedCamId;
+    Q_ASSERT_X(mCachedCamId >= 0, "MainWindow::openWebcam()", "invalid cam id");
+    useDecoder(new Webcam(this)); // useDecoder() sets mDecoder and returns it
+    mDecoder->open(mCachedCamId);
     mVideoReaderThread->setSource(mDecoder);
-    mVideoWidget->setFrameSize(mDecoder->frameSize());
-    setPictureSize(mDecoder->frameSize());
     mEffectiveFrameNumber = 0;
     mProject.setCurrentFrame(0);
+    if (mWebcamThread) {
+        mWebcamThread->disconnect();
+        delete mWebcamThread;
+    }
     mWebcamThread = new WebcamThread(qobject_cast<Webcam*>(mDecoder), this);
     QObject::connect(mWebcamThread, SIGNAL(frameReady(QImage)), mVideoWidget, SLOT(setFrame(const QImage&)));
-    setSizeConstraints();
-    mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
-    showPictureWidget();
-    QImage img;
-    mDecoder->getFrame(img, &mLastFrameNumber);
+    if (action) {
+        mPreviewForm->pictureWidget()->setPicture(QImage(), -1);
+        QImage img;
+        mDecoder->getFrame(img, &mLastFrameNumber);
+        setPictureSize(mDecoder->frameSize());
+        mVideoWidget->setFrameSize(mDecoder->frameSize());
+        clearMarks();
+    }
+    enableGuiButtons();
+    ui->actionSave_project_as->setEnabled(true);
+    ui->actionSave_project->setEnabled(true);
     mFrameSlider->setEnabled(false);
     ui->infoPlainTextEdit->clear();
-    ui->actionSave_project->setEnabled(true);
-    ui->actionSave_project_as->setEnabled(true);
-    enableGuiButtons();
+    showPictureWidget();
     mWebcamThread->startReading();
     ui->statusBar->showMessage(tr("Webcam is running ..."));
-    clearMarks();
 }
 
 
@@ -1061,6 +1070,7 @@ bool MainWindow::loadVideoFile(void)
     seekToFrame(0);
     enableGuiButtons();
     ui->statusBar->showMessage(tr("Video is ready."));
+    mCachedCamId = InvalidCamId;
     return true;
 }
 

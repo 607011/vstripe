@@ -13,19 +13,20 @@
 #include "project.h"
 
 
-VideoWidget::VideoWidget(QWidget* parent) : QWidget(parent)
+VideoWidget::VideoWidget(QWidget* parent) :
+        QWidget(parent),
+        mHistogramEnabled(false),
+        mStripeWidth(1),
+        mMouseButtonDown(false),
+        mDrawingHistogram(false),
+        mVerticalStripe(true),
+        mStripePos(QPoint(-1, -1)),
+        mRunningStripePos(-1)
 {
     setAcceptDrops(true);
     setBaseSize(480, 270);
     setMinimumSize(384, 216);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    mStripePos = QPoint(-1, -1);
-    mStripeWidth = 1;
-    mMouseButtonDown = false;
-    mDrawingHistogram = false;
-    mVerticalStripe = true;
-    mHistogramEnabled = false;
-    mRunningStripePos = -1;
 }
 
 
@@ -59,6 +60,7 @@ void VideoWidget::setStripeOrientation(bool vertical)
     if (!mImage.isNull())
         update();
 }
+
 
 void VideoWidget::setHistogramEnabled(bool enabled)
 {

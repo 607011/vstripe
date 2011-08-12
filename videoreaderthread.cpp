@@ -36,7 +36,6 @@ void VideoReaderThread::setSource(IAbstractVideoDecoder* decoder)
 {
     Q_ASSERT(decoder != NULL);
     Q_ASSERT(!isRunning());
-
     close();
     mDecoder = decoder;
 }
@@ -44,10 +43,9 @@ void VideoReaderThread::setSource(IAbstractVideoDecoder* decoder)
 
 void VideoReaderThread::startReading(int firstFrameNumber, int nFrames, qreal frameDelta)
 {
-    Q_ASSERT(firstFrameNumber != Project::INVALID_FRAME);
-    Q_ASSERT(nFrames > 0);
-    Q_ASSERT(frameDelta > 0);
-
+    Q_ASSERT_X(firstFrameNumber != Project::INVALID_FRAME, "VideoReaderThread::startReading()", "Invalid frame number (firstFrameNumber)");
+    Q_ASSERT_X(nFrames > 0, "VideoReaderThread::startReading()", "nFrames <= 0");
+    Q_ASSERT_X(frameDelta > 0, "VideoReaderThread::startReading()", "frameDelta <= 0");
     stopReading();
     mFrameNumber = (qreal)firstFrameNumber;
     mMaxFrameCount = nFrames;
@@ -91,8 +89,7 @@ void VideoReaderThread::calcHistogram(const QImage& src)
 
 void VideoReaderThread::run(void)
 {
-    Q_ASSERT(mFrameNumber != Project::INVALID_FRAME);
-
+    Q_ASSERT_X(mFrameNumber != Project::INVALID_FRAME, "VideoReaderThread::run()", "Invalid frame number (mFrameNumber)");
     qreal prevFrameNumber = mFrameNumber;
     int frameCount = 0;
     int percent = 0, prevPercent = 0;

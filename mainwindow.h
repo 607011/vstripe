@@ -125,7 +125,8 @@ private: // variables
     QAction* recentProjectFileActs[MaxRecentFiles];
     WebcamThread* mWebcamThread;
     IAbstractVideoDecoder* mDecoder;
-
+    static const int InvalidCamId = -1;
+    int mCachedCamId;
 
 private: // methods
     void showPictureWidget(void);
